@@ -1,0 +1,5 @@
+
+.Rbuildignore
+/.Rproj*
+.Rhistory
+mc2d.Rproj
