@@ -1,0 +1,575 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% mc2d: Tools for Two-Dimensional Monte-Carlo Simulations
+%%%
+%%%         New TP V.2
+%%%
+
+
+
+\documentclass[10pt, english]{article}
+
+%\usepackage[letterpaper]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage[scale=0.8, centering]{geometry}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+% sweave commands for vignette
+%\VignetteIndexEntry{Case study: L. monocytogenes in cold-smoked salmon}
+%\VignettePackage{mc2d}
+%\VignetteDepends{mvtnorm,fitdistrplus}
+
+%\makeatother
+
+\begin{document}
+
+% Command for Sweave: figure = .5 the text width
+\setkeys{Gin}{width=0.5\textwidth}
+
+\title{Case study: \emph{L.\ monocytogenes} in cold-smoked salmon}
+\author{R. POUILLOT, M.-L. DELIGNETTE-MULLER, M. CORNU}
+
+\maketitle
+
+The objective of this case study is to assess the risk of invasive listeriosis from consumption
+of cold-smoked salmon in France. 
+The process of interest lays from the end of the production line in the factory, when the cold-smoked 
+salmon is vacuum-packed, to the consumption.
+
+The data and the model are adapted to illustrate the use 
+of \texttt{mc2d}: the results will not and \emph{should not} be interpreted as an assessment
+of the actual risk of listeriosis from consumption of cold-smoked salmon. 
+Interested readers could refer to \cite{POUILLOT-2007} and \cite{POUILLOT-2009} for a complete
+risk assessment on that issue.
+
+The model will be developed in a first section, without considering variability or uncertainty (deterministic model).
+Variability will then be introduced in a second section, and a last section will consider variability 
+and a part of the data uncertainty.  
+
+\section{The Model}
+
+In this section, no variability nor uncertainty is considered.
+We assess the final level of \emph{L.\ monocytogenes} in the product,
+the exposure and the risk of invasive listeriosis for an ``average'' individual
+of the ``healthy'' French population\footnote{It makes little sense, but it will help us introducing
+smoothly the model.}.
+
+During the logistic, the retail and the home step,
+a bacterial growth is modeled considering \emph{i}) the fluctuating temperature
+during the various stages and; \emph{ii}) the bacterial competition with the food flora.
+We use the models developed and/or used in \cite{POUILLOT-2007}. The data are adapted from
+\cite{POUILLOT-2007} and \cite{DELIGNETTE-2006}:
+
+\begin{itemize}
+  \item The DMS model predicts the bacterial growth during a stage of duration $d$,
+  when the temperature is fluctuating, with an intra-stage average temperature $m_{T}$
+  and an intra-stage standard deviation of the temperature $s_{T}$. It is written:
+  %
+  \begin{equation}
+  N_{1}=
+  \min\left(
+    N_{0} +
+    \frac{\mu_{ref}}{\ln(10)} \times d \times 
+    \frac{\left(s_{T}^{2}+\left(m_{T}-T_{min}\right)^{2}\right)}{\left(T_{ref}-T_{min}\right)^{2}},
+    \: N_{max}\right) \label{DMS}
+  \end{equation}
+  %
+  if $m_{T}>T_{min}$, with $N_{1}$ the $\log_{10}$ concentration of bacteria
+  ($\log_{10}$ (CFU/g)) in the product at the end of the stage,
+  $N_{0}$ the $\log_{10}$ concentration of bacteria ($\log_{10}$ (CFU/g))
+  in the product at the beginning of the stage, $\mu_{ref}$ the specific growth
+  rate ($\text{day}^{-1}$) at a reference temperature $T_{ref}$ (\textdegree{}C),
+   $T_{min}$ the minimal temperature (\textdegree{}C) of growth
+  and $N_{max}$   the maximum achievable concentration in the product ($\log_{10}$ (CFU/g)).
+  If $m_{T} \leq T_{min}$, $N_{1}=N_{0}$.
+  \item We will use $T_{ref}=25$\textdegree{}C.
+  We have in this section $N_{max}=7.27 \log_{10}(\text{CFU/g})$;
+  \item The model for \emph{L.\ monocytogenes} uses $\mu_{ref,Lm}=6.2\: \text{day}^{-1}$ and
+  $T_{min,Lm}=-2.9$\textdegree{}C;
+  \item  The same model is used for the food flora, with $\mu_{ref,ff}=4.1\: \text{day}^{-1}$ and
+  $T_{min,ff}=-4.5$\textdegree{}C;
+  \item The growth model for the bacterial competition consider the Jameson effect,
+  i.e.\ consider that the bacterial growth of \emph{L.\ monocytogenes and} the growth of the food flora
+  are stopped as soon as one population reaches $N_{max}$.
+\end{itemize}
+  In practice, one will evaluate $d_{Lm}$ and $d_{ff}$, the time needed for \emph{L.\ monocytogenes}
+  or the food flora to reach $N_{max}$, respectively, and model a growth for the
+  given stage during an effective duration of $\min(d,d_{Lm},d_{ff})$.
+  The time needed to reach $N_{max}$ is evaluated by inverting \eqref{DMS}:
+  %
+  \[
+  d_{\left(N_{1}=N_{max}\right)}=
+  \left(N_{max}-N_{0}\right)\times
+    \frac{\ln(10)}{\mu_{ref}} \times
+    \frac{\left(T_{ref}-T_{min}\right)^{2}}{\left(s_{T}^{2}+\left(m_{T}-T_{min}\right)^{2}\right)}
+  \]
+  %
+
+The other assumptions are:
+\begin{itemize}
+  \item  A cold-smoked salmon package is homogeneously contaminated with \emph{L.\ monocytogenes}
+  at the end of the production at a level of $0.1$ CFU/g;
+  \item  The food flora level at the end of the production is $10^{2.78}$ CFU/g;
+  \item  The time-temperature profile is:
+
+    \begin{itemize}
+    \item  1.1 days at an average temperature of 3.2\textdegree{}C from the factory to the retail (logistic step),
+    with an intra-stage standard deviation of the temperature of 2.1 \textdegree{}C;
+    \item  4.7 days at an average temperature of 5.5\textdegree{}C at retail
+    with an intra-stage standard deviation of the temperature of 1.0 \textdegree{}C;
+    \item  4.3 days at an average temperature of 8.2\textdegree{}C in the consumer's home
+    with an intra-stage standard deviation of the temperature of 2.0 \textdegree{}C;
+    \end{itemize}
+  \item  An healthy, non elderly, non pregnant individual eats 35g of this product;
+  \item  The individual dose-response model for this population is a one hit model
+  \[
+  \Pr(\text{Illness} \mid D)=1-(1-r)^{D}
+  \]
+  with $r=4.7\times10^{-14}$ for an individual from this healthy sub-population.
+  The populational dose-response that evaluates the mean risk for
+  a population exposed to food where the number of bacteria follows a Poisson distribution of
+  mean paramer $D$ is the exponential dose-response
+  \[
+  \Pr(\text{Illness} \mid D)=1-\exp(r\times D)
+  \]
+\end{itemize}
+
+The question is ``What is the risk for this `average' individual?''. 
+One way to write this model is as following:
+
+%Specify the width opf the output
+<<sh0, echo=false, eval=true>>=
+options("width"=100,"digits"=3)
+set.seed(666)
+@
+
+<<sh1, echo=true, eval=true>>=
+Nmax <- 7.3
+murefLm <- 6.2; TminLm <- -2.9
+
+murefFF <- 4.1; TminFF <- -4.5
+
+Lm0 <- log10(1); FF0 <- 2.78
+
+d1 <- 1.1; mT1 <- 3.2; sdT1 <- 2.1
+
+d2 <- 4.7; mT2 <- 5.5; sdT2 <- 1.0
+
+d3 <- 4.3; mT3 <- 8.2; sdT3 <- 2.0
+
+conso <- 35
+r <- 4.7e-14
+
+
+modGrowth <- function(duration, mTemp, sdTemp,
+                      N0Lm, murefLm, TminLm,
+                      N0FF, murefFF, TminFF,
+                      Nmax, Tref=25) {
+  N0Lm <- pmin(N0Lm, Nmax)
+  N0FF <- pmin(N0FF, Nmax)
+  dLm <- (Nmax-N0Lm) * log(10)/murefLm * (Tref-TminLm)^2 / (sdTemp^2 + (mTemp-TminLm)^2)
+  dLm <- ifelse(mTemp < TminLm & N0Lm!=Nmax, Inf, dLm)
+  dFF <- (Nmax-N0FF) * log(10)/murefFF * (Tref-TminFF)^2 / (sdTemp^2 + (mTemp-TminFF)^2)
+  dFF <- ifelse(mTemp < TminFF & N0FF!=Nmax, Inf, dFF)
+  realDuration <- pmin(duration, dLm , dFF)
+  xLm <- N0Lm + (mTemp > TminLm) * murefLm/log(10) * 
+        (sdTemp^2 + (mTemp - TminLm)^2) /  ((Tref - TminLm)^2) * realDuration
+  xFF <- N0FF + (mTemp > TminFF) * murefFF/log(10) * 
+        (sdTemp^2 + (mTemp - TminFF)^2) /  ((Tref - TminFF)^2) * realDuration
+  return(list(xLm = xLm, xFF=xFF))}
+
+x1 <- modGrowth(d1, mT1, sdT1,
+                Lm0, murefLm, TminLm,
+                FF0, murefFF, TminFF,
+                Nmax)
+x2 <- modGrowth(d2, mT2, sdT2,
+                x1$xLm, murefLm, TminLm,
+                x1$xFF, murefFF, TminFF,
+                Nmax)
+x3 <- modGrowth(d3, mT3, sdT3,
+                x2$xLm, murefLm, TminLm,
+                x2$xFF, murefFF, TminFF,
+                Nmax)
+x3
+conta <-10^x3$xLm
+conta
+expo <- conso * conta
+expo
+risk <- 1 - (1 - r)^expo
+risk
+@
+
+\texttt{modGrowth} is a convenient function for the growth model. Within this function
+\texttt{dLm} is the time needed for \emph{L.\ monocytogenes} to reach \texttt{Nmax},
+\texttt{dFF} is the time needed for the food flora to reach \texttt{Nmax} and,
+\texttt{realDuration} is the effective time of growth during the stage. Note that: 
+\begin{itemize}
+\item this function is ``vectorized'', meaning that it can deal with a vector for any of its parameters, returning consequently 
+a vector. This is a strength of R, notably for Monte-Carlo simulations, but it requests a bit of knowledge on
+the way to code the functions. As an example: \texttt{pmin}, a function that takes one or more vectors 
+as arguments and return a single vector giving the ``parallel'' minima of the vectors  is used instead
+of the more classical function \texttt{min} function, that would return the maximum or minimum of \emph{all} the values.
+Another example is the use of the \texttt{ifelse} instead of \texttt{if};
+\item it is also written to handle \emph{all} specific cases that could occur in the Monte-Carlo simulation, such as 
+$N_{0} \geq N_{max}$ or $m_{T} \leq T_{min}$ or both, for any or both bacterial populations.    
+\end{itemize}
+\texttt{x1}, \texttt{x2} and \texttt{x3} are the bacterial concentrations at the end of the logistic, the retail and the home step, respectively.
+
+\section{Including Variability}
+
+We now specify now some variability distributions for some inputs, following \cite{DELIGNETTE-2006} and
+\cite{POUILLOT-2007}.
+We first have to call the needed libraries, and define the desired number of iterations:
+
+<<shCallLibrary, echo=true, eval=true>>=
+library(fitdistrplus)
+library(mc2d)
+ndvar(10001)
+@
+
+\subsection{Specifying Variability Distribution}
+\subsubsection{Initial Contamination}
+For the initial contamination levels in \emph{L.\ monocytogenes}, 
+we have a set of 62 enumeration data from a representative sample of
+packages of cold smoked salmon positive in detection: 43 samples have less than $0.2$ CFU/g,
+7 samples have $0.2$ CFU/g, 4 samples have $0.4$ CFU/g, 2 samples have $0.6$ CFU/g,
+and the other values are $0.3$, $1.0$, $1.6$, $2.4$, $5.4$ and $7.0$ CFU/g \cite{POUILLOT-2007}. 
+We will use
+the \texttt{fitdistrplus} package to fit a normal distribution on the $\log_{10}$ of
+these values, taking into account the censored values.
+Using the fitted parameters, we model thereafter these initial concentrations
+in contaminated packages through a normal distribution truncated\footnote{so that at least one CFU is included in one 100g package}
+on $[-2,\infty)\: \log_{10}$ (CFU/g).
+
+For the food flora, we use the distribution proposed by \cite{DELIGNETTE-2006}, 
+$N_{0ff} \sim N(2.78,1.14)$. 
+
+<<shLm0FF0V, echo=true, eval=true>>=
+dataC <- data.frame(
+  left =c(rep(NA,43), rep(.2,7),.3,rep(.4,4),1,1.6,.6,.6,2.4,5.4,7),
+  right=c(rep(0.2,43),rep(.2,7),.3,rep(.4,4),1,1.6,.6,.6,2.4,5.4,7)
+  )
+fit <- fitdistcens(log10(dataC), "norm")
+fit
+Lm0V <- mcstoc(rnorm, mean = fit$est["mean"], sd = fit$est["sd"], rtrunc=TRUE, linf=-2)
+FF0V <- mcstoc(rnorm, mean=2.78, sd=1.14)
+@
+Note that, by default, the type of alea that is modeled is ``variability'' (\texttt{type="V"}).
+ 
+\subsubsection{Growth Parameters}
+Distributions are derived from \cite{DELIGNETTE-2006}: 
+\begin{itemize}
+\item $N_{max}$ follows a normal distribution with mean 7.27 $\log_{10}$ CFU/g
+and standard deviation 0.86 $\log_{10}$ CFU/g;
+\item The specific growth rate at the reference temperature of 25\textdegree{}C
+for \emph{L.\ monocytogenes} follows a normal distribution with mean 6.24 $\text{day}^{-1}$ and standard
+deviation 0.75 $\text{day}^{-1}$ truncated on $[0,\infty)$. The minimal growth temperature follows a normal distribution with
+mean -2.86\textdegree{}C and standard deviation 1.93\textdegree{}C;
+\item The specific growth rate at the reference temperature of 25\textdegree{}C
+for the food flora follows a normal distribution with mean 4.12 $\text{day}^{-1}$ and standard
+deviation 1.97 $\text{day}^{-1}$ truncated on $[0,\infty)$. The minimal growth temperature follows a normal distribution with
+mean -4.52\textdegree{}C and standard deviation 7.6\textdegree{}C.
+\end{itemize}
+
+<<shGrowtV, echo=true, eval=true>>=
+
+NmaxV    <- mcstoc(rnorm, mean=7.27, sd = 0.86)
+
+murefLmV <- mcstoc(rnorm, mean = 6.24, sd = 0.75, rtrunc=TRUE, linf=0)
+TminLmV  <- mcstoc(rnorm, mean = -2.86, sd = 1.93)
+
+murefFFV <- mcstoc(rnorm, mean = 4.12, sd = 1.97, rtrunc=TRUE, linf=0)
+TminFFV <-  mcstoc(rnorm, mean = -4.52, sd = 7.66)
+@
+
+\subsubsection{Time-Temperature Profiles}
+The time temperature profiles in the three steps are modelled using
+the distribution provided in the table \ref{tab:4} (adapted from \cite{POUILLOT-2007} from representative
+data from France)\footnote{$\Gamma$ is the Gamma distribution parameterized as $\Gamma(shape,\: scale)$.
+The Exponential($x$) ditribution is the exponential distribution with mean $x$.}. We
+assume a shelf life of 28 days. A simple way to model this shelf life will
+be to have $d_{1}+d_{2}+d_{3}\leq28$ days, with $d_{1}$ the duration of the logistic stage,
+$d_{2}$ the duration of the retail stage and $d_{3}$ the duration of the consumer stage\footnote{See
+the code for a way to model this shelf life using truncated distributions.};
+
+\begin{table}
+ \caption{ \label{tab:4}Time Temperature Profiles}
+
+ \centering{}\begin{tabular}{|c|c|c|c|}
+\hline 
+ Stage &  Mean Temperature (\textdegree{}C) & Intra-Stage Variance of T (\textdegree{}C) &  time (days)%
+\tabularnewline
+\hline
+\hline 
+ logistic &  normal(3.2, 2.2) truncated on {[}-3;25{]} & $\Gamma(1.16, 4.61)$ &  Exponential(1.1)\tabularnewline
+\hline 
+ retail &  normal(5.5, 2.2) truncated on {[}-3;25{]} & $\Gamma(0.65, 2.09)$ &  Exponential(4.7)\tabularnewline
+\hline 
+ consumer &  normal(8.2, 3.8) truncated on {[}-3; 25{]} & $\Gamma(0.35, 19.7)$  &  Exponential(4.3)\tabularnewline
+\hline
+\end{tabular}
+\end{table}
+%
+
+<<shTtV, echo=true, eval=true>>=
+d1V <- mcstoc(rexp, rate = 1/1.1)
+mT1V <- mcstoc(rnorm, mean = 3.2, sd = 2.2, rtrunc = TRUE, linf = -3, lsup = 25)
+sdT1V <- sqrt(mcstoc(rgamma, shape = 1.16, scale=4.61))
+
+d2V <- mcstoc(rexp, rate = 1/4.7, rtrunc=TRUE, lsup=28-d1V)
+mT2V <- mcstoc(rnorm, mean = 5.5, sd = 2.2, rtrunc = TRUE, linf = -3, lsup = 25)
+sdT2V <- sqrt(mcstoc(rgamma, shape = 0.65, scale=2.09))
+
+d3V <- mcstoc(rexp, rate = 1/4.3, rtrunc=TRUE, lsup=28-(d1V+d2V))
+mT3V <- mcstoc(rnorm, mean = 8.2, sd = 3.8, rtrunc = TRUE, linf = -3, lsup = 25)
+sdT3V <- sqrt(mcstoc(rgamma, shape = 0.35, scale=19.7))
+@
+
+\subsubsection{Serving Size}
+As for the serving size, we consider, from observed data, a discrete empirical distribution with values \cite{POUILLOT-2007}:
+$V$=\{10, 12, 19, 20, 30, 34, 40, 50, 60, 67.5, 80, 100, 250\} grams, observed
+$F$=\{11, 1, 1 ,29, 12, 1, 41, 4, 4, 1, 4, 1, 1\} time, respectively.
+%
+<<shConsoV, echo=true, eval=true>>=
+consoV <- mcstoc(rempiricalD, 
+	values = c(10, 12, 19, 20, 30, 34, 40, 50, 60, 67.5, 80, 100, 250), 
+	prob = c(11, 1, 1, 29, 12, 1, 41, 4, 4, 1, 4, 1, 1))
+@
+
+\subsection{Applying the Model}
+The model may then be evaluated straightforwardly:
+
+<<shModelV, echo=true, eval=true>>=
+r <- mcdata(4.7e-14, type = "0")
+x1V <- modGrowth(d1V, mT1V, sdT1V,
+                Lm0V, murefLmV, TminLmV,
+                FF0V, murefFFV, TminFFV,
+                NmaxV)
+x2V <- modGrowth(d2V, mT2V, sdT2V,
+                x1V$xLm, murefLmV, TminLmV,
+                x1V$xFF, murefFFV, TminFFV,
+                NmaxV)
+x3V <- modGrowth(d3V, mT3V, sdT3V,
+                x2V$xLm, murefLmV, TminLmV,
+                x2V$xFF, murefFFV, TminFFV,
+                NmaxV)
+
+contaV <-10^x3V$xLm
+expoV <- consoV * contaV
+riskV <- 1 - exp(-r * expoV )
+Lm1 <- mc(Lm0V, FF0V, NmaxV, murefLmV, TminLmV, murefFFV, TminFFV,
+          d1V, mT1V, sdT1V, d2V, mT2V, sdT2V, d3V, mT3V, sdT3V,
+          consoV, r, contaV, expoV, riskV)
+Lm1
+sLm1 <- mc(contaV=Lm1$contaV, expoV=Lm1$expoV, riskV=Lm1$riskV)
+summary(sLm1, probs = c(0, 0.5, 0.75, 0.95, 1))
+@
+\texttt{Lm1} is a \texttt{mc} object that contains all the parameters and outputs.
+We extract some of these outputs in \texttt{sLm1} to provide a short summary.
+
+\subsection{Final Estimate}
+If 6.5\% of cold-smoked salmon package are contaminated,
+if 49,090,000 Frenchs are part of the ``non susceptible''
+population and if, on average, those people consume some smoked salmon
+$6.4$ times per year, the expected number of cases of listeriosis
+from consumption of cold smoked salmon in this population is estimated through:
+
+<<sh4, echo=true, eval=true>>=
+meanRisk <-  mcapply(riskV,"var",mean)
+expectedN <- round(0.065 * unmc(meanRisk) * 6.4 * 49090000)
+expectedN
+@
+
+\section{Including (a Part of the) Uncertainty}
+We eventually include both variability and uncertainty in the model.
+For this example, we will only consider the uncertainty linked to the initial contamination,
+the growth parameters and the prevalence.
+
+\subsection{Specifying Uncertainty}
+\subsubsection{Initial Contamination}
+
+The uncertainty surrounding the initial contamination levels of the \emph{L.\ monocytogenes}
+will be modeled using a bootstrap procedure, obtained straightforwardly with the help of the \texttt{fitdistrplus}
+package and its \texttt{bootdistcens} function. Before this, we define the number of iterations needed in 
+the uncertainty dimension.
+%
+<<sh8, echo=true, eval=true>>=
+ndunc(101)
+bootLm0 <- bootdistcens(fit, niter=ndunc())
+MLm0 <- mcdata(bootLm0$est$mean,type="U")
+SLm0 <- mcdata(bootLm0$est$sd,type="U")
+Lm0VU <- mcstoc(rnorm, type="VU", mean=MLm0, sd=SLm0, rtrunc=TRUE, linf=-2)
+@
+
+In order to consider uncertainty for the food flora initial contamination, we have, from \cite{DELIGNETTE-2006},
+a set of uncertain hyperparameters, $M_{N0ff}$ and $\sigma_{N0ff}$, that are used
+as parameters for the uncertain \emph{and} variable parameter $N_{0ff}$:
+\begin{eqnarray*}
+  N_{0ff} & \sim & N(M_{N0ff},\sigma_{N0ff})\\
+  M_{N0ff} & \sim & N(2.78,0.265)\\
+  \ln(\sigma_{N0ff}) & \sim & N(0.114,0.172)
+\end{eqnarray*}
+
+This hierarchical simulation is written with \texttt{mc2d}:
+
+<<shFF0VU, echo=true, eval=true>>=
+MLm0FF <- mcstoc(rnorm, type="U", mean=2.78, sd=0.265)
+SLm0FF <- mcstoc(rlnorm, type="U", meanlog=0.114, sdlog=0.172)
+FF0VU <- mcstoc(rnorm, type="VU", mean=MLm0FF, sd=SLm0FF)
+@
+\subsubsection{Growth Parameters}
+The uncertainty around $\mu_{ref,Lm}$, $T_{min,Lm}$, $\mu_{ref,ff}$, $T_{min,ff}$
+and $N_{max}$ are modeled similarly through the
+specification of hyperparameters \cite{DELIGNETTE-2006}\footnote{Note
+that there was a typo in \cite{DELIGNETTE-2006} that lead to an error in
+\cite{POUILLOT-2007}: the standard-error for $\ln(\sigma_{\mu ref,Lm})$ is $1.03$
+and not $-1.03$ as written in \cite{DELIGNETTE-2006}. We will use here the correct value.}:
+\begin{eqnarray*}
+  \mu_{ref,Lm} & \sim & N(M_{\mu ref,Lm},\sigma_{\mu ref,Lm})\\
+  M_{\mu ref,Lm} & \sim & \Gamma(shape: 69.7, scale: 0.0896)\\
+  \ln(\sigma_{\mu ref,Lm}) & \sim & N(1.03,0.191)\\
+\\
+  T_{min,Lm} & \sim & N(M_{Tmin,Lm},\sigma_{Tmin,Lm})\\
+  M_{Tmin,Lm} & \sim & N(-2.86,0.459)\\
+  \ln(\sigma_{Tmin,Lm}) & \sim & N(0.638,0.208) \\
+\\
+  \mu_{ref,ff} & \sim & N(M_{\mu ref,ff},\sigma_{\mu ref,ff})\\
+  M_{\mu ref,ff} & \sim & \Gamma(shape: 32.5, scale: 0.127)\\
+  \ln(\sigma_{\mu ref,ff}) & \sim & N(-0.656,0.221)\\
+\\
+  T_{min,ff} & \sim & N(M_{Tmin,ff},\sigma_{Tmin,ff})\\
+  M_{Tmin,ff} & \sim & N(-4.52,1.23)\\
+  \ln(\sigma_{Tmin,ff}) & \sim & N(2.00,0.257) \\
+\\
+  N_{max} & \sim & N(M_{Nmax},\sigma_{Nmax})\\
+  M_{Nmax} & \sim & N(7.27,0.276)\\
+  \ln(\sigma_{Nmax}) & \sim & N(-0.172,0.218)
+\end{eqnarray*}
+
+with $\mu_{ref}>0$ and $T_{min}<25$. We simply translated the preceeding distributions:
+
+<<sh5, echo=true, eval=true>>=
+MmurefLm <- mcstoc(rgamma, type="U", shape=69.7, scale=0.0896)
+SmurefLm <- mcstoc(rlnorm, type="U", meanlog = 1.03, sdlog = 0.191)
+murefLmVU <- mcstoc(rnorm, type="VU", mean=MmurefLm, sd=SmurefLm, rtrunc=TRUE, linf=0)
+
+MTminLm <- mcstoc(rnorm, type="U", mean=-2.86, sd=0.459)
+STminLm <- mcstoc(rlnorm, type="U", meanlog = 0.638, sdlog = 0.208)
+TminLmVU <- mcstoc(rnorm, type="VU", mean = MTminLm, sd = STminLm, rtrunc=TRUE, lsup=25)
+
+MmurefFF <- mcstoc(rgamma, type="U", shape=32.5, scale=.127)
+SmurefFF <- mcstoc(rlnorm, type="U", meanlog = -.656, sdlog = 0.221)
+murefFFVU <- mcstoc(rnorm, type="VU", mean=MmurefFF, sd=SmurefFF, rtrunc=TRUE, linf=0)
+
+MTminFF <- mcstoc(rnorm, type="U", mean=-4.52, sd=1.23)
+STminFF <- mcstoc(rlnorm, type="U", meanlog = 2.00, sdlog = 0.257)
+TminFFVU <- mcstoc(rnorm, type="VU", mean = MTminFF, sd = STminFF, rtrunc=TRUE, lsup=25)
+
+MNmax <- mcstoc(rnorm, type="U", mean=7.27, sd=0.276)
+SNmax <- mcstoc(rlnorm, type="U", meanlog = -0.172, sdlog = 0.218)
+NmaxVU <- mcstoc(rnorm, type="VU", mean = MNmax, sd = SNmax)
+@
+%
+\subsubsection{Prevalence}
+The prevalence level of contaminated cold-smoked salmon packages
+(6.5\%) was estimated from 41 positive packages out of 626 tested \cite{POUILLOT-2007}.
+We assume a sensitivity and a specificity of the method of 100\%.
+We model the data uncertainty around the true prevalence of contaminated
+package using a bayesian reasonning, with a Beta(1, 1) distribution
+as a prior. The number of expected cases may be estimated using:
+<<shPrevU, echo=true, eval=true>>=
+prevU <- mcstoc(rbeta,type="U", shape1=41+1, shape2=626-41+1)
+@
+\subsection{Applying the Model}
+Applying the model is just a copy-paste from the previous version (+ we change the name of the parameters).
+
+<<sh9, echo=true, eval=true>>=
+x1VU <- modGrowth(d1V, mT1V, sdT1V,
+                Lm0VU, murefLmVU, TminLmVU,
+                FF0VU, murefFFVU, TminFFVU,
+                NmaxVU)
+x2VU <- modGrowth(d2V, mT2V, sdT2V,
+                x1VU$xLm, murefLmVU, TminLmVU,
+                x1VU$xFF, murefFFVU, TminFFVU,
+                NmaxVU)
+x3VU <- modGrowth(d3V, mT3V, sdT3V,
+                x2VU$xLm, murefLmVU, TminLmVU,
+                x2VU$xFF, murefFFVU, TminFFVU,
+                NmaxVU)
+
+contaVU <-10^x3VU$xLm
+expoVU <- consoV * contaVU
+riskVU <- 1 - exp(-r * expoVU)
+Lm2 <- mc(Lm0VU, FF0VU, NmaxVU, murefLmVU, TminLmVU, murefFFVU, TminFFVU,
+          d1V, mT1V, sdT1V, d2V, mT2V, sdT2V, d3V, mT3V, sdT3V,
+          consoV, r, contaVU, expoVU, riskVU)
+Lm2
+sLm2 <- mc(contaVU=Lm2$contaVU, expoVU=Lm2$expoVU, riskVU=Lm2$riskVU)
+summary(sLm2, probs = c(0, 0.5, 0.75, 0.95, 1))
+@
+The summary provides the estimate of the mean, the standard deviation, the minimum, the median \ldots and a 95\% credible interval.
+The estimate is the median of the 101 values obtained in the uncertainty dimension. The credible interval lays
+between the $2.5^{\text{th}}$ and the $97.5^{\text{th}}$ percentiles obtained in the uncertainty dimension.
+   
+\subsection{Final Estimate}
+The uncertainty around the number of expected cases is estimated using:
+<<sh7, echo=true, eval=true>>=
+meanRiskU <-  mcapply(riskVU,"var",mean)
+expectedNU <- round(prevU * meanRiskU * 6.4 * 49090000)
+summary(expectedNU)
+@
+
+This is an estimate of the uncertainty around the number of cases linked to the uncertainty 
+around the initial contamination, the bacterial growth parameter and
+the sampling uncertainty for positive packages.
+A lot of other uncertainties exist but are not considered here, notably 
+the uncertainty around the dose-response model
+and parameters. See \cite{POUILLOT-2007,POUILLOT-2009} for a complete analysis.
+The study of the model through a Tornado chart in the variability dimension
+leads to the Figure \ref{fig:TorLm}. 
+It suggests a big impact of the growth rate of \emph{L.\ monocytogenes}, of the storage duration
+during the consumer step, and of the initial level of \emph{L.\ monocytogenes}. 
+The Tornado chart in the uncertainty dimension
+leads to the Figure \ref{fig:TorLmU} and suggests the impact of the uncertainty around
+$N_{max}$ on the mean risk, and thus the expected number of cases.
+
+<<sh3, echo=true, eval=true, figure=false>>=
+torn <- tornado(Lm2)
+torn
+tornunc <- tornadounc(Lm2, quant=.975)
+tornunc
+@
+
+<<sh3b, echo=true, eval=false, figure=false>>=
+plot(torn)
+plot(tornunc, stat="mean risk")
+@
+
+\begin{figure}
+\caption{\label{fig:TorLm}Tornado chart for the \emph{L.\ monocytogenes} example (Variability).}
+\begin{center}
+<<sh3c, echo=false, eval=true, fig=true>>=
+plot(torn)
+@
+\end{center}
+\end{figure}
+
+\begin{figure}
+\caption{\label{fig:TorLmU}Tornado chart for the \emph{L.\ monocytogenes} example (Uncertainty).}
+\begin{center}
+<<sh3d, echo=false, eval=true, fig=true>>=
+plot(tornunc, stat="mean risk")
+@
+\end{center}
+\end{figure}
+
+As a conclusion, this example illustrates how predictive growth models may 
+be implemented within \texttt{mc2d}\ldots
+
+
+\bibliographystyle{plain}
+\bibliography{docmcEnglish}
+ 
+\end{document}

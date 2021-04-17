@@ -1,0 +1,158 @@
+=== mc2d ===
+
+Version 0.1-18
+=============
+
+BUG FIX
+
+- potential bugs linked to the default limit of 60 characters in the deparse function. Let to errors in hist, plot, converg, ... 
+
+Version 0.1-17
+=============
+
+BUG FIX
+
+- one bug in rtriang, rpert, rbetagen corrected (error when the length of the arguments differed)
+
+Version 0.1-16
+=============
+
+BUG FIX
+
+- one bug in rtriang corrected (returned 1 when min == mode == max)
+- one error in the manual was corrected
+
+Version 0.1-15
+=============
+
+BUG FIX
+
+- one bug in mcstoc for multivariates nodes with truncation was corrected
+
+Version 0.1-14
+=============
+
+BUG FIX
+
+- one bug for multivariates nodes with truncation was corrected
+- addition of tests for truncations (function rtrunc and mcstoc (option trunc=TRUE)). Some unexpected results linked to rounding errors could be obtained for some extreme truncations (see examples). Note that it is not possible to catch all errors and a warning is now provided in the documentation.
+
+IMPROVEMENTS
+
+- pert is definitively better and quicker.
+- the vignettes were revised
+
+Version 0.1-13
+=============
+
+BUG FIX
+
+- pert, betagen and triang functions were slow in previous versions. This is fixed 
+- some of the rdist functions returned matrixes when some of the arguments were matrixes
+- all parameters but the first one are now vectorized in the univariate p, d, q, r distribution functions
+
+Version 0.1-12
+=============
+
+BUG FIX
+
+- a bug in the definition of d2V and d3V in the mc2dLmEnglish vignette
+- a bug in dmultinomial with log = FALSE: it led to NA values
+
+NEW FEATURES
+
+- creation of a NAMESPACE for R.2.14 compliance 
+- additionnal xlim and ylim arguments in plot.mc
+
+Version 0.1-11
+=============
+
+BUG FIX
+
+- rtriang was really slow in Version 0.1-10
+
+Version 0.1-10
+=============
+
+NEW FEATURES
+
+- dempiricalC is now vectorized and improved
+- better control of limit cases in distributions
+
+BUG FIXES
+
+- major correction: dbetagen and dpert led to wrong values
+- major correction: mcapply led to incorrect results when the function returned a vector of length n and if margin was 'unc' or 'variates'
+- one bug in extractvar led to errors
+
+Version 0.1-9
+=============
+
+NEW FEATURES
+
+- dmultinormal, a vectorized version of dmvnorm
+
+IMPROVEMENTS
+
+- all p- d- q- r-distributions return numeric(0) if the first argument (x, q, p or n) are numeric(0)  
+
+BUG FIXES
+
+- dmultinomial led to errors
+
+Version 0.1-8
+=============
+
+NEW FEATURES
+
+- pmin.mcnode and pmax.mcnode 
+- a second vignette
+
+IMPROVEMENTS
+
+- error message in mc when one argument was neither an mc nor an mcnode
+
+BUG FIXES
+
+- rempiricalC and qempiricalC lead to errors 
+
+Version 0.1-7
+=============
+
+NEW FEATURES
+
+- The documentation is now a real vignette
+- mcratio, a function to measure variability and uncertainty
+- extractvar and addvar, two utilities for multivariate nodes
+
+IMPROVEMENTS
+
+- Ops.mcnode function is much more efficient and less memory consuming
+- great improvement for speed in mcstoc for multivariate distributions
+- plot.mc proposes to fill the enveloppes
+- empiricalD is (a little bit) more efficient
+
+BUG FIXES
+
+- lhs: could bug when sent without default distribution. Now, distr="runif" by default.
+- lhs: nsv = ndvar() and nsu = ndunc() by default
+- mcstoc: issue when rtrunc with linf or lsup as multivariate nodes: solved
+- rtrunc: issue for discrete distribution. It is now clear that rtrunc sample within (linf, lsup]. As a consequence, linf should be strictly lower than lsup
+- same issue in mcstoc
+
+Version 0.1-6
+=============
+
+
+BUG FIXES
+
+- Pert distribution: could bug when is.equal(mu,mode) while mu!=mode.
+- mcprobtree: allows now to use mcvalues with a type different of
+  the type of the ouptut
+
+
+Version 0.1-5
+=============
+
+
+- Initial release on CRAN.

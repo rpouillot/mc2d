@@ -1,0 +1,85 @@
+### Import
+import(stats, grDevices, graphics, utils, mvtnorm)
+
+### Exports
+export(tornadounc, tornadounc.mc, tornadounc.default, tornadounc.mccut)
+S3method(tornadounc, mc)
+S3method(tornadounc, default)
+S3method(tornadounc, mccut)
+
+#mc class
+export(hist.mc, plot.mc, print.mc, quantile.mc, summary.mc)
+S3method(hist, mc)
+S3method(plot, mc)
+S3method(print, mc)
+S3method(quantile, mc)
+S3method(summary, mc)
+
+#mccut class
+export(plot.mccut, print.mccut, summary.mccut)
+S3method(plot, mccut)
+S3method(print, mccut)
+S3method(summary, mccut)
+
+#mcnode class
+export(hist.mcnode, is.finite.mcnode, is.infinite.mcnode, is.na.mcnode, is.nan.mcnode, Ops.mcnode, plot.mcnode, pmax.mcnode, pmin.mcnode, print.mcnode, quantile.mcnode, summary.mcnode) 
+S3method(hist, mcnode)
+S3method(is.finite, mcnode)
+S3method(is.infinite, mcnode)
+S3method(is.na, mcnode)
+S3method(is.nan, mcnode)
+S3method(Ops, mcnode)
+S3method(plot, mcnode)
+S3method(pmax, mcnode)
+S3method(pmin, mcnode)
+S3method(print, mcnode)
+S3method(quantile, mcnode)
+S3method(summary, mcnode)
+
+#plotmc class
+export(plot.plotmc)
+S3method(plot, plotmc)
+
+#summary.mc class
+export(print.summary.mc)
+S3method(print, summary.mc)
+
+#tornado class
+export(plot.tornado, print.tornado)
+S3method(plot, tornado)
+S3method(print, tornado)
+
+#tornadounc class
+export(plot.tornadounc, print.tornadounc)
+S3method(plot, tornadounc)
+S3method(print, tornadounc)
+
+#other functions
+export(addvar, converg, cornode, dimmc, dimmcnode, evalmccut, evalmcmod, extractvar, is.mcnode, is.mc, lhs, mc, mcapply, 
+		mcdata, mcdatanocontrol, mcmodelcut, mcmodel, mcprobtree, mcratio, mcstoc, ndunc, ndvar, outm, rtrunc, tornado, typemcnode, unmc)
+
+export(pmax, pmin, pmax.default, pmin.default)		
+S3method(pmax, default)
+S3method(pmin, default)
+		
+
+		
+export(dbern, pbern, qbern, rbern)
+
+export(dbetagen, pbetagen, qbetagen, rbetagen)
+
+export(ddirichlet, rdirichlet)
+
+export(dempiricalC, pempiricalC, qempiricalC, rempiricalC)
+
+export(dempiricalD, pempiricalD, qempiricalD, rempiricalD)
+
+export(dmultinomial, rmultinomial)
+
+export(dmultinormal, rmultinormal)
+
+export(dpert, ppert, qpert, rpert)
+
+export(dtriang, ptriang, qtriang, rtriang)
+
+
