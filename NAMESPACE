@@ -82,4 +82,5 @@ export(dpert, ppert, qpert, rpert)
 
 export(dtriang, ptriang, qtriang, rtriang)
 
+export(dlnormb, plnormb, qlnormb, rlnormb)
 
