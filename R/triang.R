@@ -1,40 +1,51 @@
-#<<BEGIN>>
-dtriang <- function(x, min=-1, mode=0, max=1, log=FALSE)
-#TITLE The Triangular Distribution
-#NAME triangular
-#KEYWORDS distribution
-#DESCRIPTION
-#Density, distribution function, quantile function and random generation
-#for the triangular distribution with minimum equal to \samp{min}, mode equal \samp{mode}
-#and maximum equal to \samp{max}.
-#INPUTS
-#{x,q}<<vector of quantiles.>>
-#{p}<<vector of probabilities.>>
-#{n}<<number of observations. If length(n) > 1, the length is taken to be the number required.>>
-#[INPUTS]
-#{min}<<vector of minima.>>
-#{mode}<<vector of modes.>>
-#{max}<<vector of maxima.>>
-#{log, log.p}<<logical; if \samp{TRUE}, probabilities \samp{p} are given as \samp{log(p)}.>>
-#{lower.tail}<<logical; if \samp{TRUE} (default), probabilities are \samp{P[X <= x]}, otherwise, \samp{P[X > x]}.>>
-#DETAILS
-#For the case of u := min == mode == max, there is no density in that case and dtriang will return NaN (the error condition) (Similarity with dunif).
-#VALUE
-#\samp{dtriang} gives the density, \samp{ptriang} gives the distribution function,
-#\samp{qtriang} gives the quantile function, and \samp{rtriang} generates random deviates.
+#' The Triangular Distribution
+#' 
+#' Density, distribution function, quantile function and random generation
+#' for the triangular distribution with minimum equal to \samp{min}, mode equal \samp{mode}
+#' (alternatively, mean equal \samp{mean}) and maximum equal to \samp{max}.
+#' 
+#' If \samp{min == mode == max}, there is no density in that case and 
+#' \samp{dtriang} will return \samp{NaN} (the error condition) (Similarity with \code{\link[stats]{Uniform}}).
+#'
+#' \samp{mode} or \samp{mean} can be specified, but not both. Note: \samp{mean} is the last parameter for back-compatibility.
+#' A warning will be provided if some combinations of \samp{min}, \samp{mean} and \samp{max} leads to impossible mode.
+#' 
+#' @param x,q vector of quantiles.
+#' @param p vector of probabilities.
+#' @param n number of observations. If length(n) > 1, the length is taken to be the number required.
+#' @param min vector of minima.
+#' @param mode vector of modes.
+#' @param max vector of maxima.
+#' @param mean Vector of means, can be specified in place of \samp{mode} as an alternative parametrization.
+#' @param log,log.p logical; if \samp{TRUE}, probabilities \samp{p} are given as \samp{log(p)}.
+#' @param lower.tail logical; if \samp{TRUE} (default), probabilities are \samp{P[X <= x]}, otherwise, \samp{P[X > x]}.
+#' 
+#' @return
+#' \samp{dtriang} gives the density, \samp{ptriang} gives the distribution function,
+#' \samp{qtriang} gives the quantile function, and \samp{rtriang} generates random deviates.
+#' @name triangular
+#' @keywords distribution
+#' @examples
+#' curve(dtriang(x, min=3, mode=6, max=10), from = 2, to = 11, ylab="density")
+#' ## Alternative parametrization
+#' curve(dtriang(x, min=3, mean=6, max=10), from = 2, to = 11, add=TRUE, lty=2)
+#' ##no density when  min == mode == max
+#' dtriang(c(1,2,3),min=2,mode=2,max=2)
 
-#EXAMPLE
-#curve(dtriang(x, min=3, mode=5, max=10), from = 2, to = 11)
-###no density when  min == mode == max
-#dtriang(c(1,2,3),min=2,mode=2,max=2)
-#CREATED 08-02-20
-#--------------------------------------------
-{
+dtriang <- function(x, min=-1, mode=0, max=1, log=FALSE, mean = 0){
 	if(length(x) == 0) return(numeric(0))
-	min <- as.vector(min)
-	mode <- as.vector(mode)
-	max <- as.vector(max)
-	
+  if (!missing(mode) && !missing(mean)) stop("specify 'mode' or 'mean' but not both")
+  
+  min <- as.vector(min)
+  max <- as.vector(max)
+
+  if (missing(mode)){
+    mean <- as.vector(mean)
+    mode <- (3*mean - min - max)
+    if(any(mode < min | mode > max)) warning("Some values of mean lead to mode < min or mode > max.")
+    
+  } else {mode <- as.vector(mode)}
+  
 	# quel: x < mode or x = mode = max 
 	xmaxmode <- (abs(x-max) < (.Machine$double.eps^0.5)) & (abs(max-mode) < (.Machine$double.eps^0.5)) 
 	quel <- (x < mode) | xmaxmode  
@@ -53,17 +64,23 @@ dtriang <- function(x, min=-1, mode=0, max=1, log=FALSE)
 	if(any(is.na(d))) warning("NaN in dtriang")
   return(d)}
 
-#<<BEGIN>>
-ptriang <- function(q,min=-1,mode=0,max=1,lower.tail = TRUE, log.p = FALSE)
-#ISALIAS dtriang
-#--------------------------------------------
-{
+#' @rdname triangular
+ptriang <- function(q,min=-1,mode=0,max=1,lower.tail = TRUE, log.p = FALSE, mean = 0){
 	if(length(q) == 0) return(numeric(0))
 	# quel: q < mode or q = mode = max 
-	min <- as.vector(min)
-	mode <- as.vector(mode)
-	max <- as.vector(max)
-	qmaxmode <- (abs(q-max) < (.Machine$double.eps^0.5)) & (abs(max-mode) < (.Machine$double.eps^0.5)) 
+  if (!missing(mode) && !missing(mean)) stop("specify 'mode' or 'mean' but not both")
+  
+  min <- as.vector(min)
+  max <- as.vector(max)
+  
+  if (missing(mode)){
+    mean <- as.vector(mean)
+    mode <- (3*mean - min - max)
+    if(any(mode < min | mode > max)) warning("Some values of mean lead to mode < min or mode > max.")
+    
+  } else {mode <- as.vector(mode)}
+  
+  qmaxmode <- (abs(q-max) < (.Machine$double.eps^0.5)) & (abs(max-mode) < (.Machine$double.eps^0.5)) 
 	quel <- (q < mode) | qmaxmode  
 	p <- ifelse(quel,
               (q-min)^2 / ((mode-min)*(max-min)),
@@ -80,16 +97,21 @@ ptriang <- function(q,min=-1,mode=0,max=1,lower.tail = TRUE, log.p = FALSE)
 	if(any(is.na(p))) warning("NaN in ptriang")
   return(p)}
 
-#<<BEGIN>>
-qtriang <- function(p, min=-1, mode=0, max=1, lower.tail=TRUE, log.p=FALSE)
-#ISALIAS dtriang
-#--------------------------------------------
-{
+#' @rdname triangular
+qtriang <- function(p, min=-1, mode=0, max=1, lower.tail=TRUE, log.p=FALSE, mean = 0){
   if (length(p) == 0) 
     return(numeric(0))
+  if (!missing(mode) && !missing(mean)) stop("specify 'mode' or 'mean' but not both")
+  
   min <- as.vector(min)
-  mode <- as.vector(mode)
   max <- as.vector(max)
+  
+  if (missing(mode)){
+    mean <- as.vector(mean)
+    mode <- (3*mean - min - max)
+    if(any(mode < min | mode > max)) warning("Some values of mean lead to mode < min or mode > max.")
+    
+  } else {mode <- as.vector(mode)}
   
   lout <- max(length(p),length(min),length(mode),length(max))
   min <- rep(min, length.out=lout)
@@ -113,11 +135,8 @@ qtriang <- function(p, min=-1, mode=0, max=1, lower.tail=TRUE, log.p=FALSE)
 }
 
 
-#<<BEGIN>>
-rtriang <- function(n, min=-1, mode=0, max=1)
-#ISALIAS dtriang
-#--------------------------------------------
-{
+#' @rdname triangular
+rtriang <- function(n, min=-1, mode=0, max=1, mean = 0){
   if (length(n) > 1) 
     n <- length(n)
   if (length(n) == 0 || as.integer(n) == 0) 
@@ -125,6 +144,17 @@ rtriang <- function(n, min=-1, mode=0, max=1)
   n <- as.integer(n)
   if (n < 0) 
     stop("integer(n) can not be negative in rtriang")
+  if (!missing(mode) && !missing(mean)) stop("specify 'mode' or 'mean' but not both")
+  
+  min <- as.vector(min)
+  max <- as.vector(max)
+  
+  if (missing(mode)){
+    mean <- as.vector(mean)
+    mode <- (3*mean - min - max)
+    if(any(mode < min | mode > max)) warning("Some values of mean lead to mode < min or mode > max.")
+    
+  } else {mode <- as.vector(mode)}
   
   U <- runif(n)
   ow <- options(warn = -1)

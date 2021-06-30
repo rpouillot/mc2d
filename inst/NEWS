@@ -1,5 +1,13 @@
 === mc2d ===
 
+Version 0.1-20
+=============
+
+NEW FEATURES
+
+- lognormb distribution: a lognormal distribution with arithmetic mean and sd parametrization. 
+- Pert and triangular distribution as an alternative parametrization using the mean 
+
 Version 0.1-18
 =============
 

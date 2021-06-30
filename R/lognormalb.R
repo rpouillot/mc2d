@@ -1,7 +1,7 @@
 #' The Log Normal Distribution parameterized through its mean and standard deviation.
 #' 
 #' Density, distribution function, quantile function and random generation for a log normal distribution whose 
-#' arithmetic mean equals to `mean` and standard deviation equals to `sd`.
+#' arithmetic mean equals to \samp{mean} and standard deviation equals to \samp{sd}.
 #' 
 #' This function calls the corresponding density, distribution function, quantile function and random generation 
 #' from the log normal (see \code{\link[stats]{Lognormal}}) after evaluation of \eqn{meanlog = log(mean^2 / sqrt(sd^2+mean^2))} and
@@ -16,18 +16,19 @@
 #' @param log,log.p logical. if `TRUE` probabilities `p` are given as `log(p)`.
 #' @param lower.tail logical. if `TRUE`, probabilities are \eqn{P[X \le x]}, otherwise,  \eqn{P[X > x]}.
 #' @keywords distribution
-#' @seealso code{\link[stats]{Lognormal}}
+#' @seealso \code{\link[stats]{Lognormal}}
 #' 
-#' @return `dlnormb`  gives the density, `plnormb` gives the distribution function, 
-#' `qlnormb` gives the quantile function, and `rlnormb` generates random deviates.
-#' The length of the result is determined by `n` for `rlnorm`, and is the maximum of the lengths 
+#' @return \samp{dlnormb}  gives the density, \samp{plnormb} gives the distribution function, 
+#' \samp{qlnormb} gives the quantile function, and \samp{rlnormb} generates random deviates.
+#' The length of the result is determined by \samp{n} for \samp{rlnorm}, and is the maximum of the lengths 
 #' of the numerical arguments for the other functions. 
-#' The numerical arguments other than `n` are recycled to the length of the result. 
+#' The numerical arguments other than \samp{n} are recycled to the length of the result. 
 #' Only the first elements of the logical arguments are used.
-#' The default `mean` and `sd` are chosen to provide a distribution close to a lognormal with 
-#' `meanlog = 0` and `sdlog = 1`.
 #' 
-#' @exampleS 
+#' The default \samp{mean} and \samp{sd} are chosen to provide a distribution close to a lognormal with 
+#' \samp{meanlog = 0} and \samp{sdlog = 1}.
+#' 
+#' @examples 
 #' x <- rlnormb(1E5,3,6)
 #' mean(x) 
 #' sd(x)

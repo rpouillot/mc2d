@@ -1,8 +1,8 @@
 Package: mc2d
 Type: Package
 Title: Tools for Two-Dimensional Monte-Carlo Simulations
-Version: 0.1-19
-Date: 2021-04-16
+Version: 0.1-20
+Date: 2021-07-01
 Authors@R: c(person("Regis", "Pouillot", role = c("aut", "cre"), email = "rpouillot@yahoo.fr"),
 			person("Marie-Laure", "Delignette-Muller", role = "ctb", email= "ml.delignette@vetagro-sup.fr"),
 			person("Jean-Baptiste", "Denis", role = "ctb", email = "jbdenis@jouy.inra.fr"))

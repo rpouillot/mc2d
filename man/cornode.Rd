@@ -1,11 +1,11 @@
 \name{cornode}
 \alias{cornode}
 \title{
-Builds a Rank Correlation using the Iman and Connover Method.
+Builds a Rank Correlation using the Iman and Conover Method.
 }
 \description{
 This function builds a rank correlation structure between columns of
-a matrix or between \samp{mcnode} objects using the Iman and Connover
+a matrix or between \samp{mcnode} objects using the Iman and Conover
 method (1982).
 }
 \usage{
@@ -48,7 +48,7 @@ serving[] <- serving[matc$roundserv, , ]
 cor(cbind(cook, roundserv, serving), method="spearman")
 }
 \arguments{
-\item{\ldots}{A matrix (each of its \samp{n} columns but the first
+\item{...}{A matrix (each of its \samp{n} columns but the first
 one will be reordered) or \samp{n mcnode} objects (each elements but
 the first one will be reordered).}
 \item{target}{A scalar (only if \samp{n=2}) or a \samp{(n x n)}
@@ -98,7 +98,6 @@ If \samp{rank = FALSE}: the matrix or a list of rearranged
 or the \samp{mcnodes} to build the desired correlation structure.
 }
 \references{
-Connover W., Iman R. (1982). A distribution-free approach to inducing
-rank correlation among input variables. Technometric, 3, 311-334.
+Iman, R. L., & Conover, W. J. (1982). A distribution-free approach to inducing rank correlation among input variables. \emph{Communication in Statistics - Simulation and Computation}, 11(3), 311-334. 
 }
 \keyword{multivariate}
