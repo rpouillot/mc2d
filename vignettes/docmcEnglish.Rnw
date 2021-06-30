@@ -48,7 +48,7 @@ explanations.
 \subsection{What is \texttt{mc2d}?}
 
 \texttt{mc2d} means Two-Dimensional Monte-Carlo (\emph{Monte-Carlo
-à 2 Dimensions}). This package provides:
+? 2 Dimensions}). This package provides:
 \begin{itemize}
 \item additional probability distributions;
 \item tools to construct One-Dimensional and Two-Dimensional Monte-Carlo
