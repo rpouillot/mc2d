@@ -165,17 +165,17 @@ rpert <- function(n,min=-1,mode=0,max=1,shape=4, mean=0){
   n <- as.integer(n)
   
   if (!missing(mode) && !missing(mean)) stop("specify 'mode' or 'mean' but not both")
-  
-  min <- as.vector(min)
-  max <- as.vector(max)
-  shape <- as.vector(shape)
+
+  min <- rep(as.vector(min),length.out=n)
+  max <- rep(as.vector(max),length.out=n)
+  shape <- rep(as.vector(shape),length.out=n)
   
   if (missing(mode)){
-    mean <- as.vector(mean)
+    mean <- rep(as.vector(mean),length.out=n)
     mode <- ((shape+2)*mean - min - max) / shape
     if(any(mode < min | mode > max)) warning("Some values of mean lead to mode < min or mode > max.")
     
-  } else {mode <- as.vector(mode)}
+  } else {  mode <- rep(as.vector(mode),length.out=n) }
   
   a1 <- 1 + shape * (mode - min)/(max - min)
   a2 <- 1 + shape * (max - mode)/(max - min)
