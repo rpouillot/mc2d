@@ -66,7 +66,7 @@ be used in other frameworks.
 
 \subsection{What is Two-Dimensional Monte-Carlo Simulation (briefly)?}
 
-The following text and Figure \ref{fig:Mc2d} are adapted from \cite{POUILLOT-2004}
+The following text and Figure \ref{fig:mc2d} are adapted from \cite{POUILLOT-2004}
 and \cite{POUILLOT-2007} where this method was used. The principal
 reference for Two-Dimensional Monte-Carlo simulation remains \cite{CULLEN-FREY-1999}. 
 
@@ -97,7 +97,7 @@ representing uncertainty are sampled
 separately in the simulation, so that variability
 and uncertainty in the output may be
 assessed separately. It may be described as following (see Figure
-\ref{fig:Mc2d}): 
+\ref{fig:mc2d}): 
 
 \begin{enumerate}
 \item The parameters of the model should be divided into four categories:
@@ -155,7 +155,7 @@ obtained from the $N_{u}$ estimates of each of the 101 percentiles.
 \includegraphics[angle=270, width=1\textwidth]{mc2dsaumon}
 \par\end{centering}
 
-\caption{\label{fig:Mc2d}Shematic Representation of a Two-Dimensional Monte-Carlo
+\caption{\label{fig:mc2d}Shematic Representation of a Two-Dimensional Monte-Carlo
 Simulation.}
 
 \end{figure}
@@ -566,6 +566,10 @@ Package & Distribution & function & \multicolumn{1}{c|}{Parameter \texttt{n}} & 
 \hline
  & multivariate normal & \texttt{rmultinormal} & \texttt{n} & \texttt{mean, sigma} & N & N\tabularnewline
 \hline
+ & beta subjective & \texttt{rbetasubj} & \texttt{n} & \texttt{min, mode, mean, max} & Y & U\tabularnewline
+\hline
+ & minimum information & \texttt{rmqi} & \texttt{n} & \texttt{mqi, mqi.quantile, ...} & Y & U\tabularnewline
+\hline
 \end{tabular}
 \end{table}
 
@@ -635,7 +639,7 @@ node in half of the simulations:
 \par\end{flushleft}
 
 %true
-<<sh3, echo=true, eval=true>>=
+<<sh3ter, echo=true, eval=true>>=
 nu <- ndunc()
 tmp <- (1:nu) > (nu/2)
 mcdata(tmp,type="U")
@@ -956,7 +960,8 @@ hist(EC2)
 @
 \end{figure}
 
-
+Note that, from \texttt{mc2d version 0.2-0}, the \texttt{gghist} 
+function draws an histogram within the \texttt{ggplot2} framework.
 
 \subsubsection{The \texttt{plot} function}
 
@@ -971,7 +976,7 @@ function of the estimate (mean or median) of the quantiles.
 
 For our example, see Figure \ref{fig:Function-plot}, a default graph.
 The 0.25 and 0.75 quantiles (default values of \texttt{lim}) in the uncertainty dimension
-of the quantiles (variability dimension) are used as the enveloppe.
+of the quantiles (variability dimension) are used as the envelope.
 
 %false
 <<sh17, echo=true, eval=false, fig=false>>=
@@ -988,9 +993,33 @@ plot(EC2)
 @
 \end{figure}
 
+Note that, from \texttt{mc2d version 0.2-0}, the \texttt{ggplotmc} 
+function draws an histogram within the \texttt{ggplot2} framework.
+
+%false
+<<sh17bis, echo=true, eval=false, fig=false>>=
+ggplotmc(EC2)
+@
+
+%
+\begin{figure}
+\caption{\label{fig:Function-ggplotmc}\texttt{ggplotmc} Function .}
+
+%true
+<<sh18bis, echo=false, eval=true, fig=true>>=
+ggplotmc(EC2)
+@
+\end{figure}
+
+
+The \texttt{spaghetti} function (and its \texttt{ggplot2} version \texttt{ggspaghetti})
+allow to plot a spaghetti graph, rather than the ecdf with envelope.
+
 
 Note that \texttt{mcnode} objects have the same methods \texttt{print},
-\texttt{summary}, \texttt{plot}, and \texttt{hist}. 
+\texttt{summary}, \texttt{plot}, and \texttt{hist}. Running a \texttt{ggplotmc},
+a \texttt{gghist} or a \texttt{ggspaghetti} function on an \texttt{mcnode} is
+handy to post-process the graph.
 
 
 \subsubsection{The \texttt{tornado} function}
@@ -1029,6 +1058,8 @@ plot(torEC2)
 \end{figure}
 
 
+Note that, from \texttt{mc2d version 0.2-0}, the \texttt{ggplottornado} 
+function draws an histogram within the \texttt{ggplot2} framework.
 
 \subsubsection{The \texttt{tornadounc} function}
 
@@ -1506,12 +1537,6 @@ to constuct and analyse their models, and that it may help in developing
 
 \noindent \begin{center}
 \emph{CHECK YOUR MODEL CAREFULLY AND EXAMINE RESULTS TO DETECT BUGS}
-\par\end{center}
-
-and, if you would like to improve it, join us at
-
-\noindent \begin{center}
-\emph{\url{http://riskassessment.r-forge.r-project.org/}}
 \par\end{center}
 
 Please refer any comments or bugs to \url{rpouillot@yahoo.fr}.

@@ -4,3 +4,9 @@
 .Rhistory
 mc2d.Rproj
 .Rproj.user
+.RData
+.Ruserdata
+echo .DS_Store >> ~/.gitignore_global
+testRP.R
+/doc/
+/Meta/

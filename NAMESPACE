@@ -1,5 +1,5 @@
 ### Import
-import(stats, grDevices, graphics, utils, mvtnorm)
+import(stats, grDevices, graphics, utils, mvtnorm, ggplot2, ggpubr)
 
 ### Exports
 export(tornadounc, tornadounc.mc, tornadounc.default, tornadounc.mccut)
@@ -8,12 +8,16 @@ S3method(tornadounc, default)
 S3method(tornadounc, mccut)
 
 #mc class
-export(hist.mc, plot.mc, print.mc, quantile.mc, summary.mc)
+export(hist.mc, plot.mc, print.mc, quantile.mc, summary.mc, spaghetti.mc, ggspaghetti.mc, ggplotmc.mc, gghist.mc)
 S3method(hist, mc)
 S3method(plot, mc)
 S3method(print, mc)
 S3method(quantile, mc)
 S3method(summary, mc)
+S3method(spaghetti, mc)
+S3method(ggspaghetti, mc)
+S3method(ggplotmc, mc)
+S3method(gghist, mc)
 
 #mccut class
 export(plot.mccut, print.mccut, summary.mccut)
@@ -22,7 +26,7 @@ S3method(print, mccut)
 S3method(summary, mccut)
 
 #mcnode class
-export(hist.mcnode, is.finite.mcnode, is.infinite.mcnode, is.na.mcnode, is.nan.mcnode, Ops.mcnode, plot.mcnode, pmax.mcnode, pmin.mcnode, print.mcnode, quantile.mcnode, summary.mcnode) 
+export(hist.mcnode, is.finite.mcnode, is.infinite.mcnode, is.na.mcnode, is.nan.mcnode, Ops.mcnode, plot.mcnode, pmax.mcnode, pmin.mcnode, print.mcnode, quantile.mcnode, summary.mcnode, spaghetti.mcnode, ggspaghetti.mcnode, ggplotmc.mcnode, gghist.mcnode) 
 S3method(hist, mcnode)
 S3method(is.finite, mcnode)
 S3method(is.infinite, mcnode)
@@ -35,6 +39,10 @@ S3method(pmin, mcnode)
 S3method(print, mcnode)
 S3method(quantile, mcnode)
 S3method(summary, mcnode)
+S3method(spaghetti, mcnode)
+S3method(ggspaghetti, mcnode)
+S3method(ggplotmc, mcnode)
+S3method(gghist, mcnode)
 
 #plotmc class
 export(plot.plotmc)
@@ -62,7 +70,13 @@ export(pmax, pmin, pmax.default, pmin.default)
 S3method(pmax, default)
 S3method(pmin, default)
 		
+export(gghist)
 
+export(spaghetti)
+
+export(ggspaghetti)
+
+export(ggplotmc)
 		
 export(dbern, pbern, qbern, rbern)
 
@@ -83,4 +97,10 @@ export(dpert, ppert, qpert, rpert)
 export(dtriang, ptriang, qtriang, rtriang)
 
 export(dlnormb, plnormb, qlnormb, rlnormb)
+
+export(dmqi, pmqi, qmqi, rmqi)
+
+export(dbetasubj, pbetasubj, qbetasubj, rbetasubj)
+
+export(ggtornado)
 

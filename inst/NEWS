@@ -1,5 +1,20 @@
 === mc2d ===
 
+Version 0.2-0
+=============
+
+NEW DISTRIBUTIONS
+
+- Beta subjective distribution (d, p, q, rbetasubj)
+- Minimum Quantile Information Distribution (d,p,q,rmqi)
+
+NEW FUNCTIONS
+
+- spaghetti (and ggplot2 version "ggspaghetti"): plot a spaghetti plot (method for mc or mcnode objects)
+- gghist : equivalent to hist, in the gglplot2 framwork (method for mc or mcnode objects)
+- ggplotmc : equivalent to plot, in the gglplot2 framwork (method for mc or mcnode objects)
+
+
 Version 0.1-22
 =============
 
