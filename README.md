@@ -23,7 +23,7 @@ The development version of `mc2d` can be installed from GitHub (`devtools` neede
 ```r
 if (!requireNamespace("devtools", quietly = TRUE))
    install.packages("devtools")
-devtools::install_github("ericcheny/mc2d-update")
+devtools::install_github("rpouillot/mc2d")
 library("mc2d")
 ```
 
