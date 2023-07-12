@@ -48,7 +48,7 @@ using \samp{qdistr}.
 
 All distributions (but sample) implemented in the stats library could
 be used. The arguments in \dots should be named. Do not use 'log' or
-'log.p' or 'lower.tail'. For discrete dictribution, rtrunc sample
+'log.p' or 'lower.tail'. For discrete distribution, rtrunc sample
 within \samp{(linf, lsup]}. See example.
 }
 \value{

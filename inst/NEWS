@@ -166,7 +166,7 @@ IMPROVEMENTS
 
 - Ops.mcnode function is much more efficient and less memory consuming
 - great improvement for speed in mcstoc for multivariate distributions
-- plot.mc proposes to fill the enveloppes
+- plot.mc proposes to fill the envelopes
 - empiricalD is (a little bit) more efficient
 
 BUG FIXES

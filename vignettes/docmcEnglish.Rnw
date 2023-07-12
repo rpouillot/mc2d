@@ -155,7 +155,7 @@ obtained from the $N_{u}$ estimates of each of the 101 percentiles.
 \includegraphics[angle=270, width=1\textwidth]{mc2dsaumon}
 \par\end{centering}
 
-\caption{\label{fig:mc2d}Shematic Representation of a Two-Dimensional Monte-Carlo
+\caption{\label{fig:mc2d}Schematic Representation of a Two-Dimensional Monte-Carlo
 Simulation.}
 
 \end{figure}
@@ -204,13 +204,13 @@ will illustrate the practical application of \texttt{mc2d}, using
 a fictitious example.
 
 
-\subsection{\label{sec:Exemple1}A basic example}
+\subsection{\label{sec:Example1}A basic example}
 
 \textbf{Quantitative Risk Assessment: \emph{Escherichia coli}
 O157:H7 infection linked to the consumption of frozen ground
 beef in <3 year old children.}
 
-\emph{Warning}: the data are fictitous and the model is over-simplified 
+\emph{Warning}: the data are fictitious and the model is over-simplified 
 to better illustrate the use of the package: 
 the results will not and should not be interpreted.
 
@@ -298,7 +298,7 @@ the \texttt{type} of the variable (\texttt{0} for fix,
 \texttt{V} for variable, \texttt{U} for uncertain or \texttt{VU} for variable
 and uncertain (here, all nodes are variable parameters only)
 and, finally, the level of output \texttt{outm} (used for multivariate parameters).
-The \texttt{summary} output proovides additionnal statistics.
+The \texttt{summary} output provides additional statistics.
 
 This One-Dimensional Monte-Carlo simulation provides an estimate of
 the mean risk (approximately 5\%), as well as some quantiles of the
@@ -594,7 +594,7 @@ r <- mcstoc(runif,type="U",min=0.0005,max=0.0015)
 A normal distribution with parameters $mean=2$, $sd=3$, truncated
 on the interval {[}1.5, 2{]}, with samples generated via Latin hypercube
 sampling could be written%
-\footnote{Note that the mean and the standard deviation of the untruncated normal
+\footnote{Note that the mean and the standard deviation of the non-truncated normal
 distribution are not preserved in the truncated distribution.%
 }:
 
@@ -1416,7 +1416,7 @@ summary(v)
 
 \subsection{The Dose-Response Model}
 
-We propose a boostrap from data (\texttt{datDR}) derived from \cite{CHAPPELL-1996}.
+We propose a bootstrap from data (\texttt{datDR}) derived from \cite{CHAPPELL-1996}.
 We first define a function \texttt{DR}
 with an \texttt{n} argument for the size of the sample to draw. This
 function may then be used in a \texttt{mcstoc} function:
@@ -1483,7 +1483,7 @@ Oo <- mcdata(c(0,1,2,5,10,20,50,100,1000),type="0",nvariates=9)
 \section*{As a Conclusion}
 
 We think and hope that \texttt{mc2d} could help risk assessors
-to constuct and analyse their models, and that it may help in developing
+to construct and analyse their models, and that it may help in developing
 two-dimensional simulations. \emph{Please report any bugs you get to rpouillot@yahoo.fr.} 
 
 If you would like to improve \texttt{mc2d}, join us at
@@ -1517,8 +1517,8 @@ P <- 10000 * (1-exp(-r*Or))
 summary(P)
 @ 
 
-This result can be compared (roughly since there is some differences
-in the modelsvariability) to the results shown in Table 2 in \cite{POUILLOT-2004}. 
+This result can be compared (roughly since there are some differences
+in the model variability) to the results shown in Table 2 in \cite{POUILLOT-2004}. 
 
 Improvement: the results for $O_{o}=\left\{ 0,1,2,5,10,20,50,100,1000\right\} $
 can be obtained in one step using: 

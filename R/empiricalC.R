@@ -13,7 +13,7 @@ dempiricalC <- function(x, min, max, values, prob=NULL, log=FALSE)
 #{max}<<A finite maximal value.>>
 #{values}<<Vector of numerical values.>>
 #[INPUTS]
-#{prob}<<Optionnal vector of count or probabilities.>>
+#{prob}<<Optional vector of count or probabilities.>>
 #{log, log.p}<<logical; if \samp{TRUE}, probabilities \samp{p} are given as \samp{log(p)}.>>
 #{lower.tail}<<logical; if \samp{TRUE} (default), probabilities are \samp{P[X <= x]}, otherwise, \samp{P[X > x]}.>>
 #DETAILS

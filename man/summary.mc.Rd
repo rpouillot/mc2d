@@ -36,7 +36,7 @@ object.}
 \item{digits}{Number of digits in the print.}
 \item{lim}{A vector of values used for the quantile function
 (uncertainty dimension).}
-\item{\dots}{For generic functions consistancy.}
+\item{\dots}{For generic functions consistency.}
 }
 \details{
 The mean, the standard deviation and the \samp{probs} quantiles will

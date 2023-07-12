@@ -15,7 +15,7 @@ dbern <- function(x,prob=.5,log=FALSE)
 #{log, log.p}<<logical; if \samp{TRUE}, probabilities \samp{p} are given as \samp{log(p)}.>>
 #{lower.tail}<<logical; if \samp{TRUE} (default), probabilities are \samp{P[X <= x]}, otherwise, \samp{P[X > x]}.>>
 #DETAILS
-#These fonctions use the corresponding functions from the \code{\link{binomial}} distribution with argument \samp{size = 1}.
+#These functions use the corresponding functions from the \code{\link{binomial}} distribution with argument \samp{size = 1}.
 #Thus, 1 is for success, 0 is for failure.
 #VALUE
 #\samp{dbern} gives the density, \samp{pbern} gives the distribution function,

@@ -130,7 +130,7 @@ Note that arguments after \dots must match exactly.
 Any function who accepts vectors/matrix as arguments may be used
 (notably: all current random generator of the \samp{stats} package).
 The arguments may be sent classically but it is STRONGLY recommended
-to use consistant \samp{mcnode}s if arguments should be recycled,
+to use consistent \samp{mcnode}s if arguments should be recycled,
 since a very complex recycling is handled for \samp{mcnode} and not
 for vectors. The rules for compliance of \samp{mcnode} arguments are
 as following (see below for special functions): 
@@ -147,10 +147,10 @@ dimension \samp{(1 x nsu x 1)} (recycled).}
 \item{type="VU"}{accepts \samp{"0" mcnode} of dimension \samp{(1 x 1
 x nvariates)} or of dimension \samp{(1 x 1 x 1)} (recycled),
 \samp{"V" mcnode} of dimension \samp{(nsv x 1 x nvariates)} (recycled
-classicaly) or \samp{(nsv x 1 x 1)} (recycled classically), \samp{"U"
+classically) or \samp{(nsv x 1 x 1)} (recycled classically), \samp{"U"
 mcnode} of dimension \samp{(1 x nsu x nvariates)} (recycled by rows)
 or \samp{(1 x nsu x 1)} (recycled by row on the uncertainty dimension
-and classicaly on variates), \samp{"VU" mcnode} of dimension
+and classically on variates), \samp{"VU" mcnode} of dimension
 \samp{(nsv x nsu x nvariates)} or of dimension \samp{(nsv x nsu x 1)}
 (recycled).}
 \item{type="0"}{accepts \samp{"0" mcnode} of dimension \samp{(1 x 1 x

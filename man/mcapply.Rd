@@ -31,7 +31,7 @@ do not use 'var' for 'variates'}
 \item{fun}{The function to be applied. When applied to a vector of
 length \samp{n}, \samp{fun} should return a vector of length \samp{n}
 or \samp{1}.}
-\item{\dots}{Optionnal arguments to \samp{fun}.}
+\item{\dots}{Optional arguments to \samp{fun}.}
 }
 \value{
 If \samp{fun} returns a function of length \samp{n} or if

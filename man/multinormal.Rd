@@ -70,7 +70,7 @@ to be a quantile. Default is a vector of 0 of convenient length.}
 covariance matrix into a vector (if unique for all \samp{n} or
 \samp{x}) or array of covariance vectors (if varying according to
 \samp{n} or \samp{x}). default is a diagonal matrix of convenient
-sizee.}
+size.}
 \item{method}{Matrix decomposition used to determine the matrix root
 of sigma, possible methods are eigenvalue decomposition ("eigen",
 default), singular value decomposition ("svd"), and Cholesky
@@ -91,6 +91,6 @@ and/or \samp{sigma}, ... recycling being permitted by raw. If
 l} or a matrix of number of \samp{l x 2} columns.
 }
 \note{
-The use of a varying sigma may be very time consumming.
+The use of a varying sigma may be very time consuming.
 }
 \keyword{distribution}

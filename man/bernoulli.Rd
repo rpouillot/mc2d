@@ -37,7 +37,7 @@ given as \samp{log(p)}.}
 are \samp{P[X <= x]}, otherwise, \samp{P[X > x]}.}
 }
 \details{
-These fonctions use the corresponding functions from the
+These functions use the corresponding functions from the
 \code{\link{binomial}} distribution with argument \samp{size = 1}.
 Thus, 1 is for success, 0 is for failure.
 }

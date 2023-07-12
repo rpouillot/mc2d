@@ -11,14 +11,14 @@ plot.mc <- function(x, prec=0.001, stat = c("median","mean"), lim = c(0.025, 0.2
 #{prec}<<the precision of the plot. 0.001 will
 #provide an ecdf from the 0.000, 0.001, .002,  ..., 1.000 quantiles.>>
 #{stat}<<the function used for estimates (2D \samp{mc} or \samp{mcnode}). By default the median.>>
-#{lim}<<a vector of numbers (between 0 and 1) indicating the enveloppe (2D \samp{mc} or \samp{mcnode}) . Maybe \samp{NULL} or empty.>>
+#{lim}<<a vector of numbers (between 0 and 1) indicating the envelope (2D \samp{mc} or \samp{mcnode}) . Maybe \samp{NULL} or empty.>>
 #{na.rm}<<Should NA values be discarded>>
 #{griddim}<<a vector of two integers, indicating the size of the grid of the graph. If \samp{NULL}, the grid is calculated to produce a "nice" graph.>>
 #{xlab}<<vector of labels for the x-axis. If \samp{NULL}, use the name of the node.>>
 #{ylab}<<vector of labels for the y-axis.>>
 #{main}<<vector of main titles of the graph.>>
 #{draw}<<Should the plot be drawn?>>
-#{paint}<<Should the enveloppes be filled?>>
+#{paint}<<Should the envelopes be filled?>>
 #{xlim}<<x coordinate range. \samp{xlim} is either a vector of length 2, used for each graph, or a list of vectors of length 2, 
 #whose ith element is used for the ith graph. By default, the data range is used as \samp{xlim}.>>
 #{ylim}<<y coordinate range. \samp{ylim} is either a vector of length 2, used for each graph, or a list of vectors of length 2, 
@@ -29,7 +29,7 @@ plot.mc <- function(x, prec=0.001, stat = c("median","mean"), lim = c(0.025, 0.2
 #For \samp{"VU"} and \samp{"U"} \samp{mcnode}s, quantiles are calculated using \code{\link{quantile.mc}}
 #within each of the \samp{nsu} simulations (i.e. by columns of each \samp{mcnode}). The medians (but may be
 #the means using \samp{stat="mean"}) calculated from the \samp{nsu} values are plotted. The 0.025 and 0.975 quantiles, 
-#and the 0.25 and 0.75 quantiles (default values of \samp{lim}) of these quantiles are used as the enveloppe.
+#and the 0.25 and 0.75 quantiles (default values of \samp{lim}) of these quantiles are used as the envelope.
 #REFERENCE
 #Cullen AC and Frey HC (1999) Probabilistic techniques in exposure assessment. Plenum Press, USA, pp. 81-155. 
 #VALUE
@@ -40,9 +40,9 @@ plot.mc <- function(x, prec=0.001, stat = c("median","mean"), lim = c(0.025, 0.2
 #data(total)
 
 #plot(xVUM3)
-### only one enveloppe corresponding to quantiles 0.025 and 0.975
+### only one envelope corresponding to quantiles 0.025 and 0.975
 #plot(xVUM3,lim=c(0.025,0.975)) 
-### only one enveloppe not painted
+### only one envelope not painted
 #plot(xVUM3,lim=c(0.025,0.975),paint=FALSE) 
 
 #def.par <- par(no.readonly = TRUE)
@@ -102,7 +102,7 @@ plot.mc <- function(x, prec=0.001, stat = c("median","mean"), lim = c(0.025, 0.2
       x50 <- plot.stepfun(y[1,], main=main[i], xlim=xlima, ylim=ylima, ylab = ylab[i], verticals = TRUE, do.points = FALSE, xlab=xlab[i], lwd=3, ...)
       abline(h = c(0, 1), col =  "gray70", lty = 3)
 
-      # Points for the polygon used to fill the enveloppe
+      # Points for the polygon used to fill the envelope
       if(paint){
         ti.l <- x50$t[-length(x50$t)]
         ti.r <- x50$t[-1L]

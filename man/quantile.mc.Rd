@@ -23,8 +23,8 @@ quantile(total)
 \item{probs}{the quantiles to be calculated}
 \item{na.rm}{TRUE or FALSE}
 \item{lim}{a vector of numbers (between 0 and 1) indicating the
-enveloppe. Maybe \samp{NULL} or empty.}
-\item{\dots}{For generic method consistancy.}
+envelope. Maybe \samp{NULL} or empty.}
+\item{\dots}{For generic method consistency.}
 }
 \details{
 The quantiles are evaluated in the variability dimension. Then, the

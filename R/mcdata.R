@@ -59,7 +59,7 @@ mcdata <- function(data, type=c("V","U","VU","0"), nsv=ndvar(), nsu=ndunc(),nvar
 #or of dimension \samp{(1 x 1 x 1)} (recycling on uncertainty and variates),
 #or a \samp{"U"} node of dimension \samp{(1 x nsu x nvariates)},
 #or \samp{(1 x nsu x 1)} (recycling on variates),>>
-#{#}<<a \samp{"VU"} node accepts a \samp{"0"} node of dimension \samp{(1 x 1 x nvariates)} (recycling on varaiability and uncertainty)
+#{#}<<a \samp{"VU"} node accepts a \samp{"0"} node of dimension \samp{(1 x 1 x nvariates)} (recycling on variability and uncertainty)
 #or of dimension \samp{(1 x 1 x 1)} (recycling on variability, uncertainty and variates),
 #a \samp{"U"} node of dimension \samp{(1 x nsu x nvariates)}(recycling "by row" on the variability dimension),
 #or of dimension \samp{(1 x nsu x 1)}(recycled "by row" on the variability dimension then on variates),

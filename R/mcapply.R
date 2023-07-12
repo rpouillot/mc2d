@@ -17,7 +17,7 @@ mcapply <- function(x, margin=c("all","var","unc","variates"), fun, ...)
 #\samp{"variates"} to apply the function on the variates. Watch out: do not use 'var' for 'variates'>>
 #{fun}<<The function to be applied.
 #When applied to a vector of length \samp{n}, \samp{fun} should return a vector of length \samp{n} or \samp{1}.>>
-#{\dots}<<Optionnal arguments to \samp{fun}.>>
+#{\dots}<<Optional arguments to \samp{fun}.>>
 #VALUE
 #If \samp{fun} returns a function of length \samp{n} or if \samp{margin="all"}, the returned \samp{mcnode}s are of type and dimension of \samp{x}.
 #In other cases, the type of \samp{mcnode} is changed.

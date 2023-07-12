@@ -3,7 +3,7 @@
 \alias{ec}
 \alias{modEC1}
 \alias{modEC2}
-\title{An exemple on Escherichia coli in ground beef}
+\title{An example on Escherichia coli in ground beef}
 \description{
 The fictive example is as following:
 

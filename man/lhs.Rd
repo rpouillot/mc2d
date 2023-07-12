@@ -18,7 +18,7 @@ If \samp{distr} is "rdist", the function "qdist" must be the quantile
 function of this distribution with argument \samp{p} as a vector of
 probabilities, as all univariates distributions of the \samp{stat}
 library.}
-\item{nsv}{The number of raws of the final matrix.}
+\item{nsv}{The number of rows of the final matrix.}
 \item{nsu}{The number of columns of the final matrix}
 \item{nvariates}{The number of variates}
 \item{\dots}{All arguments to be passed to \samp{distr} except the

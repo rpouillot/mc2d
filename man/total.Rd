@@ -11,9 +11,9 @@
 \alias{xVUM}
 \alias{xVUM2}
 \alias{xVUM3}
-\title{An Exemple of all Kind of mcnode}
+\title{An Example of all Kind of mcnode}
 \description{
-An exemple for each kind of \samp{mcnode}s. They are used in some \samp{mc2d} examples. They
+An example for each kind of \samp{mcnode}s. They are used in some \samp{mc2d} examples. They
 have been built using the following code:
 
 \code{ndvar(101)}

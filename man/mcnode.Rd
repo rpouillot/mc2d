@@ -175,7 +175,7 @@ fill the array:\enumerate{
 \samp{"U"} node of dimension \samp{(1 x nsu x nvariates)}, or
 \samp{(1 x nsu x 1)} (recycling on variates),
 \item a \samp{"VU"} node accepts a \samp{"0"} node of dimension
-\samp{(1 x 1 x nvariates)} (recycling on varaiability and
+\samp{(1 x 1 x nvariates)} (recycling on variability and
 uncertainty) or of dimension \samp{(1 x 1 x 1)} (recycling on
 variability, uncertainty and variates), a \samp{"U"} node of
 dimension \samp{(1 x nsu x nvariates)}(recycling "by row" on the
@@ -192,7 +192,7 @@ variates).}
 }
 \samp{mcdatanocontrol} is a dangerous version of \samp{mcnode} which
 forces the dimension of data to be \samp{(nsv x nsu x nvariates)} and
-gives the atributes and the class without any control. This function
+gives the attributes and the class without any control. This function
 is useful when your model is tested since it is much more quicker.
 }
 \value{

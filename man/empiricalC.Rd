@@ -52,7 +52,7 @@ is taken to be the number required.}
 \item{min}{A finite minimal value.}
 \item{max}{A finite maximal value.}
 \item{values}{Vector of numerical values.}
-\item{prob}{Optionnal vector of count or probabilities.}
+\item{prob}{Optional vector of count or probabilities.}
 \item{log, log.p}{logical; if \samp{TRUE}, probabilities \samp{p} are
 given as \samp{log(p)}.}
 \item{lower.tail}{logical; if \samp{TRUE} (default), probabilities

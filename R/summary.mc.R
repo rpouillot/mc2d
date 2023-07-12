@@ -11,7 +11,7 @@ summary.mc <- function(object,probs = c(0,0.025,0.25,0.5,0.75,0.975,1),lim=c(0.0
 #{probs}<<A vector of values used for the quantile function (variability dimension).>>
 #{digits}<<Number of digits in the print.>>
 #{lim}<<A vector of values used for the quantile function (uncertainty dimension).>>
-#{\dots}<<For generic functions consistancy.>>
+#{\dots}<<For generic functions consistency.>>
 #VALUE
 #a list.
 #DETAILS

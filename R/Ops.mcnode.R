@@ -2,11 +2,11 @@
 Ops.mcnode <- function(e1,e2)
 #TITLE Operations on mcnode Objects
 #DESCRIPTION
-# This function alters the way operations are performed on \samp{mcnode} objects for a better consistancy of the theory.
+# This function alters the way operations are performed on \samp{mcnode} objects for a better consistency of the theory.
 #KEYWORDS utilities
 #INPUTS
 #{e1}<<An \samp{mcnode} object, a vector or an array.>>
-#{e2}<<An optionnal \samp{mcnode} object, a vector or a matrix with at least one of both objects as an \samp{mcnode}.>>
+#{e2}<<An optional \samp{mcnode} object, a vector or a matrix with at least one of both objects as an \samp{mcnode}.>>
 #VALUE
 #The results as a \samp{mcnode} object.
 #DETAILS

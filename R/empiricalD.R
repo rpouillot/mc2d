@@ -13,7 +13,7 @@ dempiricalD <- function(x,values,prob=NULL,log=FALSE)
 #{n}<<Number of random values. If length(n) > 1, the length is taken to be the number required.>>
 #{values}<<Vector or matrix of numerical values. See details.>>
 #[INPUTS]
-#{prob}<<Optionnal vector or matrix of count or probabilities. See details.>>
+#{prob}<<Optional vector or matrix of count or probabilities. See details.>>
 #{log, log.p}<<logical; if \samp{TRUE}, probabilities \samp{p} are given as \samp{log(p)}.>>
 #{lower.tail}<<logical; if \samp{TRUE} (default), probabilities are \samp{P[X <= x]}, otherwise, \samp{P[X > x]}.>>
 #DETAILS
@@ -28,7 +28,7 @@ dempiricalD <- function(x,values,prob=NULL,log=FALSE)
 #\samp{rempiricalD(n, values, prob)} with \samp{values} and \samp{prob} as vectors
 #is equivalent to \samp{sample(x=values, size=n, replace=TRUE, prob=prob)}.
 #NOTE
-#In the future, the fonctions should be written for non numerical values.
+#In the future, the functions should be written for non numerical values.
 #SEE ALSO
 #\code{\link{sample}}.
 #\code{\link{empiricalC}}.

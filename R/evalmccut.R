@@ -49,7 +49,7 @@ evalmccut <- function(model, nsv = ndvar(), nsu = ndunc(), seed = NULL,  ind = "
 #\samp{{{block 1}{block 2}{block 3}}}
 #{#}<<The first block (maybe empty) is an expression that will be evaluated only once.
 #This block should evaluate all \samp{"V" mcnode} and \samp{"0" mcnode}s. It may evaluate and \samp{"U" mcnode}
-#that will be sent in the second and third block by column, and, optionnaly, some other codes
+#that will be sent in the second and third block by column, and, optionally, some other codes
 #(even \samp{"VU" mcnode}, sent by columns) that can not be evaluated if \samp{ndunc=1}
 #(e.g. sampling without replacement in the uncertainty dimension).>>
 #{#}<<The second block is an expression that leads to the \samp{mc} object.

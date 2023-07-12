@@ -26,9 +26,9 @@ empirical cumulative distribution function of the estimate of a
 data(total)
 
 plot(xVUM3)
-## only one enveloppe corresponding to quantiles 0.025 and 0.975
+## only one envelope corresponding to quantiles 0.025 and 0.975
 plot(xVUM3, lim=c(0.025, 0.975)) 
-## only one enveloppe not painted
+## only one envelope not painted
 plot(xVUM3, lim=c(0.025, 0.975), paint=FALSE) 
 
 def.par <- par(no.readonly = TRUE)
@@ -46,7 +46,7 @@ from the 0.000, 0.001, .002, ..., 1.000 quantiles.}
 \item{stat}{the function used for estimates (2D \samp{mc} or
 \samp{mcnode}). By default the median.}
 \item{lim}{a vector of numbers (between 0 and 1) indicating the
-enveloppe (2D \samp{mc} or \samp{mcnode}) . Maybe \samp{NULL} or
+envelope (2D \samp{mc} or \samp{mcnode}) . Maybe \samp{NULL} or
 empty.}
 \item{na.rm}{Should NA values be discarded}
 \item{griddim}{a vector of two integers, indicating the size of the
@@ -57,7 +57,7 @@ name of the node.}
 \item{ylab}{vector of labels for the y-axis.}
 \item{main}{vector of main titles of the graph.}
 \item{draw}{Should the plot be drawn?}
-\item{paint}{Should the enveloppes be filled?}
+\item{paint}{Should the envelopes be filled?}
 \item{xlim}{x coordinate range. \samp{xlim} is either a vector of
 length 2, used for each graph, or a list of vectors of length 2,
 whose ith element is used for the ith graph. By default, the data
@@ -78,7 +78,7 @@ calculated using \code{\link{quantile.mc}} within each of the
 medians (but may be the means using \samp{stat="mean"}) calculated
 from the \samp{nsu} values are plotted. The 0.025 and 0.975
 quantiles, and the 0.25 and 0.75 quantiles (default values of
-\samp{lim}) of these quantiles are used as the enveloppe.
+\samp{lim}) of these quantiles are used as the envelope.
 }
 \value{
 A \samp{plot.mc} object, list of the quantiles used to plot the draw.

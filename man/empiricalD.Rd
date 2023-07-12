@@ -50,7 +50,7 @@ mcstoc(rempiricalD, type = "VU", values = x)
 \item{n}{Number of random values. If length(n) \eqn{>} 1, the length
 is taken to be the number required.}
 \item{values}{Vector or matrix of numerical values. See details.}
-\item{prob}{Optionnal vector or matrix of count or probabilities. See
+\item{prob}{Optional vector or matrix of count or probabilities. See
 details.}
 \item{log, log.p}{logical; if \samp{TRUE}, probabilities \samp{p} are
 given as \samp{log(p)}.}
@@ -86,7 +86,7 @@ and \samp{rempiricalD} generates random deviates.
 \code{\link{sample}}. \code{\link{empiricalC}}.
 }
 \note{
-In the future, the fonctions should be written for non numerical
+In the future, the functions should be written for non numerical
 values.
 }
 \keyword{distribution}

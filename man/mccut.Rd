@@ -110,7 +110,7 @@ object of class \samp{mccut}.}
 evaluated only once. This block should evaluate all \samp{"V" mcnode}
 and \samp{"0" mcnode}s. It may evaluate and \samp{"U" mcnode} that
 will be sent in the second and third block by column, and,
-optionnaly, some other codes (even \samp{"VU" mcnode}, sent by
+optionaly, some other codes (even \samp{"VU" mcnode}, sent by
 columns) that can not be evaluated if \samp{ndunc=1} (e.g. sampling
 without replacement in the uncertainty dimension).
 \item The second block is an expression that leads to the \samp{mc}

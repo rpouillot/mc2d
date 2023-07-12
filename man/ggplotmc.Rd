@@ -81,12 +81,16 @@ function of the estimate of a [mcnode] or [mc] object ("`U`" and "`VU`" nodes) b
 }
 \examples{
 data(total)
-#When mcnode has one variate
+# When mcnode has one variate
 ggplotmc(xV)
-#When mcnode has two variates
+# Post process
+ggplotmc(xV) + ggplot2::ggtitle("post processed")
+# When mcnode has two variates
 gplots <- ggplotmc(xVUM) #will save two plots in a list
 gplots[[1]] # show the first variate plot of xVUM mcnode
 ggplotmc(xVUM, which = 1) #directly show the first variate plot of xVUM mcnode
+# mc
+ggplotmc(total)
 
 }
 \seealso{

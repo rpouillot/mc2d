@@ -9,7 +9,7 @@ lhs <- function(distr="runif",nsv=ndvar(),nsu=ndunc(),nvariates=1,...)
 #the function "qdist" must be the quantile function of this distribution with argument
 #\samp{p} as a vector of probabilities, as all univariates distributions of the \samp{stat}
 #library.>>
-#{nsv}<<The number of raws of the final matrix.>>
+#{nsv}<<The number of rows of the final matrix.>>
 #{nsu}<<The number of columns of the final matrix>>
 #[INPUTS]
 #{nvariates}<<The number of variates>>

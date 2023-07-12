@@ -5,7 +5,7 @@ Operations on mcnode Objects
 }
 \description{
 This function alters the way operations are performed on
-\samp{mcnode} objects for a better consistancy of the theory.
+\samp{mcnode} objects for a better consistency of the theory.
 }
 \usage{
 \method{Ops}{mcnode}(e1, e2)
@@ -67,7 +67,7 @@ xVUM - xU
 }
 \arguments{
 \item{e1}{An \samp{mcnode} object, a vector or an array.}
-\item{e2}{An optionnal \samp{mcnode} object, a vector or a matrix
+\item{e2}{An optional \samp{mcnode} object, a vector or a matrix
 with at least one of both objects as an \samp{mcnode}.}
 }
 \details{

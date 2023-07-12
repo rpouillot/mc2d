@@ -49,7 +49,7 @@ betagen(shape1, shape2, min, max, ncp)} if
 \deqn{\frac{x-min}{max-min}\sim
 beta(shape1,shape2,ncp)}{(x-min)/(max-min)~beta(shape1,shape2,ncp)}
 These functions use the \code{\link{Beta}} distribution functions
-after correct parametrisation.
+after correct parameterization.
 }
 \value{
 \samp{dbetagen} gives the density, \samp{pbetagen} gives the

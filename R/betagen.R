@@ -23,7 +23,7 @@ dbetagen <- function(x,shape1,shape2,min=0,max=1,ncp=0,log=FALSE)
 #\deqn{x \sim  betagen(shape1, shape2, min, max, ncp)}{x ~ betagen(shape1, shape2, min, max, ncp)}
 #if
 #\deqn{\frac{x-min}{max-min}\sim beta(shape1,shape2,ncp)}{(x-min)/(max-min)~beta(shape1,shape2,ncp)}
-#These functions use the \code{\link{Beta}} distribution functions after correct parametrisation.
+#These functions use the \code{\link{Beta}} distribution functions after correct parameterization.
 #EXAMPLE
 #curve(dbetagen(x,shape1=3,shape2=5,min=1,max=6), from = 0, to = 7)
 #curve(dbetagen(x,shape1=1,shape2=1,min=2,max=5), from = 0, to = 7, lty=2, add=TRUE)

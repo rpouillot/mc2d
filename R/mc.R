@@ -87,8 +87,8 @@ mc <- function(..., name=NULL, devname=FALSE)
 #  if(remove) rm(list=nameori[nameori!=""], envir = parent.frame(n = 1))
 
   dimm <- sapply(rv,dim)
-	if(!all(dimm[1,] %in% c(1,max(dimm[1,])))) stop("element should be of consistant variability dimensions")
-	if(!all(dimm[2,] %in% c(1,max(dimm[2,])))) stop("element should be of consistant uncertainty dimensions")
+	if(!all(dimm[1,] %in% c(1,max(dimm[1,])))) stop("element should be of consistent variability dimensions")
+	if(!all(dimm[2,] %in% c(1,max(dimm[2,])))) stop("element should be of consistent uncertainty dimensions")
 
   # Build the object
   

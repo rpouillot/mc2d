@@ -24,6 +24,7 @@
 %\makeatother
 
 \begin{document}
+\SweaveOpts{concordance=TRUE}
 
 % Command for Sweave: figure = .5 the text width
 \setkeys{Gin}{width=0.5\textwidth}
@@ -128,9 +129,9 @@ The other assumptions are:
   \Pr(\text{Illness} \mid D)=1-(1-r)^{D}
   \]
   with $r=4.7\times10^{-14}$ for an individual from this healthy sub-population.
-  The populational dose-response that evaluates the mean risk for
+  The dose-response that evaluates the mean risk for
   a population exposed to food where the number of bacteria follows a Poisson distribution of
-  mean paramer $D$ is the exponential dose-response
+  mean parameter $D$ is the exponential dose-response
   \[
   \Pr(\text{Illness} \mid D)=1-\exp(r\times D)
   \]
@@ -288,7 +289,7 @@ TminFFV <-  mcstoc(rnorm, mean = -4.52, sd = 7.66)
 The time temperature profiles in the three steps are modelled using
 the distribution provided in the table \ref{tab:4} (adapted from \cite{POUILLOT-2007} from representative
 data from France)\footnote{$\Gamma$ is the Gamma distribution parameterized as $\Gamma(shape,\: scale)$.
-The Exponential($x$) ditribution is the exponential distribution with mean $x$.}. We
+The Exponential($x$) distribution is the exponential distribution with mean $x$.}. We
 assume a shelf life of 28 days. A simple way to model this shelf life will
 be to have $d_{1}+d_{2}+d_{3}\leq28$ days, with $d_{1}$ the duration of the logistic stage,
 $d_{2}$ the duration of the retail stage and $d_{3}$ the duration of the consumer stage\footnote{See
@@ -371,7 +372,7 @@ We extract some of these outputs in \texttt{sLm1} to provide a short summary.
 
 \subsection{Final Estimate}
 If 6.5\% of cold-smoked salmon package are contaminated,
-if 49,090,000 Frenchs are part of the ``non susceptible''
+if 49,090,000 French people are part of the ``non susceptible''
 population and if, on average, those people consume some smoked salmon
 $6.4$ times per year, the expected number of cases of listeriosis
 from consumption of cold smoked salmon in this population is estimated through:
@@ -448,7 +449,7 @@ and not $-1.03$ as written in \cite{DELIGNETTE-2006}. We will use here the corre
   \ln(\sigma_{Nmax}) & \sim & N(-0.172,0.218)
 \end{eqnarray*}
 
-with $\mu_{ref}>0$ and $T_{min}<25$. We simply translated the preceeding distributions:
+with $\mu_{ref}>0$ and $T_{min}<25$. We simply translated the preceding distributions:
 
 <<sh5, echo=true, eval=true>>=
 MmurefLm <- mcstoc(rgamma, type="U", shape=69.7, scale=0.0896)

@@ -14,7 +14,7 @@ rmultinormal <- function(n, mean, sigma , method=c("eigen", "svd", "chol"))
 #Default is a vector of 0 of convenient length.>>
 #{sigma}<<Covariance vector corresponding to the coercion of the covariance matrix into a vector (if unique for all \samp{n} or \samp{x}) 
 #or array of covariance vectors (if varying according to \samp{n} or \samp{x}).
-#default is a diagonal matrix of convenient sizee.>>
+#default is a diagonal matrix of convenient size.>>
 #{method}<<Matrix decomposition used to determine the matrix root of sigma, possible methods are
 #eigenvalue decomposition ("eigen", default), singular value decomposition ("svd"), and Cholesky decomposition ("chol").>>
 #{log}<<Logical; if \samp{TRUE}, densities d are given as log(d).>> 
@@ -29,7 +29,7 @@ rmultinormal <- function(n, mean, sigma , method=c("eigen", "svd", "chol"))
 #If \samp{mean} is a vector of length \samp{l} or is a matrix with \samp{l} columns, \samp{sigma}
 #should be a vector of length \samp{l x l} or a matrix of number of \samp{l x 2} columns. 
 #NOTE
-#The use of a varying sigma may be very time consumming.
+#The use of a varying sigma may be very time consuming.
 #EXAMPLE
 #
 ### including equivalence with dmvnorm

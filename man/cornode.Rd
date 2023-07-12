@@ -67,7 +67,7 @@ The function accepts for \samp{data} a matrix or:
 \item some \samp{"V" mcnode} objects separated by a comma;
 \item some \samp{"U" mcnode} objects separated by a comma;
 \item some \samp{"VU" mcnode} objects separated by a comma. In that
-case, the structure is built columns by colums (the first column of
+case, the structure is built columns by columns (the first column of
 each \samp{"VU" mcnode} will have a correlation structure, the second
 ones will have a correlation structure, ....).
 \item one \samp{"V" mcnode} as a first element and some \samp{"VU"
