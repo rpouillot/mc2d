@@ -63,6 +63,7 @@ dpert <- function(x,min=-1,mode=0,max=1,shape=4,log=FALSE, mean = 0){
     
   } else {mode <- as.vector(mode)}
   
+	if(any(mode < min | mode > max)) warning("Some values of mode < min or mode > max.")
 	
 	a1 <- 1+shape*(mode-min)/(max-min)	
 	a2 <- 1+shape*(max-mode)/(max-min)
@@ -93,6 +94,8 @@ ppert <- function(q,min=-1,mode=0,max=1,shape=4,lower.tail = TRUE, log.p = FALSE
     if(any(mode < min | mode > max)) warning("Some values of mean lead to mode < min or mode > max.")
     
   } else {mode <- as.vector(mode)}
+  
+  if(any(mode < min | mode > max)) warning("Some values of mode < min or mode > max.")
   
   a1 <- 1+shape*(mode-min)/(max-min)	
 	a2 <- 1+shape*(max-mode)/(max-min)
@@ -128,6 +131,8 @@ qpert <- function(p, min=-1, mode=0, max=1, shape=4, lower.tail=TRUE, log.p=FALS
       
     } else {mode <- as.vector(mode)}
   
+    if(any(mode < min | mode > max)) warning("Some values of mode < min or mode > max.")
+    
     lout <- max(length(p),length(min),length(mode),length(max),length(shape))
     min <- rep(min, length.out=lout)
     mode <- rep(mode, length.out=lout)
@@ -177,6 +182,7 @@ rpert <- function(n,min=-1,mode=0,max=1,shape=4, mean=0){
     
   } else {  mode <- rep(as.vector(mode),length.out=n) }
   
+
   a1 <- 1 + shape * (mode - min)/(max - min)
   a2 <- 1 + shape * (max - mode)/(max - min)
   oldw <- options(warn = -1)
@@ -184,6 +190,13 @@ rpert <- function(n,min=-1,mode=0,max=1,shape=4, mean=0){
   options(warn = oldw$warn)
   minmodemax <- (abs(min - max) < (.Machine$double.eps^0.5))
   r <- ifelse(minmodemax, min, r)
+
+  check <- mode < min | mode > max
+  if(any(check)) {
+    r[check] <- NA
+    warning("Some values of mode < min or mode > max.")
+  }
+  
   if (any(is.na(r))) 
     warning("NaN in rpert")
   return(r)
