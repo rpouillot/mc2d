@@ -91,7 +91,7 @@ that is the 5th, 50th and 95th.}
 
 \item{log, log.p}{Logical; if `TRUE`, probabilities `p` are given as `log(p)`.}
 
-\item{lower.tail}{Logical; if `TRUE` (default), probabilities are `P[X ≤ x]` otherwise, `P[X > x]`.}
+\item{lower.tail}{Logical; if `TRUE` (default), probabilities are `P[X <= x]` otherwise, `P[X > x]`.}
 
 \item{p}{Vector of probabilities.}
 
@@ -102,7 +102,7 @@ Density, distribution function, quantile function and random generation
 for Minimum Quantile Information distribution.
 }
 \details{
-\eqn{p_1}, \eqn{p_2}, and \eqn{p_3} are percentiles of a distribution with \eqn{p_1 \lt p_2 \lt p_3}. 
+\eqn{p_1}, \eqn{p_2}, and \eqn{p_3} are percentiles of a distribution with \eqn{p_1 < p_2 < p_3}. 
 The interval \eqn{[L,U]} is given with:
 \deqn{L = x_{p_{1}}}{L = x_p_1}
 \deqn{U = x_{p_{3}}}{U = x_p_3}

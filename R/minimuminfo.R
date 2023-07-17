@@ -44,10 +44,10 @@
 #' @param realization Default is `NULL`. If not `NULL`, used to define `L` or `U` (see details).
 #' @param k Overshot, default value is 0.1.
 #' @param intrinsic Use to specify a prior bounds of the intrinsic range. Default = `NA`.
-#' @param lower.tail Logical; if `TRUE` (default), probabilities are `P[X ≤ x]` otherwise, `P[X > x]`.
+#' @param lower.tail Logical; if `TRUE` (default), probabilities are `P[X <= x]` otherwise, `P[X > x]`.
 #' @param log,log.p Logical; if `TRUE`, probabilities `p` are given as `log(p)`.
 #' @details
-#' \eqn{p_1}, \eqn{p_2}, and \eqn{p_3} are percentiles of a distribution with \eqn{p_1 \lt p_2 \lt p_3}. 
+#' \eqn{p_1}, \eqn{p_2}, and \eqn{p_3} are percentiles of a distribution with \eqn{p_1 < p_2 < p_3}. 
 #' The interval \eqn{[L,U]} is given with:
 #' \deqn{L = x_{p_{1}}}{L = x_p_1}
 #' \deqn{U = x_{p_{3}}}{U = x_p_3}

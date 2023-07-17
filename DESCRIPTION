@@ -11,7 +11,7 @@ Authors@R: c(person("Regis", "Pouillot", role = c("aut", "cre"), email = "rpouil
 Author: Regis Pouillot [aut, cre],
   Marie-Laure Delignette-Muller [ctb],
   Jean-Baptiste Denis [ctb],
-  Yu Chen [ctb]
+  Yu Chen [ctb],
   Arie Havelaar [ctb]
 Maintainer: Regis Pouillot <rpouillot@yahoo.fr>
 Suggests: fitdistrplus, survival, testthat (>= 3.0.0)
