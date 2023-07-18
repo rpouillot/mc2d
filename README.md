@@ -44,6 +44,6 @@ or directly to the maintainer Régis Pouillot: rpouillot@yahoo.fr
 
 If you use `mc2d`, please cite:
 
-R. Pouillot, M.-L. Delignette-Muller (2010), [Evaluating variability and uncertainty in microbial
-  quantitative risk assessment using two R packages](www.doi.org/10.1016/j.ijfoodmicro.2010.07.011). International Journal of Food Microbiology.
+R. Pouillot, M.-L. Delignette-Muller (2010), Evaluating variability and uncertainty in microbial
+  quantitative risk assessment using two R packages. International Journal of Food Microbiology.
   142(3):330-40  

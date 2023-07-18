@@ -89,8 +89,6 @@ ggplotmc(xV) + ggplot2::ggtitle("post processed")
 gplots <- ggplotmc(xVUM) #will save two plots in a list
 gplots[[1]] # show the first variate plot of xVUM mcnode
 ggplotmc(xVUM, which = 1) #directly show the first variate plot of xVUM mcnode
-# mc
-ggplotmc(total)
 
 }
 \seealso{
