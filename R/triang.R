@@ -47,24 +47,26 @@ dtriang <- function(x, min=-1, mode=0, max=1, log=FALSE, mean = 0){
   } else {mode <- as.vector(mode)}
   
 	# quel: x < mode or x = mode = max 
-	xmaxmode <-  (abs(x - max) == 0) & (abs(max - mode) == 0)
+	xmaxmode <-  x >= max & mode >= max # to avoid some rounding errors
 	quel <- (x < mode) | xmaxmode  
 	d <- ifelse(quel,
               2*(x-min)/((mode-min)*(max-min)),
 	            2 *(max-x)/((max-mode)*(max-min)))
 
-	d[x < min | x > max] <- 0
-	d[mode < min | max < mode] <- NaN
 
+	d[x < min | x > max] <- 0
 	# For min = mode = max: provide an error like in dunif
-	xminmodemax <- abs(min-max) == 0
+	xminmodemax <- min >= max # to avoid some rounding errors
 	d[xminmodemax] <- NaN
 	
+	d[mode < min | max < mode] <- NaN
+
 	if(log) d <- log(d)
 	if(any(is.na(d))) warning("NaN in dtriang")
   return(d)}
 
 #' @rdname triangular
+
 ptriang <- function(q,min=-1,mode=0,max=1,lower.tail = TRUE, log.p = FALSE, mean = 0){
 	if(length(q) == 0) return(numeric(0))
 	# quel: q < mode or q = mode = max 
@@ -80,13 +82,14 @@ ptriang <- function(q,min=-1,mode=0,max=1,lower.tail = TRUE, log.p = FALSE, mean
     
   } else {mode <- as.vector(mode)}
   
-  qmaxmode <- (abs(q-max) == 0) & (abs(max-mode) == 0) 
+  # quel: q < mode or q = mode = max 
+  qmaxmode <-  q >= max & mode >= max # to avoid some rounding errors
 	quel <- (q < mode) | qmaxmode  
 	p <- ifelse(quel,
               (q-min)^2 / ((mode-min)*(max-min)),
 	             1 - ((max-q)^2/((max-mode)*(max-min))))
 	#if q = max = mode = min
-	qminmodemax <- qmaxmode & (abs(q - min) == 0)
+	qminmodemax <- qmaxmode & q <= min
 	p[qminmodemax] <- 1
 
 	p[q < min] <- 0
@@ -98,6 +101,7 @@ ptriang <- function(q,min=-1,mode=0,max=1,lower.tail = TRUE, log.p = FALSE, mean
   return(p)}
 
 #' @rdname triangular
+
 qtriang <- function(p, min=-1, mode=0, max=1, lower.tail=TRUE, log.p=FALSE, mean = 0){
   if (length(p) == 0) 
     return(numeric(0))
@@ -125,7 +129,8 @@ qtriang <- function(p, min=-1, mode=0, max=1, lower.tail=TRUE, log.p=FALSE, mean
   quel <- p <= (mode - min)/(max - min)
   q <- ifelse(quel, min + sqrt(p * (mode - min) * (max - min)), 
               max - sqrt((1 - p) * (max - min) * (max - mode)))
-  minmodemax <- (abs(min - max) == 0)
+  #if max = mode = min
+  minmodemax <- min >= max # Avoid some rounding errors
   q <- ifelse(minmodemax, min, q)
   q[p < 0 | p > 1] <- NaN
   q[mode < min | max < mode] <- NaN
