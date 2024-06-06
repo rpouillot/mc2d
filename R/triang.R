@@ -47,7 +47,7 @@ dtriang <- function(x, min=-1, mode=0, max=1, log=FALSE, mean = 0){
   } else {mode <- as.vector(mode)}
   
 	# quel: x < mode or x = mode = max 
-	xmaxmode <- (abs(x-max) < (.Machine$double.eps^0.5)) & (abs(max-mode) < (.Machine$double.eps^0.5)) 
+	xmaxmode <-  (abs(x - max) == 0) & (abs(max - mode) == 0)
 	quel <- (x < mode) | xmaxmode  
 	d <- ifelse(quel,
               2*(x-min)/((mode-min)*(max-min)),
@@ -57,7 +57,7 @@ dtriang <- function(x, min=-1, mode=0, max=1, log=FALSE, mean = 0){
 	d[mode < min | max < mode] <- NaN
 
 	# For min = mode = max: provide an error like in dunif
-	xminmodemax <- (abs(min-max)) < (.Machine$double.eps^0.5)
+	xminmodemax <- abs(min-max) == 0
 	d[xminmodemax] <- NaN
 	
 	if(log) d <- log(d)
@@ -80,13 +80,13 @@ ptriang <- function(q,min=-1,mode=0,max=1,lower.tail = TRUE, log.p = FALSE, mean
     
   } else {mode <- as.vector(mode)}
   
-  qmaxmode <- (abs(q-max) < (.Machine$double.eps^0.5)) & (abs(max-mode) < (.Machine$double.eps^0.5)) 
+  qmaxmode <- (abs(q-max) == 0) & (abs(max-mode) == 0) 
 	quel <- (q < mode) | qmaxmode  
 	p <- ifelse(quel,
               (q-min)^2 / ((mode-min)*(max-min)),
 	             1 - ((max-q)^2/((max-mode)*(max-min))))
 	#if q = max = mode = min
-	qminmodemax <- qmaxmode & (abs(q - min) < .Machine$double.eps^0.5)
+	qminmodemax <- qmaxmode & (abs(q - min) == 0)
 	p[qminmodemax] <- 1
 
 	p[q < min] <- 0
@@ -125,7 +125,7 @@ qtriang <- function(p, min=-1, mode=0, max=1, lower.tail=TRUE, log.p=FALSE, mean
   quel <- p <= (mode - min)/(max - min)
   q <- ifelse(quel, min + sqrt(p * (mode - min) * (max - min)), 
               max - sqrt((1 - p) * (max - min) * (max - mode)))
-  minmodemax <- (abs(min - max) < (.Machine$double.eps^0.5))
+  minmodemax <- (abs(min - max) == 0)
   q <- ifelse(minmodemax, min, q)
   q[p < 0 | p > 1] <- NaN
   q[mode < min | max < mode] <- NaN

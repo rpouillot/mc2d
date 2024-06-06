@@ -1,5 +1,19 @@
 === mc2d ===
 
+Version 0.2-1
+=============
+
+BUG FIX
+- a bug in ggtornado
+- an issue in pert and triangular distribution when min, mode and max were
+  < .Machine$double.eps^0.5
+
+NEW FUNCTIONS
+
+- spaghetti (and ggplot2 version "ggspaghetti"): plot a spaghetti plot (method for mc or mcnode objects)
+- gghist : equivalent to hist, in the gglplot2 framwork (method for mc or mcnode objects)
+- ggplotmc : equivalent to plot, in the gglplot2 framwork (method for mc or mcnode objects)
+
 Version 0.2-0
 =============
 
