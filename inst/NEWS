@@ -1,5 +1,12 @@
 === mc2d ===
 
+Version 0.2-2
+=============
+
+BUG FIX
+- a bug in extractvar (didn't work for "U" or"V" nodes)
+- a bug in summary.mc (digits = 3 was hard coded)
+
 Version 0.2-1
 =============
 
