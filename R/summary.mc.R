@@ -138,7 +138,7 @@ summary.mcnode <- function(object,probs = c(0,0.025,0.25,0.5,0.75,0.975,1),lim=c
 #ISALIAS summary.mc
 #--------------------------------------------
 {
-  summary.mc(list(node=object), probs = probs, lim=lim, digits = 3,... )
+  summary.mc(list(node=object), probs = probs, lim=lim, digits = digits,... )
 }
 
 #<<BEGIN>>
