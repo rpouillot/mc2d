@@ -1,39 +1,32 @@
-#<<BEGIN>>
+#' Summary of mcnode and mc Object
+#'
+#' Provides a summary of a \samp{mcnode}, a \samp{mc} or a \samp{mccut} object.
+#'
+#' The mean, the standard deviation and the \samp{probs} quantiles will be evaluated in the
+#' variability dimension. The median, the mean and the \samp{lim} quantiles will then be
+#' evaluated on these statistics in the uncertainty dimension.
+#'
+#' For multivariate nodes: if the \samp{"outm"} attribute is \samp{"none"}, the node is not
+#' evaluated; if it is \samp{"each"}, the variates are evaluated one by one; if it is a function
+#' name (e.g. \samp{"mean"}), that function is applied on the variates dimension before output.
+#'
+#' @param object a \samp{mcnode}, \samp{mc} or \samp{mccut} object.
+#' @param x a \samp{summary.mc} object as returned by the \samp{summary.mc} function.
+#' @param probs a vector of values used for the quantile function (variability dimension).
+#' @param lim a vector of values used for the quantile function (uncertainty dimension).
+#' @param digits number of digits in the print.
+#' @param ... for generic function consistency.
+#' @return a list.
+#' @seealso \code{\link{mcnode}} for mcnode objects, \code{\link{mc}} for mc objects,
+#'   \code{\link{mccut}} for mccut objects, \code{\link{quantile}}.
+#' @keywords univar
+#' @name summary.mc
+#' @examples
+#' data(total)
+#' summary(xVUM3)
+#' summary(total)
+#' @export
 summary.mc <- function(object,probs = c(0,0.025,0.25,0.5,0.75,0.975,1),lim=c(0.025,0.975),...)
-#TITLE Summary of mcnode and mc Object
-#DESCRIPTION
-# Provides a summary of a \samp{mcnode}, a \samp{mc} or a \samp{mccut} object.
-#KEYWORDS univar
-#INPUTS
-#{object}<<a \samp{mcnode} or a \samp{mc} object or a \samp{mccut} object.>>
-#{x}<<A \samp{summary.mc} object as provided by the \samp{summary.mc} function.>>
-#[INPUTS]
-#{probs}<<A vector of values used for the quantile function (variability dimension).>>
-#{digits}<<Number of digits in the print.>>
-#{lim}<<A vector of values used for the quantile function (uncertainty dimension).>>
-#{\dots}<<For generic functions consistency.>>
-#VALUE
-#a list.
-#DETAILS
-#The mean, the standard deviation and the \samp{probs} quantiles will be evaluated in the variability dimension.
-#The median, the mean and the \samp{lim} quantiles will then be evaluated on these statistics in the uncertainty dimension.
-#
-#Multivariate nodes:
-#
-#If the \samp{"outm"} attributes of the mcnode is "none", the node is not evaluated, if it is "each"
-#the variates are evaluated one by one, if it is a function (e.g. "mean"), the function is applied on the
-#\samp{nvariates} dimension before providing a classical output.
-#
-#SEE ALSO
-# \code{\link{mcnode}} for mcnode objects, \code{\link{mc}} for mc objects, \code{\link{mccut}} for mccut objects, \code{\link{quantile}}
-#EXAMPLE
-#data(total)
-#summary(xVUM3)
-#summary(total)
-
-#CREATED 08-01-25
-#REVISED 08-01-25
-#--------------------------------------------
 {
   yaprob <- length(probs) > 0
   if(yaprob) {nom1 <- paste(probs*100,"%",sep="")
@@ -128,26 +121,18 @@ summary.mc <- function(object,probs = c(0,0.025,0.25,0.5,0.75,0.975,1),lim=c(0.0
 
   return(output)
 }
-#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-
-
-
-#<<BEGIN>>
+#' @rdname summary.mc
+#' @export
 summary.mcnode <- function(object,probs = c(0,0.025,0.25,0.5,0.75,0.975,1),lim=c(0.025,0.975),digits = 3,...)
-#ISALIAS summary.mc
-#--------------------------------------------
 {
   summary.mc(list(node=object), probs = probs, lim=lim, digits = digits,... )
 }
 
-#<<BEGIN>>
+#' @rdname summary.mc
+#' @export
 print.summary.mc <- function(x,digits=3,...)
-#ISALIAS summary.mc
-#--------------------------------------------
 {
   x <- lapply(x,function(y) if(is.list(y)) lapply(y,"attr<-","type",NULL) else {attr(y,"type") <- NULL;y})
   NextMethod(x,digits=digits,...)
   }
-#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-

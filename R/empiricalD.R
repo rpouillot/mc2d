@@ -1,64 +1,51 @@
-#<<BEGIN>>
+#' The Discrete Empirical Distribution
+#'
+#' Density, distribution function, quantile function and random generation for a discrete
+#' empirical distribution. This function is vectorized to accept different sets of
+#' \samp{values} or \samp{prob}.
+#'
+#' If \samp{prob} is missing, the discrete distribution is obtained directly from the
+#' vector of \samp{values}, otherwise \samp{prob} is used to weight the values.
+#' \samp{prob} is normalized before use. Thus, \samp{prob} may be the count of each
+#' \samp{values}. \samp{prob} values should be non negative and their sum should not be 0.
+#'
+#' \samp{values} and/or \samp{prob} may vary: in that case, \samp{values} and/or \samp{prob}
+#' should be sent as matrices, the first row being used for the first element of \samp{x},
+#' \samp{q}, \samp{p} or the first random value, the second row for the second element, ...
+#' Recycling is permitted if the number of rows of \samp{prob} and \samp{values} are equal
+#' or if the number of rows of \samp{prob} and/or \samp{values} is one.
+#'
+#' \samp{rempiricalD(n, values, prob)} with \samp{values} and \samp{prob} as vectors is
+#' equivalent to \samp{sample(x=values, size=n, replace=TRUE, prob=prob)}.
+#'
+#' @note In the future, the functions should be written for non numerical values.
+#'
+#' @param x,q vector of quantiles.
+#' @param p vector of probabilities.
+#' @param n number of random values. If \samp{length(n) > 1}, the length is taken to be
+#'   the number required.
+#' @param values vector or matrix of numerical values. See details.
+#' @param prob optional vector or matrix of counts or probabilities. See details.
+#' @param log,log.p logical; if \samp{TRUE}, probabilities \samp{p} are given as \samp{log(p)}.
+#' @param lower.tail logical; if \samp{TRUE} (default), probabilities are \samp{P[X <= x]},
+#'   otherwise, \samp{P[X > x]}.
+#' @return \samp{dempiricalD} gives the density, \samp{pempiricalD} gives the distribution
+#' function, \samp{qempiricalD} gives the quantile function and \samp{rempiricalD} generates
+#' random deviates.
+#' @seealso \code{\link{sample}}, \code{\link{empiricalC}}.
+#' @keywords distribution
+#' @name empiricalD
+#' @examples
+#' dempiricalD(1:6, 2:6, prob=c(10, 10, 70, 0, 10))
+#' pempiricalD(1:6, 2:6, prob=c(10, 10, 70, 0, 10))
+#' qempiricalD(seq(0, 1, 0.1), 2:6, prob=c(10, 10, 70, 0, 10))
+#' table(rempiricalD(10000, 2:6, prob=c(10, 10, 70, 0, 10)))
+#'
+#' ## Varying values
+#' (values <- matrix(1:10, ncol=5))
+#' dempiricalD(c(1, 1), values)
+#' @export
 dempiricalD <- function(x,values,prob=NULL,log=FALSE)
-#TITLE The Discrete Empirical Distribution
-#NAME empiricalD
-#KEYWORDS distribution
-#DESCRIPTION
-#Density, distribution function and random generation
-#for a discrete empirical distribution. This function is vectorized to accept
-#different sets of \samp{values} or \samp{prob}.
-#INPUTS
-#{x, q}<<Vector of quantiles.>>
-#{p}<<Vector of probabilities.>>
-#{n}<<Number of random values. If length(n) > 1, the length is taken to be the number required.>>
-#{values}<<Vector or matrix of numerical values. See details.>>
-#[INPUTS]
-#{prob}<<Optional vector or matrix of count or probabilities. See details.>>
-#{log, log.p}<<logical; if \samp{TRUE}, probabilities \samp{p} are given as \samp{log(p)}.>>
-#{lower.tail}<<logical; if \samp{TRUE} (default), probabilities are \samp{P[X <= x]}, otherwise, \samp{P[X > x]}.>>
-#DETAILS
-#If \samp{prob} is missing, the discrete distribution is obtained directly from the vector of \samp{values},
-#otherwise \samp{prob} is used to weight the values. \samp{prob} is normalized before use. Thus, \samp{prob}
-#may be the count of each \samp{values}. \samp{prob} values should be non negative and their sum should not be 0.</>
-#\samp{values} and/or \samp{prob} may vary: in that case, \samp{values} and/or \samp{prob} should be sent
-#as matrixes, the first row being used for the first element of \samp{x}, \samp{q}, \samp{p} or the first random value, the
-#second row for the second element of \samp{x}, \samp{q}, \samp{p} or random value, ...
-#Recycling is permitted if the number of rows of \samp{prob} and \samp{values} are equal or
-#if the number of rows of \samp{prob} and/or \samp{values} are one.</>
-#\samp{rempiricalD(n, values, prob)} with \samp{values} and \samp{prob} as vectors
-#is equivalent to \samp{sample(x=values, size=n, replace=TRUE, prob=prob)}.
-#NOTE
-#In the future, the functions should be written for non numerical values.
-#SEE ALSO
-#\code{\link{sample}}.
-#\code{\link{empiricalC}}.
-#VALUE
-#\samp{dempiricalD} gives the density, \samp{pempiricalD} gives the distribution function,
-#\samp{qempiricalD} gives the quantile function and \samp{rempiricalD} generates random deviates.
-#EXAMPLE
-#dempiricalD(1:6,2:6,prob=c(10,10,70,0,10))
-#pempiricalD(1:6,2:6,prob=c(10,10,70,0,10))
-#qempiricalD(seq(0,1,0.1),2:6,prob=c(10,10,70,0,10))
-#table(rempiricalD(10000,2:6,prob=c(10,10,70,0,10)))
-#
-### Varying values
-#(values <- matrix(1:10,ncol=5))
-### the first x apply to the first row : p = 0.2
-### the second x to the second one: p = 0
-#dempiricalD(c(1,1),values)
-#
-#
-###Use with mc2d
-###Non Parameteric Bootstrap
-#val <- c(100, 150, 170, 200)
-#pr <- c(6, 12, 6, 6)
-#out <- c("min", "mean", "max")
-###First Bootstrap in the uncertainty dimension
-#(x <- mcstoc(rempiricalD, type = "U", outm = out, nvariates = 30, values = val, prob = pr))
-###Second one in the variability dimension
-#mcstoc(rempiricalD, type = "VU", values = x)
-#CREATED 08-06-15
-#--------------------------------------------
 {
   if(length(x) == 0) return(numeric(0))
   if(is.vector(values)) values <- matrix(values,nrow=1)
@@ -112,10 +99,9 @@ dempiricalD <- function(x,values,prob=NULL,log=FALSE)
   if(log) res <- log(res)
   return(res)}
 
-#<<BEGIN>>
+#' @rdname empiricalD
+#' @export
 pempiricalD <- function(q,values,prob=NULL,lower.tail = TRUE, log.p = FALSE)
-#ISALIAS dempiricalD
-#--------------------------------------------
 {
   if(length(q) == 0) return(numeric(0))
   if(is.vector(values)) values <- matrix(values,nrow=1)
@@ -169,11 +155,9 @@ pempiricalD <- function(q,values,prob=NULL,lower.tail = TRUE, log.p = FALSE)
   if(log.p) res <- log(res)
   return(res)}
 
-
-#<<BEGIN>>
+#' @rdname empiricalD
+#' @export
 qempiricalD <- function(p,values,prob=NULL,lower.tail = TRUE, log.p = FALSE)
-#ISALIAS dempiricalD
-#--------------------------------------------
 {
   if(length(p) == 0) return(numeric(0))
   if(is.vector(values)) values <- matrix(values,nrow=1)
@@ -227,16 +211,15 @@ qempiricalD <- function(p,values,prob=NULL,lower.tail = TRUE, log.p = FALSE)
   return(res)
 }
 
-#<<BEGIN>>
+#' @rdname empiricalD
+#' @export
 rempiricalD <- function(n,values,prob=NULL)
-#ISALIAS dempiricalD
-#--------------------------------------------
 {
   if(length(n) > 1) n <- length(n)
   if(length(n) == 0 || as.integer(n) == 0) return(numeric(0))
   n <- as.integer(n)
   if(n < 0) stop("integer(n) cannot be negative in rempiricalD")
- 
+
   if(is.vector(values)) values <- matrix(values,nrow=1)
   if(is.null(prob))     prob <- rep(1,length(values[1,]))
   if(is.vector(prob))   prob <- matrix(prob,nrow=1)
@@ -267,4 +250,3 @@ rempiricalD <- function(n,values,prob=NULL)
     res <- c(res,mapply(sample,x=values[1:n2],prob=prob[1:n2],MoreArgs=list(size=1,replace=TRUE)))
   return(as.vector(res))
 }
-

@@ -44,7 +44,7 @@ gghist <- function(x,...){
 
 #' @rdname gghist
 #' @method gghist mcnode
-#' @exportS3Method gghist mcnode
+#' @export
 gghist.mcnode <- function(x, griddim = NULL, xlab = names(x),ylab = "Frequency", main = "", bins=30, which=NULL,...)
 {
   
@@ -130,7 +130,7 @@ gghist.mcnode <- function(x, griddim = NULL, xlab = names(x),ylab = "Frequency",
 
 #' @rdname gghist
 #' @method gghist mc
-#' @exportS3Method gghist mc
+#' @export
 gghist.mc <- function(x, griddim = NULL, xlab = names(x),ylab = "Frequency", main = "", bins=30, ...)
 {
   if(!inherits(x,"mc")) stop("Please input mc object data")

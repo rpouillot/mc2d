@@ -1,55 +1,41 @@
-#<<BEGIN>>
+#' Computes Correlation Between Inputs and Output in the Variability Dimension (Tornado)
+#'
+#' Provides statistics for a tornado chart. Evaluates correlations between output and inputs
+#' of a \samp{mc} object in the variability dimension.
+#'
+#' The tornado function computes Spearman's rho statistic to estimate a rank-based measure
+#' of association between one set of random variables of a \samp{mc} object (the output)
+#' and the others (the inputs).
+#'
+#' \samp{tornado} may be applied on a \samp{mccut} object if a \samp{tornado} function was
+#' used in the third block of the \code{\link{evalmccut}} call.
+#'
+#' Type rules for the output node:
+#' \itemize{
+#'   \item \samp{"V" mcnode}: correlations are only provided for other \samp{"V" mcnode}s.
+#'   \item \samp{"VU" mcnode}: correlations are provided for other \samp{"VU"} and \samp{"V"} nodes.
+#' }
+#'
+#' @param mc a \code{\link{mc}} or \code{\link{mccut}} object.
+#' @param x a \samp{tornado} object.
+#' @param output the rank or name of the output to be considered. By default: the last element.
+#' @param use an optional character string for computing covariances in the presence of
+#'   missing values: \samp{"all.obs"}, \samp{"complete.obs"} or \samp{"pairwise.complete.obs"}.
+#' @param method a character string for the correlation coefficient: \samp{"spearman"}
+#'   (default), \samp{"kendall"} or \samp{"pearson"}.
+#' @param lim a vector of quantiles used to compute the credible interval.
+#' @param ... further arguments to be passed to the final print function.
+#' @return an invisible object of class \samp{tornado}, containing: \samp{value} (correlation
+#'   coefficients), \samp{output} (name of output), \samp{method}, \samp{use}.
+#' @seealso \code{\link{cor}}, \code{\link{plot.tornado}} to draw the results.
+#' @keywords univar
+#' @examples
+#' data(total)
+#' tornado(total, 2, "complete.obs", "spearman", c(0.025, 0.975))
+#' (y <- tornado(total, 10, "complete.obs", "spearman", c(0.025, 0.975)))
+#' plot(y)
+#' @export
 tornado <- function(mc,output = length(mc),use = "all.obs",	method=c("spearman","kendall","pearson"),lim=c(0.025,0.975))
-#TITLE Computes Correlation between Inputs and Output in a mc Object (tornado) in the Variability Dimension;
-#DESCRIPTION Provides statistics for a tornado chart. Evaluates correlations between output and inputs of a \samp{mc} object.
-#KEYWORDS univar
-#INPUTS
-#{mc}<<a \code{\link{mc}} object or a \code{\link{mccut}} object.>>
-#{x}<<A \samp{tornado} object as provided by the \samp{tornado} function.>>
-#[INPUTS]
-#{output}<<(for \samp{mc} objects only). The rank or the name of the output to be considered. By default: the last element of the \samp{mc}.>>
-#{use}<<(for \samp{mc} objects only). An optional character string giving a method for computing covariances in the presence of missing values. This must be (an abbreviation of) one of the strings "all.obs", "complete.obs" or "pairwise.complete.obs" (see \code{\link{cor}}).>>
-#{method}<<(for \samp{mc} objects only). A character string indicating which correlation coefficient (or covariance) is to be computed. One of "spearman" (default), "kendall" or "pearson", can be abbreviated (see \code{\link{cor}}). Warning : the default is not the same in \code{\link{cor}}.>>
-#{lim}<<A vector of quantiles used to compute the credible interval in two-dimensional models.>>
-#{\dots}<<Further arguments to be passed to the final print function.>>
-#DETAILS
-# The tornado function computes the spearman's rho statistic. It is used to estimate a rank-based measure of association between one set of 
-#random variable of a \samp{mc} object (the output) and the others (the inputs).</>
-#\samp{tornado} may be applied on a \samp{mccut} object if a \samp{tornado} function was used in the third block of the
-#\code{\link{evalmccut}} call.
-#VALUE
-#An invisible object of class tornado.
-#A tornado object is a list of objects containing the following objects:
-#{value}<<the value of correlation coefficients>>
-#{output}<<the name of the output>>
-#{method}<<the method used>>
-#{use}<<the use parameter>>
-#DETAILS
-#If "output" refers to a \samp{"0" mcnode}, it is an error.
-#If "output" refers to a \samp{"V" mcnode}, correlations are only provided for other \samp{"V" mcnode}s.
-#If "output" refers to a \samp{"U" mcnode}, correlations are only provided for other \samp{"U" mcnode}s.
-#If "output" refers to a \samp{"VU" mcnode}, correlations are only provided for other \samp{"VU" mcnode}s and \samp{"V" mcnode}s.
-#
-#If use is "all.obs", then the presence of missing observations will produce an error.
-#If use is "complete.obs" then missing values are handled by casewise deletion.
-#Finally, if use has the value "pairwise.complete.obs" then the correlation between each pair of variables
-#is computed using all complete pairs of observations on those variables.
-#SEE ALSO
-# \code{\link{cor}}.</>
-# \code{\link{plot.tornado}} to draw the results.</>
-#EXAMPLE
-#data(total)
-#tornado(total,2,"complete.obs","spearman",c(0.025,0.975))
-#tornado(total,4,"pairwise.complete.obs","spearman",c(0.025,0.975))
-#tornado(total,6,"complete.obs","kendall",c(0.025,0.975))
-#tornado(total,8,"complete.obs","spearman",c(0.025,0.975))
-#(y <- tornado(total,10,"complete.obs","spearman",c(0.025,0.975)))
-#plot(y)
-
-#CREATED 07-08-01
-#REVISED 07-08-01
-#--------------------------------------------
-#
 {
   if(inherits(mc,"mccut")){
     summ <- function(x) {
@@ -62,7 +48,7 @@ tornado <- function(mc,output = length(mc),use = "all.obs",	method=c("spearman",
     class(mc) <- "tornado"
     return(mc)
   }
-  
+
 	method <- match.arg(method)
  	na.method <- pmatch(use, lesmet <- c("all.obs", "complete.obs", "pairwise.complete.obs"))
 
@@ -90,8 +76,8 @@ tornado <- function(mc,output = length(mc),use = "all.obs",	method=c("spearman",
   nom <- names(mc)
   nomi <- nom[nom != output]
 
-  
-  
+
+
   # Which row are complete
   quelk <- !apply(sapply(mc,function(x) apply(x,1,function(x) any(is.na(x)))),1,any)
 
@@ -143,14 +129,6 @@ tornado <- function(mc,output = length(mc),use = "all.obs",	method=c("spearman",
    sapply(1:nco,function(y) cor(out[,y,],inp[,ifelse(nunci==1,1,y),],method=method,use=use))
   }
 
-# Alternative bien plus lente  
-#  calcorr <- function(inp,out){
-#    nunci <- dim(inp)[2]
-#    res <- cor(out[,,1],inp[,,1],method=method,use=use)
-#    if(nunci==1) return(as.vector(res))
-#    return(diag(res))
-#    }
-
   if(!is.list(out)) out <- list(out)
   res <- rapply(out,function(x) matrix(rapply(mc,calcorr,how="unlist",out=x),nrow=nco,dimnames=list(NULL,nomin)),how="replace")
 
@@ -166,25 +144,18 @@ tornado <- function(mc,output = length(mc),use = "all.obs",	method=c("spearman",
 
   names(res) <- nomout
 
-  
+
   tc <- list(value = res, output = output, method = method, use = use)
 	class(tc) <- "tornado"
   return(tc)
 	}
 
-#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-
-#<<BEGIN>>
+#' @rdname tornado
+#' @export
 print.tornado <- function(x, ...)
-#ISALIAS tornado
-#--------------------------------------------
 {	tmethod <- c("Spearman's rho statistic","Kendall's tau statistic","Pearson correlation")
 	tmethod <- tmethod[x$method==c("spearman","kendall","pearson")]
   cat(tmethod,"\n")
 	cat("Output: ",x$output,"\n")
 	print(x$value,...)
  }
-#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-

@@ -1,74 +1,47 @@
-#<<BEGIN>>
-tornadounc <- function(mc,...) 
-#ISALIAS tornadounc.mc
-#--------------------------------------------
+#' Computes Correlation Between Inputs and Output in the Uncertainty Dimension (Tornado)
+#'
+#' Provides statistics for a tornado chart. Evaluates correlations between output and inputs
+#' of a \samp{mc} object in the uncertainty dimension.
+#'
+#' The function computes Spearman's rho statistic between values or statistics calculated in
+#' the variability dimension of inputs and outputs. The statistics are the mean, the standard
+#' deviation and the quantiles specified by \samp{quant}.
+#'
+#' \samp{tornadounc.mccut} may be applied on a \code{\link{mccut}} object if a
+#' \samp{summary.mc} function was used in the third block of the \code{\link{evalmccut}} call.
+#'
+#' @param mc a \samp{mc} object.
+#' @param x a \samp{tornadounc} object.
+#' @param output the rank or name of the output. Should be a \samp{"VU"} or \samp{"U"} node.
+#'   By default: the last element.
+#' @param quant the vector of quantiles used in the variability dimension.
+#' @param use an optional character string for computing covariances in presence of missing
+#'   values: \samp{"all.obs"}, \samp{"complete.obs"} or \samp{"pairwise.complete.obs"}.
+#' @param method a character string for the correlation coefficient: \samp{"spearman"}
+#'   (default), \samp{"kendall"} or \samp{"pearson"}.
+#' @param ... further arguments to be passed to the final print function.
+#' @return an invisible object of class \samp{tornadounc}.
+#' @seealso \code{\link{cor}}, \code{\link{tornado}} for variability dimension,
+#'   \code{\link{plot.tornadounc}} to draw the results.
+#' @keywords univar
+#' @name tornadounc
+#' @examples
+#' data(total)
+#' tornadounc(total, 3)
+#' (y <- tornadounc(total, 10, use="complete.obs"))
+#' plot(y, 1, 1)
+#' @export
+tornadounc <- function(mc,...)
  UseMethod("tornadounc")
-#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-#<<BEGIN>>
-tornadounc.default <- function(mc,...) 
-#ISALIAS tornadounc.mc
-#--------------------------------------------
+#' @rdname tornadounc
+#' @export
+tornadounc.default <- function(mc,...)
  tornadounc.mc(mc,...)
-#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-#<<BEGIN>>
+#' @rdname tornadounc
+#' @export
 tornadounc.mc <- function(mc,output = length(mc), quant=c(0.5,0.75,0.975),use = "all.obs",	method=c("spearman","kendall","pearson"),...)
-#TITLE Computes Correlation between Inputs and Output in a mc Object (tornado) in the Uncertainty Dimension
-#KEYWORDS univar
-#NAME tornadounc
-#DESCRIPTION Provides statistics for a tornado chart. Evaluates correlations between output and inputs of a \samp{mc} object in the uncertainty dimension.
-#INPUTS
-#{mc}<<a \samp{mc} object.>>
-#{x}<<a \samp{tornadounc} object.>>
-#[INPUTS]
-#{output}<<The rank or the name of the output to be considered. Should be a \samp{"VU"} or a \samp{"U" type mcnode}. By default: the last element of \samp{mc}.>>
-#{quant}<<The vector of quantiles used in the variability dimension.>>
-#{use}<<An optional character string giving a method for computing covariances in the presence of missing values. This must be (an abbreviation of) one of the strings "all.obs", "complete.obs" or "pairwise.complete.obs" (see \code{\link{cor}}).>>
-#{method}<<A character string indicating which correlation coefficient (or covariance) is to be computed. One of "spearman" (default), "kendall" or "pearson", can be abbreviated (see \code{\link{cor}}). Warning : "pearson" is the default for \code{\link{cor}}).>>
-#{\dots}<<Further arguments to be passed to the final print function.>>
-#DETAILS
-# The \samp{tornadounc.mc} function computes the spearman's rho statistic between 
-#{*}<<values (\samp{"U" type mcnode}) or statistics calculated in the variability dimension (\samp{"VU" type mcnode}) of inputs and>>
-#{*}<<values (\samp{"U" type mcnode}) or statistics calculated in the variability dimension (\samp{"VU" type mcnode}) of one output.>>
-#The statistics are the mean, the median and the quantiles specified by \samp{quant}.
-#
-#It is useful to estimate a rank-based measure of association between one set of
-# random variable of a \samp{mc} object (the output) and the others in the uncertainty dimension.</>
-#\samp{tornadounc.mccut} may be applied on a \code{\link{mccut}} object if a \samp{summary.mc} function was used in the third block of the
-#\code{\link{evalmccut}} call.
-#
-#If output refers to a \samp{"0"} or \samp{"V" mcnode}, it is an error.
-#
-#If use is "all.obs", then the presence of missing observations will produce an error.
-#If use is "complete.obs" then missing values are handled by casewise deletion.
-#Finally, if use has the value "pairwise.complete.obs" then the correlation between each pair of variables
-#is computed using all complete pairs of observations on those variables.
-#VALUE
-#An invisible object of class \samp{tornadounc}.
-#A \samp{tornadounc} object is a list of objects containing the following objects:
-#{value}<<a matrix of values of correlation coefficients. Each row are the value
-#or the statistics of inputs, each columns the value or the statistics of outputs.>>
-#{output}<<the name of the output>>
-#{method}<<the method used>>
-#{use}<<the \samp{use} parameter>>
-#SEE ALSO
-# \code{\link{cor}}.</>
-# \code{\link{tornado}} for tornado in the variability dimension.</>
-# \code{\link{plot.tornadounc}} to draw the results.</>
-#EXAMPLE
-#data(total)
-#tornadounc(total,3)
-#tornadounc(total,4,use="complete")
-#tornadounc(total,7,use="complete.obs")
-#tornadounc(total,8,use="complete.obs")
-#(y <- tornadounc(total,10,use="complete.obs"))
-#plot(y,1,1)
-
-#CREATED 07-08-01
-#REVISED 07-08-01
-#--------------------------------------------
-#
 {
 	method <- match.arg(method)
  	na.method <- pmatch(use, lesmet <- c("all.obs", "complete.obs", "pairwise.complete.obs"))
@@ -108,7 +81,7 @@ tornadounc.mc <- function(mc,output = length(mc), quant=c(0.5,0.75,0.975),use = 
   }
 
   # Real name of input / output
-  
+
   yaprob <- length(quant) > 0
   if(yaprob) {nom1 <- paste(quant*100,"%",sep="")
   	nom1[quant==0] <- "Min"
@@ -168,7 +141,7 @@ tornadounc.mc <- function(mc,output = length(mc), quant=c(0.5,0.75,0.975),use = 
 
   nomin <- unlist(nomsortie[nomi])
   mc <- matrix(unlist(mc[nomi]),nrow=nco)
-  
+
   lescorr <- mapply(function(x) as.matrix(cor(x,mc,method=method,use=use)),out,SIMPLIFY=FALSE)
   lescorr <- lapply(lescorr,"colnames<-",value=nomin)
   lescorr <- mapply("rownames<-",lescorr,value=nomout,SIMPLIFY=FALSE,USE.NAMES=TRUE)
@@ -179,12 +152,9 @@ tornadounc.mc <- function(mc,output = length(mc), quant=c(0.5,0.75,0.975),use = 
   return(tc)
 	}
 
-#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-#<<BEGIN>>
+#' @rdname tornadounc
+#' @export
 print.tornadounc <- function(x, ...)
-#ISALIAS tornadounc.mc
-#--------------------------------------------
 {
 tmethod <- c("Spearman's rho statistic","Kendall's tau statistic","Pearson correlation")
 	tmethod <- tmethod[x$method==c("spearman","kendall","pearson")]
@@ -193,5 +163,3 @@ tmethod <- c("Spearman's rho statistic","Kendall's tau statistic","Pearson corre
 	cat("Output: ",x$output,"\n")
 	print(x$value,...)
  }
-#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-

@@ -59,17 +59,16 @@ Density, distribution function, quantile function and random generation for a lo
 arithmetic mean equals to \samp{mean} and standard deviation equals to \samp{sd}.
 }
 \details{
-This function calls the corresponding density, distribution function, quantile function and random generation 
-from the log normal (see \code{\link[stats]{Lognormal}}) after evaluation of \eqn{meanlog = log(mean^2 / sqrt(sd^2+mean^2))} and
-\eqn{sqrt{(log(1+sd^2/mean^2))}}
+This function calls the corresponding density, distribution function, quantile function and random generation
+from the log normal (see \code{\link[stats]{Lognormal}}) after evaluation of \eqn{meanlog = log(mean^2 / \sqrt{sd^2+mean^2})} and
+\eqn{sdlog = \sqrt{\log(1 + sd^2/mean^2)}}
 }
 \examples{
-x <- rlnormb(1E5,3,6)
-mean(x) 
+x <- rlnormb(1E5, 3, 6)
+mean(x)
 sd(x)
-dlnormb(1) == dnorm(0)
-dlnormb(1) == dlnorm(1)
-
+dlnormb(1) == dnorm(0)   # TRUE: default params give meanlog=0, sdlog=1
+dlnormb(1) == dlnorm(1)  # TRUE
 }
 \seealso{
 \code{\link[stats]{Lognormal}}

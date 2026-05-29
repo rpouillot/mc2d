@@ -1,39 +1,31 @@
-
-
-#A REVOIR
-#<<BEGIN>>
+#' Apply Functions Over mc or mcnode Objects
+#'
+#' Apply a function on all values or over a given dimension of an \samp{mcnode} object.
+#' May be used for all \samp{mcnode} objects of an \samp{mc} object.
+#'
+#' @param x a \samp{mc} or a \samp{mcnode} object.
+#' @param margin the dimension on which to apply the function. May be \samp{"all"} (default)
+#'   to apply the function on all values, \samp{"var"} to apply on the variability dimension,
+#'   \samp{"unc"} to apply on the uncertainty dimension, or \samp{"variates"} to apply on
+#'   the variates. Note: do not use \samp{"var"} for \samp{"variates"}.
+#' @param fun the function to be applied. When applied to a vector of length \samp{n},
+#'   \samp{fun} should return a vector of length \samp{n} or \samp{1}.
+#' @param ... optional arguments to \samp{fun}.
+#' @return If \samp{fun} returns a vector of length \samp{n} or if \samp{margin="all"},
+#'   the returned \samp{mcnode}s have the same type and dimension as \samp{x}.
+#'   Otherwise, the type of \samp{mcnode} is changed accordingly.
+#' @seealso \code{\link{apply}}, \code{\link{mc}}, \code{\link{mcnode}}.
+#' @keywords misc
+#' @examples
+#' data(total)
+#' xVUM
+#' mcapply(xVUM, "unc", sum)
+#' mcapply(xVUM, "var", sum)
+#' mcapply(xVUM, "all", sum)
+#' mcapply(xVUM, "variates", sum)
+#' mcapply(total, "all", exp)
+#' @export
 mcapply <- function(x, margin=c("all","var","unc","variates"), fun, ...)
-#TITLE Apply Functions Over mc or mcnode Objects
-#DESCRIPTION
-# Apply a function on all values or over a given dimension of an \samp{mcnode} object. May be used for all \samp{mcnode} of an \samp{mc} object.
-#KEYWORDS misc
-#INPUTS
-#{x}<<A \samp{mc} or a \samp{mcnode} object.>>
-#[INPUTS]
-#{margin}<<The dimension on which applying the function.
-#Maybe \samp{"all"} (default) to apply the function on all values,
-#\samp{"var"} to apply the function on the variability dimension,
-#\samp{"unc"} to apply the function on the uncertainty dimension, or
-#\samp{"variates"} to apply the function on the variates. Watch out: do not use 'var' for 'variates'>>
-#{fun}<<The function to be applied.
-#When applied to a vector of length \samp{n}, \samp{fun} should return a vector of length \samp{n} or \samp{1}.>>
-#{\dots}<<Optional arguments to \samp{fun}.>>
-#VALUE
-#If \samp{fun} returns a function of length \samp{n} or if \samp{margin="all"}, the returned \samp{mcnode}s are of type and dimension of \samp{x}.
-#In other cases, the type of \samp{mcnode} is changed.
-#SEE ALSO
-#\code{\link{apply}}, \code{\link{mc}}, \code{\link{mcnode}}.
-#EXAMPLE
-#data(total)
-#xVUM
-#mcapply(xVUM,"unc",sum)
-#mcapply(xVUM,"var",sum)
-#mcapply(xVUM,"all",sum)
-#mcapply(xVUM,"variates",sum)
-#mcapply(total,"all",exp)
-
-#CREATED 08-03-17
-#--------------------------------------------
 {
   margin <- match.arg(margin)
 
@@ -62,13 +54,13 @@ mcapply <- function(x, margin=c("all","var","unc","variates"), fun, ...)
 	}
 
 	if(nl != nlo) stop("fun(x) with length(x) = n should return a vector of length n or 1")
-  
+
   nsu <- ifelse(margin=="unc", 1, dimn[2])
   nsv <- ifelse(margin=="var", 1, dimn[1])
   nva <- ifelse(margin=="variates", 1, dimn[3])
 
   if(typen=="0") ntype <- "0"
-  
+
   else if(typen=="V"){
     if(margin=="var") ntype <- "0"
     else ntype <- "V"}
@@ -83,4 +75,3 @@ mcapply <- function(x, margin=c("all","var","unc","variates"), fun, ...)
 
  return(mcdata(as.vector(dat),type=ntype,nsv=nsv,nsu=nsu,nvariates=nva,outm=oldoutm))
 }
-

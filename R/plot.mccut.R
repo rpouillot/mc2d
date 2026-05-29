@@ -1,7 +1,6 @@
-#<<BEGIN>>
+#' @rdname mccut
+#' @export
 plot.mccut <- function(x, stat = c("median","mean"), lim = c(0.025, 0.25, 0.75, 0.975), griddim = NULL, xlab = names(x), ylab = "Fn(x)", main = "", draw=TRUE, ...)
-#ISALIAS plot.mc
-#--------------------------------------------
 {
   summ <- function(x) c(mean=mean(x,na.rm=TRUE),quantile(x,probs=c(0.5,lim),na.rm=TRUE),Nas=sum(is.na(x)))[c(2,1,3:(length(lim)+3))]
 
@@ -33,14 +32,13 @@ plot.mccut <- function(x, stat = c("median","mean"), lim = c(0.025, 0.25, 0.75, 
     if(type=="U") {
       x <- as.matrix(x)
       colnames(x) <- "NoVar"}
-      
+
       return(x)
   }
 
   x <- mapply(LEQUANT,x,typen)
-  
+
   class(x) <- "plotmc"
   plot.mc(x,stat = stat, lim=lim, griddim = griddim, xlab = xlab, ylab = ylab, main = main, draw=draw, ...)
   return(invisible(x))
 }
-

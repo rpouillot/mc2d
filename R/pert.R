@@ -47,7 +47,7 @@
 #' @return
 #' \samp{dpert} gives the density, \samp{ppert} gives the distribution function,
 #' \samp{qpert} gives the quantile function, and \samp{rpert} generates random deviates.
-
+#' @export
 dpert <- function(x,min=-1,mode=0,max=1,shape=4,log=FALSE, mean = 0){
 	if(length(x) == 0) return(numeric(0))
   if (!missing(mode) && !missing(mean)) stop("specify 'mode' or 'mean' but not both")
@@ -69,8 +69,8 @@ dpert <- function(x,min=-1,mode=0,max=1,shape=4,log=FALSE, mean = 0){
 	a2 <- 1+shape*(max-mode)/(max-min)
 	
 	oldw <- options(warn = -1)
-	d <- (x-min)^(a1-1) * (max-x)^(a2-1) / beta(a=a1,b=a2) / (max-min)^(a1+a2-1)	
-	options(warn = oldw$warn)
+	on.exit(options(oldw), add = TRUE)
+	d <- (x-min)^(a1-1) * (max-x)^(a2-1) / beta(a=a1,b=a2) / (max-min)^(a1+a2-1)
 	
   d[x < min | x > max] <- 0
 	d[mode < min | max < mode] <- NaN
@@ -80,6 +80,7 @@ dpert <- function(x,min=-1,mode=0,max=1,shape=4,log=FALSE, mean = 0){
   return(d)}
 
 #' @rdname pert
+#' @export
 ppert <- function(q,min=-1,mode=0,max=1,shape=4,lower.tail = TRUE, log.p = FALSE, mean = 0){
 	if(length(q) == 0) return(numeric(0))
   if (!missing(mode) && !missing(mean)) stop("specify 'mode' or 'mean' but not both")
@@ -101,8 +102,8 @@ ppert <- function(q,min=-1,mode=0,max=1,shape=4,lower.tail = TRUE, log.p = FALSE
 	a2 <- 1+shape*(max-mode)/(max-min)
   
 	oldw <- options(warn = -1)
+	on.exit(options(oldw), add = TRUE)
 	p <- pbeta(q=(q-min)/(max-min),shape1=a1,shape2=a2)
-	options(warn = oldw$warn)
 	
   p[q < min] <- 0
 	p[q >= max] <- 1
@@ -115,6 +116,7 @@ ppert <- function(q,min=-1,mode=0,max=1,shape=4,lower.tail = TRUE, log.p = FALSE
   return(p)}
 
 #' @rdname pert
+#' @export
 qpert <- function(p, min=-1, mode=0, max=1, shape=4, lower.tail=TRUE, log.p=FALSE, mean=0){
     if (length(p) == 0) 
       return(numeric(0))
@@ -146,8 +148,8 @@ qpert <- function(p, min=-1, mode=0, max=1, shape=4, lower.tail=TRUE, log.p=FALS
     a1 <- 1 + shape * (mode - min)/(max - min)
     a2 <- 1 + shape * (max - mode)/(max - min)
     oldw <- options(warn = -1)
+    on.exit(options(oldw), add = TRUE)
     q <- qbeta(p, shape1 = a1, shape2 = a2)
-    options(warn = oldw$warn)
     q <- q * (max - min) + min
     # Check if min == max, but avoid some of the rounding errors
     minmodemax <- min >= max
@@ -163,6 +165,7 @@ qpert <- function(p, min=-1, mode=0, max=1, shape=4, lower.tail=TRUE, log.p=FALS
 
 
 #' @rdname pert
+#' @export
 rpert <- function(n,min=-1,mode=0,max=1,shape=4, mean=0){
   if (length(n) > 1) 
     n <- length(n)
@@ -187,8 +190,8 @@ rpert <- function(n,min=-1,mode=0,max=1,shape=4, mean=0){
   a1 <- 1 + shape * (mode - min)/(max - min)
   a2 <- 1 + shape * (max - mode)/(max - min)
   oldw <- options(warn = -1)
+  on.exit(options(oldw), add = TRUE)
   r <- rbeta(n, shape1 = a1, shape2 = a2) * (max - min) + min
-  options(warn = oldw$warn)
   # Check if min == max, but avoid some of the rounding errors
   minmodemax <- min >= max
   r <- ifelse(minmodemax, min, r)

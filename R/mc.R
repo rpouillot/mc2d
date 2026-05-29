@@ -1,47 +1,35 @@
-#<<BEGIN>>
+#' Monte Carlo Object
+#'
+#' Creates \samp{mc} objects from \code{\link{mcnode}} or \samp{mc} objects.
+#'
+#' A \samp{mc} object is a list of \code{\link{mcnode}} objects.
+#' \samp{mcnode} objects must be of coherent dimensions.
+#'
+#' If one of the arguments is a \samp{mc} object, the names of its elements are used.
+#' \samp{devname = TRUE} develops the name using the name of the \samp{mc} object as prefix.
+#' Finally, names are made unique.
+#'
+#' @param ... \samp{mcnode} and/or \samp{mc} object(s) to be gathered in a \samp{mc} object,
+#'   separated by a comma.
+#' @param name vector of characters of the same length as the final \samp{mc} object.
+#'   If \samp{NULL}, names are taken from the names of the elements.
+#' @param devname develop the name from the name of the \samp{mc} objects, if any.
+#' @return An object of class \samp{mc}.
+#' @seealso \code{\link{mcnode}}, the basic element of a \samp{mc} object.
+#'   To evaluate \samp{mc} objects: \code{\link{mcmodel}}, \code{\link{evalmcmod}},
+#'   \code{\link{evalmccut}}.
+#'   To study \samp{mc} objects: \code{\link{print.mc}}, \code{\link{summary.mc}},
+#'   \code{\link{plot.mc}}, \code{\link{converg}}, \code{\link{hist.mc}},
+#'   \code{\link{tornado}}, \code{\link{tornadounc}}.
+#' @keywords methods
+#' @examples
+#' x <- mcstoc(runif)
+#' y <- mcdata(3, type = "0")
+#' z <- x * y
+#' (m <- mc(x, y, z, name = c('n1', 'n2', 'n3')))
+#' mc(m, x, devname = TRUE)
+#' @export
 mc <- function(..., name=NULL, devname=FALSE)
-#TITLE Monte Carlo Object
-#DESCRIPTION
-# Creates \samp{mc} objects from \code{\link{mcnode}} or \samp{mc} objects.
-#KEYWORDS methods
-#INPUTS
-#{...}<<\samp{mcnode} and/or \samp{mc} object(s) to be gathered in a \samp{mc} object
-#separated by a coma.>>
-#[INPUTS]
-#{name}<<Vector of character of the same length of the final \samp{mc} object.
-#If NULL, the name will be given from the name of the elements. >>
-#{devname}<<Develop the name from the name of the \samp{mc} objects, if any.>>
-##{remove}<<If \samp{TRUE}, original objects are removed from the parent environment.>>
-#VALUE
-# An object of class \samp{mc}.
-#DETAILS
-#A \samp{mc} object is a list of \code{\link{mcnode}} objects.
-#\samp{mcnode} objects must be of coherent dimensions.
-#
-#If one of the arguments is a \samp{mc} object, the name of the elements of this \samp{mc} object are used.
-#\samp{devname = TRUE} will develop the name, using as a prefix the name of the \samp{mc} object.</>
-#Finally, names are transformed to be unique.
-#SEE ALSO
-#\code{\link{mcnode}}, the basic element of a \samp{mc} object.</>
-#To evaluate \samp{mc} objects: \code{\link{mcmodel}}, \code{\link{evalmcmod}}, \code{\link{evalmccut}}</>
-#Informations about an \samp{mc} object: \code{\link{is.mc}}, \code{\link{dimmc}}</>
-##To apply a function on a \samp{mc} object: \code{\link{mcapply}}</>
-#To study \samp{mc} objects: \code{\link{print.mc}}, \code{\link{summary.mc}}, \code{\link{plot.mc}},
-#\code{\link{converg}}, \code{\link{hist.mc}}, \code{\link{tornado}}, \code{\link{tornadounc.mc}}</>
-##To modify \samp{mc} objects:
-##\code{\link{subset.mc}}</>
-##To transform \samp{mc} objects in a list, a data.frame, a matrix or an array: \code{\link{unmcnode}}.
-#EXAMPLE   
-#x <- mcstoc(runif)
-#y <- mcdata(3,type="0")
-#z <- x * y
-#(m <- mc(x,y,z,name=c('n1','n2','n3')))
-#mc(m,x,devname=TRUE)
-
-#CREATED 07-08-01
-#REVISED 07-08-01
-#--------------------------------------------
-#
 {
 # the function list.names is taken from the base table function
 
@@ -71,11 +59,11 @@ mc <- function(..., name=NULL, devname=FALSE)
 
   rv <- vector(mode="list",length=0)
   nom <- character(0)
-  
+
   if(!all(sapply(args,inherits,"mcnode")|sapply(args,inherits,"mc"))) stop("arguments should be mc or mcnode objects")
-  
+
   for(i in 1:length(args)){   # Should find better                                                  # loop to help memory
-    
+
 	if(is.list(args[[i]])){
       rv <- c(rv,args[[i]])
       if(devname) nom <- c(nom,paste(nameobj[i],names(args[[i]]),sep="."))
@@ -84,14 +72,13 @@ mc <- function(..., name=NULL, devname=FALSE)
           nom <- c(nom,nameobj[i])}
     }
   rm(args)
-#  if(remove) rm(list=nameori[nameori!=""], envir = parent.frame(n = 1))
 
   dimm <- sapply(rv,dim)
 	if(!all(dimm[1,] %in% c(1,max(dimm[1,])))) stop("element should be of consistent variability dimensions")
 	if(!all(dimm[2,] %in% c(1,max(dimm[2,])))) stop("element should be of consistent uncertainty dimensions")
 
   # Build the object
-  
+
   typen <- sapply(rv,attr,which="type")
   type <- ifelse(all(typen < 2),"1D","2D")
 
@@ -106,5 +93,3 @@ mc <- function(..., name=NULL, devname=FALSE)
   attr(rv,which="type") <- type
 	return(rv)
 }
-#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-

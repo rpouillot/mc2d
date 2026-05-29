@@ -1,31 +1,24 @@
-#<<BEGIN>>
+#' Utilities for Multivariate Nodes
+#'
+#' \samp{extractvar} extracts one or more variates from a multivariate \samp{mcnode}.
+#' \samp{addvar} combines consistent \samp{mcnode}s into a single multivariate \samp{mcnode}.
+#'
+#' The \samp{outm} attribute of the output of \samp{addvar} is taken from the first element.
+#'
+#' @param x a multivariate \samp{mcnode}.
+#' @param which a vector specifying which variate(s) to extract.
+#' @param ... \samp{mcnode}s to be combined in a multivariate \samp{mcnode}.
+#'   These \samp{mcnode}s should be of the same type and dimension.
+#' @return The new \samp{mcnode}.
+#' @seealso \code{\link{mcnode}} for \samp{mcnode} objects.
+#' @keywords methods
+#' @examples
+#' x <- mcdata(0:3, "0", nvariates = 4)
+#' y <- extractvar(x, c(1, 3))
+#' y
+#' addvar(x, y)
+#' @export
 extractvar <- function(x, which = 1)
-#TITLE Utilities for multivariate nodes
-#DESCRIPTION
-# \samp{extractvar} extracts one variate from a multivariate node. 
-#
-# \samp{addvar} adds consistent \samp{mcnode}s to build a multivariate \samp{mcnode} .
-#KEYWORDS methods
-#INPUTS
-#{x}<<a multivariates \samp{mcnode}.>>
-#[INPUTS]
-#{which}<<a vector. which variate(s) should be extracted?>>
-#{\dots}<< \samp{mcnode}s to be gathered in a multivariate \samp{mcnode}.
-# These \samp{mcnode}s should be of same type and dimension.>>
-#VALUE
-#The new built \samp{mcnode}.
-#DETAILS
-#The \samp{outm} attribute of the output of \samp{addvar} will be the one of the first element.
-#SEE ALSO
-# \code{\link{mcnode}} for \samp{mcnode} objects.
-#EXAMPLE
-#x <- mcdata(0:3,"0",nvariates = 4)
-#y <- extractvar(x, c(1,3)) 
-#y
-#addvar(x,y)
-
-#CREATED 19-02-10
-#--------------------------------------------
 {
   if(missing(x) || !inherits(x,"mcnode")) stop("extractvar need a mcnode object")
   dimm <- dim(x)
@@ -34,16 +27,15 @@ extractvar <- function(x, which = 1)
   return(x)
 }
 
-#<<BEGIN>>
+#' @rdname extractvar
+#' @export
 addvar <- function(...)
-#ISALIAS extractvar
-#--------------------------------------------
 {
   argsd <- list(...)
   ismc <-  sapply(argsd,inherits,"mcnode")
   if(!all(ismc)) stop("addvar needs mcnodes object")
   dimm <- sapply(argsd,dim)
-  if(any(dimm[1,] != dimm[1,1]) || any(dimm[2,]!=dimm[2,1])) 
+  if(any(dimm[1,] != dimm[1,1]) || any(dimm[2,]!=dimm[2,1]))
     stop("Arguments should have the same dimension of variability and uncertainty")
   typem <- sapply(argsd,attr,which="type")
   if(any(typem != typem[1])) stop("Arguments should be of same type")

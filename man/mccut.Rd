@@ -2,6 +2,7 @@
 \alias{mccut}
 \alias{evalmccut}
 \alias{print.mccut}
+\alias{plot.mccut}
 \alias{mcmodelcut}
 \title{
 Evaluates a Two-Dimensional Monte Carlo Model in a Loop.

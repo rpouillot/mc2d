@@ -1,25 +1,20 @@
-#<<BEGIN>>
+#' Print a mcnode or mc Object
+#'
+#' Prints a description of the structure of a \samp{mc} or \samp{mcnode} object.
+#'
+#' @param x a \samp{mcnode} or a \samp{mc} object.
+#' @param digits number of digits to be used.
+#' @param ... further arguments to be passed to the print function.
+#' @return an invisible data frame.
+#' @seealso \code{\link{mcnode}} for \samp{mcnode} objects, \code{\link{mc}} for \samp{mc} objects.
+#' @keywords print
+#' @name print.mc
+#' @examples
+#' data(total)
+#' print(xVU)
+#' print(total)
+#' @export
 print.mc <- function(x, digits=3,...)
-#TITLE Prints a mcnode or a mc Object
-#DESCRIPTION
-# Print a description of the structure of the \samp{mc} or the \samp{mcnode} object.
-#KEYWORDS print
-#INPUTS
-#{x}<<a \samp{mcnode} or a \samp{mc} object.>>
-#[INPUTS]
-#{digits}<<Number of digits to be used.>>
-#{\dots}<<Further arguments to be passed to the print function.>>
-#VALUE
-#An invisible data frame.
-#DETAILS
-#SEE ALSO
-# \code{\link{mcnode}} for \samp{mcnode} objects.
-# \code{\link{mc}} for \samp{mc} objects.
-#EXAMPLE
-
-#CREATED 08-01-25
-#REVISED 08-01-25
-#--------------------------------------------
 {
   outm <- lapply(x,attr,which="outm")
   type <- lapply(x,attr,which="type")
@@ -31,7 +26,7 @@ print.mc <- function(x, digits=3,...)
     rangem <- range(obj,na.rm=TRUE)
     return(data.frame(
       node=nom[i],
-      mode=mode(obj),                            
+      mode=mode(obj),
       nsv=dimm[1],
       nsu=dimm[2],
       nva=nvariates,
@@ -45,7 +40,7 @@ print.mc <- function(x, digits=3,...)
       outm=out
     ))
   }
-  
+
   res <- data.frame(NULL)
   for(i in seq_along(x)){
     nvariates <- dimm[[i]][3]
@@ -64,14 +59,12 @@ print.mc <- function(x, digits=3,...)
  if(is.null(unlist(res))) {
   warning("Try to print a multivariate node with outm = none", call.=FALSE)
   res <- NULL}
-  
+
  invisible(print(res,digits=digits,...))
 }
-#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-#<<BEGIN>>
+#' @rdname print.mc
+#' @export
 print.mcnode <- function(x,...)
-#ISALIAS print.mc
-#--------------------------------------------
 {
   print.mc(list(x=x),...)}

@@ -1,33 +1,26 @@
-#<<BEGIN>>
+#' Quantiles of a mc or mcnode Object
+#'
+#' Evaluates quantiles of a \samp{mc} or \samp{mcnode} object. Used internally by
+#' \code{\link{plot.mc}}.
+#'
+#' Quantiles are evaluated in the variability dimension. Then, the median, the mean and
+#' the \samp{lim} quantiles are evaluated for each of these quantiles in the uncertainty dimension.
+#'
+#' @param x a \samp{mc} or \samp{mcnode} object.
+#' @param probs the quantiles to be calculated.
+#' @param lim a vector of numbers (between 0 and 1) indicating the envelope. May be \samp{NULL} or empty.
+#' @param na.rm logical; should NA values be stripped?
+#' @param ... for generic method consistency.
+#' @return a list of quantiles.
+#' @seealso \code{\link{plot.mc}}, \code{\link{quantile}}.
+#' @keywords univar
+#' @name quantile.mc
+#' @examples
+#' data(total)
+#' quantile(total$xVUM3)
+#' quantile(total)
+#' @export
 quantile.mc <- function(x, probs = seq(0, 1, 0.01), lim=c(0.025,0.975), na.rm=TRUE,  ...)
-#TITLE Quantiles of a mc Object
-#DESCRIPTION
-# Evaluates quantiles of a \samp{mc} object. This function is used by \samp{plot.mc}
-#KEYWORDS univar
-#INPUTS
-# {x}<<a \samp{mc} objects>>
-#[INPUTS]
-#{probs}<<the quantiles to be calculated>>
-#{na.rm}<<TRUE or FALSE>>
-#{lim}<<a vector of numbers (between 0 and 1) indicating the envelope. Maybe \samp{NULL} or empty.>>
-#{\dots}<<For generic method consistency.>>
-#DETAILS
-#The quantiles are evaluated in the variability dimension.
-#Then, the median, the mean and the \samp{lim} quantiles are evaluated for each of these quantiles.
-#VALUE
-#A list of quantiles.
-#SEE ALSO
-#\code{\link{plot.mc}}, \code{\link{quantile}}.
-#EXAMPLE
-#data(total)
-#quantile(total$xVUM3)
-#quantile(total)
-
-#CREATED 07-08-01
-#REVISED 07-08-01
-#--------------------------------------------
-#
-
 {
   lprobs <- length(probs)
 
@@ -44,7 +37,7 @@ quantile.mc <- function(x, probs = seq(0, 1, 0.01), lim=c(0.025,0.975), na.rm=TR
   dimm <- sapply(x,dim)
   nvariates <- dimm[3,]
   nom <- names(x)
-  
+
   lesnom <- function(outm,nvariates,nom){
     if(outm[1] == "each"){
       if(nvariates==1) nomsortie <- nom
@@ -95,7 +88,6 @@ quantile.mc <- function(x, probs = seq(0, 1, 0.01), lim=c(0.025,0.975), na.rm=TR
             restmp[1:2,] <- restmp[2:1,]
             dimnames(restmp) <- list(nomlim,nomprob)
          }
-#         attr(restmp,which="type") <- typen
          return(restmp)
       }
 
@@ -106,11 +98,11 @@ quantile.mc <- function(x, probs = seq(0, 1, 0.01), lim=c(0.025,0.975), na.rm=TR
   class(x) <- "plotmc"
   return(res)}
 
-#<<BEGIN>>
+#' @rdname quantile.mc
+#' @export
 quantile.mcnode <- function(x, ...)
-#ISALIAS quantile.mc
-#--------------------------------------------
-{ nom <- deparse(substitute(x),width.cutoff = 500L,nlines=1)
+{
+  nom <- deparse(substitute(x),width.cutoff = 500L,nlines=1)
   x <- list(x)
   names(x) <- nom
   quantile.mc(x, ...)}

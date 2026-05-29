@@ -1,31 +1,26 @@
-#<<BEGIN>>
+#' Changes the Output of Nodes
+#'
+#' Changes the \samp{outm} attribute of an \samp{mcnode} or a node of an \samp{mc} object.
+#'
+#' @param x a \samp{mcnode} or a \samp{mc} object.
+#' @param value the output of the \samp{mcnode} for multivariate nodes. May be \samp{"each"}
+#'   (default) if output should be provided for each variate independently, \samp{"none"} for
+#'   no output, or a vector of function names (as character strings) applied on the variates
+#'   dimension before any output (e.g. \samp{"mean"}, \samp{"median"}, \samp{c("min","max")}).
+#'   The function should return one value per vector.
+#' @param which.node which node should be changed in a \samp{mc} object.
+#' @return \samp{x} with a modified \samp{outm} attribute.
+#' @keywords misc
+#' @examples
+#' data(total)
+#' total$xVUM2
+#' ## since outm = NULL
+#' summary(total$xVUM2)
+#' x <- outm(total$xVUM2, c("min"))
+#' summary(x)
+#' @export
 outm <- function(x,value="each",which.node=1)
-#TITLE Output of Nodes
-#DESCRIPTION
-# Changes the output of Nodes
-#KEYWORDS misc
-#INPUTS
-#{x}<<A \samp{mcnode} or a \samp{mc} object.>>
-#[INPUTS]
-#{value}<<The output of the \samp{mcnode} for multivariates nodes. May be "each" (default)
-#if output should be provided for each variates considered independently, "none" for no output
-#or a vector of name of function(s) (as a character string) that will be applied on the variates dimension
-#before any output (ex: \samp{"mean"}, \samp{"median"}, \samp{c("min","max")}). The function should have no other arguments
-#and send one value per vector of values (ex. do not use \samp{"range"}).>>
-#{which.node}<<which node should be changed in a \samp{mc} object>>
-#EXAMPLE
-#data(total)
-#total$xVUM2
-### since outm = NULL
-#summary(total$xVUM2)  
-#x <- outm(total$xVUM2,c("min"))
-#summary(x)
-
-#VALUE
-#\samp{x} with a modified \samp{outm} attribute.
-#--------------------------------------------
 {
-
   if(is.character(value)  && (value == "none" || value == "each" | all(sapply(value,exists,mode="function")))){
 
   if(inherits(x,"mcnode"))  attr(x,which="outm") <- value

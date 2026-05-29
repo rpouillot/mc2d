@@ -1,10 +1,7 @@
-#<<BEGIN>>
+#' @rdname mccut
+#' @export
 print.mccut <- function(x, lim=c(0.025,0.975), digits=3,...)
-#ISALIAS evalmccut
-#--------------------------------------------
-#
 {
-
   summ <- function(x) c(mean=mean(x,na.rm=TRUE),quantile(x,probs=c(0.5,lim),na.rm=TRUE),Nas=sum(is.na(x)))[c(2,1,3:(length(lim)+3))]
   nbl <- length(x)
 
@@ -32,5 +29,3 @@ print.mccut <- function(x, lim=c(0.025,0.975), digits=3,...)
   class(x) <- "listof"
   print(x,digits=digits,...)
   return(invisible(x))}
-#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-

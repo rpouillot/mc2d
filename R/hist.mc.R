@@ -1,28 +1,27 @@
-#<<BEGIN>>
+#' Histogram of a Monte Carlo Simulation
+#'
+#' Shows a histogram of a \samp{mcnode} or a \samp{mc} object.
+#'
+#' @note For two-dimensional \samp{mc} objects, the histogram is based on all data
+#' (variability and uncertainty) pooled together.
+#'
+#' @param x an \samp{mcnode} or an \samp{mc} object.
+#' @param griddim a vector of two integers, indicating the size of the grid of plots.
+#'   If \samp{NULL}, the grid is calculated to produce a "nice" graph.
+#' @param xlab a vector of labels for the x-axis. May be recycled.
+#' @param ylab a vector of labels for the y-axis. May be recycled.
+#' @param main a vector of main titles of histograms. May be recycled.
+#' @param ... other arguments to be passed to all calls of \samp{hist}.
+#' @return \samp{invisible()} (called for side effects).
+#' @seealso \code{\link{gghist}} for a ggplot2 version.
+#' @keywords hplot
+#' @name hist.mc
+#' @examples
+#' data(total)
+#' hist(xVUM3)
+#' hist(total)
+#' @export
 hist.mc <- function(x, griddim = NULL, xlab = names(x),ylab = "Frequency", main = "",  ...)
-#TITLE Histogram of a Monte Carlo Simulation
-#DESCRIPTION
-# Shows histogram of a \samp{mcnode} or a \samp{mc} object.
-#KEYWORDS hplot
-#INPUTS
-#{x}<<An \samp{mcnode} or an \samp{mc} object.>>
-#[INPUTS]
-#{griddim}<<A vector of two integers, indicating the size of the grid of plots. If \samp{NULL}, the grid is calculated to produce a "nice" graph.>>
-#{xlab}<<A vector of labels for the x-axis for drawn histograms (those whose \samp{outm(x)!="none"}). May be recycled.>>
-#{ylab}<<A vector of labels for the y-axis for drawn histograms. May be recycled.>>
-#{main}<<A vector of main title of histograms for drawn histograms. May be recycled.>>
-#{\dots}<<Other arguments to be passed to all calls of \samp{hist}.>>
-#NOTE
-#For Two-dimensional \samp{mc}, the histogram is based on all data (variability and uncertainty) pooled together.
-#EXAMPLE
-#data(total)
-#hist(xVUM3)
-#hist(total)
-
-#CREATED 07-08-01
-#REVISED 07-08-01
-#--------------------------------------------
-#
 {
 # the function beau calculate a nice grid
 
@@ -45,7 +44,7 @@ hist.mc <- function(x, griddim = NULL, xlab = names(x),ylab = "Frequency", main 
   	if(is.null(griddim)) griddim <- beau(n)
   	if(prod(griddim) < n) op <- par(mfrow=griddim,ask=TRUE,mar=c(5,4,.2,.2))
     else op <- par(mfrow=griddim,mar=c(5,4,.2,.2))
-	
+
 	try({  #to restore par in case of error
 
     for(i in 1:l){
@@ -77,14 +76,12 @@ hist.mc <- function(x, griddim = NULL, xlab = names(x),ylab = "Frequency", main 
   par(op)
 	return(invisible())
   }
-#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-#<<BEGIN>>
+#' @rdname hist.mc
+#' @export
 hist.mcnode <- function(x, ...)
-#ISALIAS hist.mc
-#--------------------------------------------
-{ nom <- deparse(substitute(x), width.cutoff = 500L, nlines=1)
+{
+  nom <- deparse(substitute(x), width.cutoff = 500L, nlines=1)
   x <- list(x)
   names(x) <- nom
   hist.mc(x, ...)}
-

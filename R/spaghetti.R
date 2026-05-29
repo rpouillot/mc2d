@@ -22,7 +22,7 @@ spaghetti <- function(x,...){
 
 #' @rdname spaghetti
 #' @method spaghetti mc
-#' @exportS3Method spaghetti mc
+#' @export
 spaghetti.mc <- function(x, 
                          griddim = NULL, 
                          xlab = names(x),
@@ -107,7 +107,7 @@ spaghetti.mc <- function(x,
 
 #' @rdname spaghetti
 #' @method spaghetti mcnode
-#' @exportS3Method spaghetti mcnode
+#' @export
 spaghetti.mcnode <- function(x, ...)
 { 
   nom <- deparse(substitute(x), width.cutoff = 500L, nlines=1)

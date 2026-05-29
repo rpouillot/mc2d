@@ -31,7 +31,7 @@
 #' curve(dtriang(x, min=3, mean=6, max=10), from = 2, to = 11, add=TRUE, lty=2)
 #' ##no density when  min == mode == max
 #' dtriang(c(1,2,3),min=2,mode=2,max=2)
-
+#' @export
 dtriang <- function(x, min=-1, mode=0, max=1, log=FALSE, mean = 0){
 	if(length(x) == 0) return(numeric(0))
   if (!missing(mode) && !missing(mean)) stop("specify 'mode' or 'mean' but not both")
@@ -66,7 +66,7 @@ dtriang <- function(x, min=-1, mode=0, max=1, log=FALSE, mean = 0){
   return(d)}
 
 #' @rdname triangular
-
+#' @export
 ptriang <- function(q,min=-1,mode=0,max=1,lower.tail = TRUE, log.p = FALSE, mean = 0){
 	if(length(q) == 0) return(numeric(0))
 	# quel: q < mode or q = mode = max 
@@ -101,7 +101,7 @@ ptriang <- function(q,min=-1,mode=0,max=1,lower.tail = TRUE, log.p = FALSE, mean
   return(p)}
 
 #' @rdname triangular
-
+#' @export
 qtriang <- function(p, min=-1, mode=0, max=1, lower.tail=TRUE, log.p=FALSE, mean = 0){
   if (length(p) == 0) 
     return(numeric(0))
@@ -141,6 +141,7 @@ qtriang <- function(p, min=-1, mode=0, max=1, lower.tail=TRUE, log.p=FALSE, mean
 
 
 #' @rdname triangular
+#' @export
 rtriang <- function(n, min=-1, mode=0, max=1, mean = 0){
   if (length(n) > 1) 
     n <- length(n)
@@ -163,13 +164,13 @@ rtriang <- function(n, min=-1, mode=0, max=1, mean = 0){
   
   U <- runif(n)
   ow <- options(warn = -1)
-  q <- qtriang(U, 
-               min = rep(as.vector(min),length.out=n), 
+  on.exit(options(ow), add = TRUE)
+  q <- qtriang(U,
+               min = rep(as.vector(min),length.out=n),
                mode = rep(as.vector(mode),length.out=n),
                max = rep(as.vector(max),length.out=n),
-               lower.tail = TRUE, 
+               lower.tail = TRUE,
                log.p = FALSE)
-  options(ow)
   if (any(is.na(q))) 
     warning("NaN in rtriang")
   return(q)

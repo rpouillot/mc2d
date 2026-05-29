@@ -1,39 +1,29 @@
-#<<BEGIN>>
+#' Draw a Tornado Chart
+#'
+#' Draws a Tornado chart as provided by \code{\link{tornado}} or \code{\link{tornadounc}}.
+#'
+#' A point is drawn at the estimate, and the segment reflects the uncertainty around it.
+#'
+#' @param x a \code{\link{tornado}} or \code{\link{tornadounc}} object.
+#' @param which which output to plot (for multivariate output).
+#' @param name vector of names for input variables. If \samp{NULL}, taken from the object.
+#' @param stat the statistic of the output to be considered. For a \samp{tornado} object:
+#'   \samp{"median"} or \samp{"mean"}. For a \samp{tornadounc} object: should match a row
+#'   name, or use the row number.
+#' @param xlab label of the x axis. If \samp{"method"}, use the correlation method.
+#' @param ylab label of the y axis.
+#' @param ... further arguments to be passed to the \samp{plot} function.
+#' @return \samp{NULL} (called for side effects).
+#' @seealso \code{\link{tornado}}
+#' @keywords hplot
+#' @name plot.tornado
+#' @examples
+#' data(ec)
+#' x <- evalmcmod(ec$modEC2, nsv=100, nsu=100, seed=666)
+#' tor <- tornado(x, 7)
+#' plot(tor)
+#' @export
 plot.tornado <- function(x,which=1,name=NULL,stat=c("median","mean"),xlab="method",ylab="",...)
-#TITLE Draws a Tornado chart.
-#DESCRIPTION
-# Draws a Tornado chart as provided by \samp{tornado}.
-#KEYWORDS hplot
-#INPUTS
-#{x}<<A \code{\link{tornado}} object or a \code{\link{tornadounc}} object.>>
-#[INPUTS]
-#{which}<<Which output to print -for multivariates output-.>>
-#{name}<<Vector of name of input variables.
-#If NULL, the name will be given from the name of the elements.>>
-#{stat}<<The name of the statistics of the output to be considered. For a \samp{tornado} object: "median" or "mean". 
-#For a \samp{tornadounc} object: the value should match one row name of the \samp{tornadounc} object.
-#Alternatively, for a \samp{tornadounc} object, the number of the row may be used.>>
-#{xlab}<<Label of the x axis. if "method", use the correlation method used in the \samp{tornado} object.>>
-#{ylab}<<Label of the y axis.>>
-#{\dots}<<Further arguments to be passed to the \samp{plot} function.>>
-#VALUE
-# NULL
-#DETAILS
-#A point is drawn at the estimate
-#and the segment reflects the uncertainty around this estimate.
-#SEE ALSO
-#\code{\link{tornado}}
-#EXAMPLE
-
-#CREATED 07-08-01
-#EXAMPLE
-#data(ec)
-#x <- evalmcmod(ec$modEC2, nsv=100, nsu=100, seed=666)
-#tor <- tornado(x,7)
-#plot(tor)
-#REVISED 10-02-10
-#--------------------------------------------
-#
 {
   val <- x$value[[which]]
   if(is.null(val)) stop("Invalid value for which")
@@ -69,20 +59,15 @@ plot.tornado <- function(x,which=1,name=NULL,stat=c("median","mean"),xlab="metho
 		text(-1.4,1:nc,labels=paste(colnames(val),sep=":"),cex=.8)
 		}
 
-#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-#<<BEGIN>>
+#' @rdname plot.tornado
+#' @export
 plot.tornadounc <- function(x,which=1, stat="median", name=NULL, xlab="method", ylab="",...)
-#ISALIAS plot.tornado
-#--------------------------------------------
-#
 {
   statposs <- rownames(x$value[[which]])
-  
+
   if(is.character(stat)) stat <- pmatch(stat, rownames(x$value[[which]]))
-  if(is.na(stat)) stop("stat should match with: ",paste(statposs,collapse=", ")) 
+  if(is.na(stat)) stop("stat should match with: ",paste(statposs,collapse=", "))
 
   x$value <- list(x$value[[which]][stat,,drop=FALSE])
 	plot.tornado(x,which=1, stat="median", name=name, xlab=xlab,ylab=ylab,...)
  }
-

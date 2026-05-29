@@ -1,7 +1,6 @@
-#<<BEGIN>>
+#' @rdname summary.mc
+#' @export
 summary.mccut <- function(object, lim=c(0.025,0.975),...)
-#ISALIAS summary.mc
-#--------------------------------------------
 {
   summ <- function(x) c(mean=mean(x,na.rm=TRUE),quantile(x,probs=c(0.5,lim),na.rm=TRUE),Nas=sum(is.na(x)))[c(2,1,3:(length(lim)+3))]
 
@@ -9,14 +8,14 @@ summary.mccut <- function(object, lim=c(0.025,0.975),...)
   lquel <- length(quel)
   if(lquel == 0) stop("summary.mc was not evaluated in evalmccut : no summary to produce")
   if(lquel > 1) stop("More than one summary.mc was evaluated in evalmccut : impossible to produce a summary")
-  
+
   object <- object[[quel]]
   typen <- sapply(object,"attr",which="type")
 
   l <- length(object)
 
   LESSTAT <- function(object,typen){
-  
+
     if(is.list(object)) return(mapply(LESSTAT,object,typen,SIMPLIFY=FALSE))
 
     if(typen =="0") {

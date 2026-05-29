@@ -1,7 +1,6 @@
-#<<BEGIN>>
+#' @rdname tornadounc
+#' @export
 tornadounc.mccut <- function(mc,output = length(mc), quant=c(0.5,0.75,0.975),use = "all.obs",	method=c("spearman","kendall","pearson"),...)
-#ISALIAS tornadounc.mc
-#--------------------------------------------
 {
 	method <- match.arg(method)
  	na.method <- pmatch(use, lesmet <- c("all.obs", "complete.obs", "pairwise.complete.obs"))
@@ -35,7 +34,7 @@ tornadounc.mccut <- function(mc,output = length(mc), quant=c(0.5,0.75,0.975),use
   mc <- rapply(mc,drop,how="replace")
   mc <- rapply(mc,function(x) x[,nom1],classes="matrix",how="replace")
   mc <- rapply(mc,as.matrix,classes="numeric",how="replace")
-  
+
   ninc <- rapply(mc,function(x) dim(x)[1])[1]
 
   lesnom <- function(x,nom){
@@ -78,5 +77,3 @@ tornadounc.mccut <- function(mc,output = length(mc), quant=c(0.5,0.75,0.975),use
 	class(tc) <- "tornadounc"
   return(tc)
 	}
-
-#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>

@@ -38,7 +38,7 @@ ggspaghetti <- function(x,...){
 
 #' @rdname ggspaghetti
 #' @method ggspaghetti mc
-#' @exportS3Method ggspaghetti mc
+#' @export
 ggspaghetti.mc <- function(x, 
                            griddim = NULL, 
                            xlab = names(x),
@@ -119,7 +119,7 @@ ggspaghetti.mc <- function(x,
 
 #' @rdname ggspaghetti
 #' @method ggspaghetti mcnode
-#' @exportS3Method ggspaghetti mcnode
+#' @export
 ggspaghetti.mcnode <- function(x, 
                                griddim = NULL, 
                                xlab = names(x),

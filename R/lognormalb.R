@@ -3,9 +3,9 @@
 #' Density, distribution function, quantile function and random generation for a log normal distribution whose 
 #' arithmetic mean equals to \samp{mean} and standard deviation equals to \samp{sd}.
 #' 
-#' This function calls the corresponding density, distribution function, quantile function and random generation 
-#' from the log normal (see \code{\link[stats]{Lognormal}}) after evaluation of \eqn{meanlog = log(mean^2 / sqrt(sd^2+mean^2))} and
-#' \eqn{sqrt{(log(1+sd^2/mean^2))}}  
+#' This function calls the corresponding density, distribution function, quantile function and random generation
+#' from the log normal (see \code{\link[stats]{Lognormal}}) after evaluation of \eqn{meanlog = log(mean^2 / \sqrt{sd^2+mean^2})} and
+#' \eqn{sdlog = \sqrt{\log(1 + sd^2/mean^2)}}  
 #' 
 #' @name Lognormalb
 #' @param x,q vector of quantiles.
@@ -28,13 +28,13 @@
 #' The default \samp{mean} and \samp{sd} are chosen to provide a distribution close to a lognormal with 
 #' \samp{meanlog = 0} and \samp{sdlog = 1}.
 #' 
-#' @examples 
-#' x <- rlnormb(1E5,3,6)
-#' mean(x) 
+#' @examples
+#' x <- rlnormb(1E5, 3, 6)
+#' mean(x)
 #' sd(x)
-#' dlnormb(1) == dnorm(0)
-#' dlnormb(1) == dlnorm(1)
-#' 
+#' dlnormb(1) == dnorm(0)   # TRUE: default params give meanlog=0, sdlog=1
+#' dlnormb(1) == dlnorm(1)  # TRUE
+#' @export
 dlnormb <- function (x, mean = exp(0.5), sd = sqrt(exp(2)-exp(1)), log = FALSE)
 { 
   gmean <- log(mean^2 / sqrt(sd^2+mean^2))
@@ -44,6 +44,7 @@ dlnormb <- function (x, mean = exp(0.5), sd = sqrt(exp(2)-exp(1)), log = FALSE)
 }
 
 #' @rdname Lognormalb
+#' @export
 plnormb <- function (q, mean = exp(0.5), sd = sqrt(exp(2)-exp(1)), lower.tail = TRUE, log.p = FALSE)
 { 
   gmean <- log(mean^2 / sqrt(sd^2+mean^2))
@@ -53,6 +54,7 @@ plnormb <- function (q, mean = exp(0.5), sd = sqrt(exp(2)-exp(1)), lower.tail = 
 }
 
 #' @rdname Lognormalb
+#' @export
 qlnormb <- function (p, mean = exp(0.5), sd = sqrt(exp(2)-exp(1)), lower.tail = TRUE, log.p = FALSE)
 { 
   gmean <- log(mean^2 / sqrt(sd^2+mean^2))
@@ -62,6 +64,7 @@ qlnormb <- function (p, mean = exp(0.5), sd = sqrt(exp(2)-exp(1)), lower.tail = 
 }
 
 #' @rdname Lognormalb
+#' @export
 rlnormb <- function (n, mean = exp(0.5), sd = sqrt(exp(2)-exp(1)))
 { 
   gmean <- log(mean^2 / sqrt(sd^2+mean^2))

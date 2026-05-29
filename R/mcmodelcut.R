@@ -1,10 +1,11 @@
-#<<BEGIN>>
+#' Specify a Two-Dimensional Monte Carlo Model for Looped Evaluation
+#'
+#' Builds a \samp{mcmodelcut} object that can be sent to \code{\link{evalmccut}}.
+#'
+#' @rdname mccut
+#' @export
 mcmodelcut <- function(x, is.expr=FALSE)
-#ISALIAS evalmccut
-#--------------------------------------------
-#
 {
-
   if(!is.expr) x <- as.expression(substitute(x))
   if(!is.expression(x)) stop("x can not be evaluate as an expression")
 
@@ -24,4 +25,3 @@ mcmodelcut <- function(x, is.expr=FALSE)
   class(x) <- "mcmodelcut"
   return(invisible(x))
 }
-#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>

@@ -1,33 +1,28 @@
-#<<BEGIN>>
+#' Random Latin Hypercube Sampling
+#'
+#' Creates a Latin Hypercube Sample (LHS) from the specified distribution.
+#'
+#' @note The resulting LHS is a latin hypersquare sampling: the LHS structure is provided
+#' only in the first 2 dimensions.
+#' It is not possible to use truncated distributions directly with \code{\link{rtrunc}}.
+#' Use \code{\link{mcstoc}} with \samp{lhs=TRUE} and \samp{rtrunc=TRUE} for that purpose.
+#' The \dots arguments will be recycled.
+#'
+#' @param distr the function for generating random samples, or its name as a character string.
+#'   If \samp{distr} is \samp{"rdist"}, the quantile function \samp{"qdist"} must exist with
+#'   argument \samp{p} as a vector of probabilities.
+#' @param nsv the number of rows of the final matrix.
+#' @param nsu the number of columns of the final matrix.
+#' @param nvariates the number of variates.
+#' @param ... all arguments to be passed to \samp{distr} except the size of the sample.
+#' @return A \samp{nsv x nsu} matrix of random variates.
+#' @note Adapted from a code by Rob Carnell (package \pkg{lhs}).
+#' @seealso \code{\link{mcstoc}}
+#' @keywords design
+#' @examples
+#' ceiling(lhs(runif, nsu=10, nsv=10) * 10)
+#' @export
 lhs <- function(distr="runif",nsv=ndvar(),nsu=ndunc(),nvariates=1,...)
-#TITLE Random Latin Hypercube Sampling
-#DESCRIPTION
-# Creates a Latin Hypercube Sample (LHS) of the specified distribution.
-#KEYWORDS design
-#INPUTS
-#{distr}<<The function for generating random sample or its name. If \samp{distr} is "rdist",
-#the function "qdist" must be the quantile function of this distribution with argument
-#\samp{p} as a vector of probabilities, as all univariates distributions of the \samp{stat}
-#library.>>
-#{nsv}<<The number of rows of the final matrix.>>
-#{nsu}<<The number of columns of the final matrix>>
-#[INPUTS]
-#{nvariates}<<The number of variates>>
-#{\dots}<<All arguments to be passed to \samp{distr} except the size of the sample.>>
-#VALUE
-#A \samp{nsv x nsu} matrix of random variates.
-#NOTE
-#The resulting lhs is in fact a latin hypersquare sampling: the lhs is provided only in the first 2 dimensions.</>
-#It is not possible to send truncated distribution with \code{\link{rtrunc}}. Use \code{\link{mcstoc}} for
-#this purpose, with \samp{lhs=TRUE} and \samp{rtrunc=TRUE}.</>
-#The \dots arguments will be recycled.
-#SEE ALSO
-#\code{\link{mcstoc}}
-#EXAMPLE
-#ceiling(lhs(runif,nsu=10,nsv=10)*10)
-#AUTHOR adapted from a code of Rob Carnell (library \samp{lhs})
-#CREATED 08-01-25
-#--------------------------------------------
 {
     nsv
     nsu
@@ -44,7 +39,7 @@ lhs <- function(distr="runif",nsv=ndvar(),nsu=ndunc(),nvariates=1,...)
     distr <- paste("q",distr,sep="")                            # add the q
 
     ranperm <- function(X, N) order(runif(N))
-    
+
     P <- array(dim=c(nsv, nsu, nvariates))
     for(i in 1:nvariates) {
       P[,,i] <- apply(P[,,i,drop=FALSE], 2, ranperm, N = nsv)

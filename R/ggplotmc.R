@@ -40,14 +40,13 @@
 #' 
 #' @rdname ggplotmc
 #' @export
-#' @importFrom rlang .data
 ggplotmc <- function(x,...){
   UseMethod("ggplotmc")
 }
 
 #' @rdname ggplotmc
 #' @method ggplotmc mcnode
-#' @exportS3Method ggplotmc mcnode
+#' @export
 ggplotmc.mcnode <- function(x, prec=0.001, 
                  stat = c("median","mean"), 
                  lim = c(0.025, 0.25, 0.75, 0.975), 
@@ -177,7 +176,7 @@ ggplotmc.mcnode <- function(x, prec=0.001,
 
 #' @rdname ggplotmc
 #' @method ggplotmc mc
-#' @exportS3Method ggplotmc mc
+#' @export
 ggplotmc.mc <- function(x, prec=0.001, 
                      stat = c("median","mean"), 
                      lim = c(0.025, 0.25, 0.75, 0.975), 
