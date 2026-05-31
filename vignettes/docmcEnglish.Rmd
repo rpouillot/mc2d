@@ -233,8 +233,8 @@ Package & Distribution & Function & Size arg. & Other parameters & trunc & lhs\t
         & multinomial     & `rmultinomial`& `n` & `size, prob`                 & N & N\tabularnewline\hline
         & Dirichlet       & `rdirichlet` & `n`  & `alpha`                      & N & N\tabularnewline\hline
         & mv.\ normal     & `rmultinormal`& `n` & `mean, sigma`                & N & N\tabularnewline\hline
-        & beta subjective & `rbetasubj`  & `n`  & `min, mode, mean, max`       & Y & U\tabularnewline\hline
-        & min.\ info.     & `rmqi`       & `n`  & `mqi, mqi.quantile, ...`     & Y & U\tabularnewline\hline
+        & beta subjective & `rbetasubj`  & `n`  & `min, mode, mean, max`       & Y & Y\tabularnewline\hline
+        & min.\ info.     & `rmqi`       & `n`  & `mqi, mqi.quantile, ...`     & Y & Y\tabularnewline\hline
 \end{tabular}
 \end{table}
 
@@ -257,7 +257,7 @@ x <- mcstoc(rnorm, mean = 2, sd = 3, rtrunc = TRUE, linf = 1.5, lsup = 2, lhs = 
 summary(x)
 ```
 
-Additional distributions in `mc2d`: `rbern` (Bernoulli), `rempiricalD` (empirical discrete), `rpert` \cite{VOSE-2000}, `rtriang`, `rdirichlet`, `rmultinormal`. The multinomial distribution is vectorized as `rmultinomial` (use instead of `stats::rmultinom`).
+Additional distributions in `mc2d`: `rbern` (Bernoulli), `rempiricalD` (empirical discrete), `rpert` \cite{VOSE-2000}, `rtriang`, `rdirichlet`, `rmultinormal`, `rmqi` (min. quantile info.). The multinomial distribution is vectorized as `rmultinomial` (use instead of `stats::rmultinom`).
 
 ### The `mcdata` function {#sub:mcnode}
 
@@ -455,19 +455,17 @@ tmp$risk
 hist(x, griddim=NULL, xlab=names(x), ylab="Frequency", main="", ...)
 ```
 
-Provides histograms of each `mcnode` in the `mc` object (Figure \ref{fig:Function-hist}). Note: variability and uncertainty are collapsed, so the histogram may be approximate.
+Provides histograms of each `mcnode` in the `mc` object. Note: variability and uncertainty are collapsed, so the histogram may be approximate.
 
 ```{r sh15, eval=FALSE}
 hist(EC2)
 ```
 
-````{=tex}
 ```{r Function-hist, echo=FALSE, fig.cap="The `hist` function."}
 hist(EC2)
 ```
-````
 
-From `mc2d` version 0.2-0, `gghist` provides a `ggplot2`-based histogram.
+From `mc2d` version 0.2-0, `gghist` provides a `ggplot2`-based histogram, returning a `ggplot2` object that can be further customised with `+` operators.
 
 ### The `plot` function
 
@@ -477,31 +475,33 @@ plot(x, prec=0.001, stat=c("median","mean"), lim=c(0.025,0.25,0.75,0.975),
      draw=TRUE, paint=TRUE, ...)
 ```
 
-Plots the empirical CDF with uncertainty envelope (Figure \ref{fig:Function-plot}). The 0.25 and 0.75 quantiles (default `lim`) form the inner envelope.
+Plots the empirical CDF with uncertainty envelope. The 0.25 and 0.75 quantiles (default `lim`) form the inner envelope.
 
 ```{r sh17, eval=FALSE}
 plot(EC2)
 ```
 
-````{=tex}
 ```{r Function-plot, echo=FALSE, fig.cap="The `plot` function."}
 plot(EC2)
 ```
-````
 
 From `mc2d` version 0.2-0, `ggplotmc` provides a `ggplot2`-based version.
 
-```{r sh17bis, eval=FALSE}
-ggplotmc(EC2)
+`spaghetti` draws individual empirical CDF step-functions, one per uncertainty sample, instead of the summary envelope produced by `plot`. The `maxlines` argument caps the number of lines drawn.
+
+```         
+spaghetti(x, griddim=NULL, xlab=names(x), ylab="F(n)", main="", maxlines=100, ...)
 ```
 
-````{=tex}
-```{r Function-ggplotmc, echo=FALSE, fig.cap="The `ggplotmc` function."}
-ggplotmc(EC2)
+```{r sh17ter, eval=FALSE}
+spaghetti(EC2)
 ```
-````
 
-`spaghetti` (and its `ggplot2` version `ggspaghetti`) draws spaghetti plots instead of an ECDF with envelope.
+```{r Function-spaghetti, echo=FALSE, fig.cap="The `spaghetti` function."}
+spaghetti(EC2)
+```
+
+`ggspaghetti` provides the same plot via `ggplot2`.
 
 All `mcnode` objects support the same `print`, `summary`, `plot`, and `hist` methods. `ggplotmc`, `gghist`, and `ggspaghetti` on an `mcnode` allow post-processing of the graph.
 
@@ -512,18 +512,16 @@ tornado(x, output=length(x), use="all.obs", method=c("spearman","kendall","pears
         lim=c(0.025,0.975))
 ```
 
-Computes Spearman (default) rank correlation between nodes. `output` specifies the output node (default: last). `tornado` creates a `tornado` object with a `plot` method (Figure \ref{fig:Function-plottor}).
+Computes Spearman (default) rank correlation between nodes. `output` specifies the output node (default: last). `tornado` creates a `tornado` object with a `plot` method.
 
 ```{r sh19}
 torEC2 <- tornado(EC2)
 plot(torEC2)
 ```
 
-````{=tex}
 ```{r Function-plottor, echo=FALSE, fig.cap="The `plot.tornado` function."}
 plot(torEC2)
 ```
-````
 
 From `mc2d` version 0.2-0, `ggtornado` provides a `ggplot2`-based version.
 
@@ -682,13 +680,11 @@ inca <- structure(c(0, 22.08, 60, 64.4, 72, 82.8, 90, 96, 100, 110, 120,  137.5,
 inca <- rep(inca[, 1], inca[, 2]) / 1000
 ```
 
-We have raw data on daily tap water consumption from 1,180 consumers (`inca`, Figure \ref{fig:Function-inca}). We could use the empirical distribution directly:
+We have raw data on daily tap water consumption from 1,180 consumers (`inca`, histogram below). We could use the empirical distribution directly:
 
-````{=tex}
 ```{r Function-inca, echo=FALSE, fig.cap="Histogram of daily tap water intake."}
 hist(inca, xlab = "l/day", freq = FALSE, main = "")
 ```
-````
 
 ```{r Crypto3}
 ndvar(1001)
@@ -705,13 +701,11 @@ inca_non_0 <- inca[inca != 0]
 descdist(inca_non_0)
 ```
 
-````{=tex}
 ```{r Function-descdist, echo=FALSE, fig.cap="Graph from `descdist`.", results='hide', message=FALSE}
 descdist(inca_non_0)
 ```
-````
 
-Following Figure \ref{fig:Function-descdist}, we try a lognormal distribution:
+From the shape descriptor plot above, we try a lognormal distribution:
 
 ```{r Crypto6}
 Adj_water <- fitdist(inca_non_0, "lnorm", method = "mle")

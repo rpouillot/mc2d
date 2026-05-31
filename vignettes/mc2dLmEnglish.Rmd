@@ -429,11 +429,10 @@ This estimate reflects uncertainty from initial contamination, bacterial growth 
 and sampling of positive packages. Many other uncertainties (notably around the dose-response
 model) are not considered here; see \cite{POUILLOT-2007,POUILLOT-2009} for a complete analysis.
 
-The tornado chart in the variability dimension (Figure \ref{fig:TorLm}) suggests a large
+The tornado chart in the variability dimension suggests a large
 impact from the growth rate of *L.\ monocytogenes*, the storage duration during the consumer
 step, and the initial contamination level. The tornado in the uncertainty dimension
-(Figure \ref{fig:TorLmU}) highlights the impact of uncertainty around $N_{max}$ on the
-mean risk.
+highlights the impact of uncertainty around $N_{max}$ on the mean risk.
 
 ```{r sh3}
 torn    <- tornado(Lm2); torn
