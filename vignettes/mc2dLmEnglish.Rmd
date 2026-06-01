@@ -21,6 +21,8 @@ vignette: >
 options("width"=100, "digits"=3)
 set.seed(666)
 knitr::opts_chunk$set(fig.path = "figs/")
+knitr::opts_chunk$set(dpi = 96, fig.width = 6, fig.height = 4, dev = "pdf")
+```
 ```
 
 The objective of this case study is to assess the risk of invasive listeriosis from consumption

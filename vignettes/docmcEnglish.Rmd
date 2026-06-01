@@ -15,6 +15,11 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(dpi = 96, fig.width = 6, fig.height = 4, dev = "pdf")
+```
+
+
 This documentation is intended for readers with:
 
 - A medium level of experience in R. Please refer to *An Introduction to R* available with the R distribution if needed.

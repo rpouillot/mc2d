@@ -1,4 +1,9 @@
 #' @rdname mccut
+#' @param lim a vector of quantiles for the uncertainty dimension. For \code{print.mccut}
+#'   defaults to \code{c(0.025, 0.975)}; for \code{plot.mccut} defaults to
+#'   \code{c(0.025, 0.25, 0.75, 0.975)}.
+#' @param digits number of digits in the print.
+#' @param ... additional arguments passed to the print or plot function.
 #' @export
 print.mccut <- function(x, lim=c(0.025,0.975), digits=3,...)
 {

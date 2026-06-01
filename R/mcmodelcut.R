@@ -3,6 +3,11 @@
 #' Builds a \samp{mcmodelcut} object that can be sent to \code{\link{evalmccut}}.
 #'
 #' @rdname mccut
+#' @param x for \code{mcmodelcut}: a call or an expression (if \code{is.expr=TRUE}) including
+#'   three blocks (see Details and Examples for the required structure). For \code{print.mccut}
+#'   and \code{plot.mccut}: an \samp{mccut} object.
+#' @param is.expr \code{FALSE} to send a call, \code{TRUE} to send an expression
+#'   (see \code{\link{mcmodel}} examples).
 #' @export
 mcmodelcut <- function(x, is.expr=FALSE)
 {

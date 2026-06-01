@@ -1,4 +1,14 @@
 #' @rdname mccut
+#' @param stat a character string: \code{"median"} (default) or \code{"mean"}, the statistic
+#'   used to display the uncertainty in the plot.
+#' @param griddim a vector of two integers specifying the grid layout (rows, columns) for
+#'   the plot. If \code{NULL}, the grid is computed automatically.
+#' @param xlab a vector of x-axis labels, one per node. Defaults to the names of the
+#'   \samp{mccut} object.
+#' @param ylab the y-axis label.
+#' @param main the plot title.
+#' @param draw logical. If \code{TRUE} (default), the plot is drawn. Set to \code{FALSE}
+#'   when calling from within \code{\link{evalmccut}} to store the plot data.
 #' @export
 plot.mccut <- function(x, stat = c("median","mean"), lim = c(0.025, 0.25, 0.75, 0.975), griddim = NULL, xlab = names(x), ylab = "Fn(x)", main = "", draw=TRUE, ...)
 {
