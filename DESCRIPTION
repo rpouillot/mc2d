@@ -3,11 +3,11 @@ Type: Package
 Title: Tools for Two-Dimensional Monte-Carlo Simulations
 Version: 0.2.2
 Date: 2026-05-12
-Authors@R: c(person("Regis", "Pouillot", role = c("aut", "cre"), email = "rpouillot@yahoo.fr"),
-			person("Marie-Laure", "Delignette-Muller", role = "ctb", email= "ml.delignette@vetagro-sup.fr"),
+Authors@R: c(person("Regis", "Pouillot", role = c("aut", "cre"), email = "rpouillot@yahoo.fr", comment = c(ORCID = "0000-0002-6107-5212")),
+			person("Marie-Laure", "Delignette-Muller", role = "ctb", email= "ml.delignette@vetagro-sup.fr", comment = c(ORCID = "0000-0001-5453-3994")),
 			person("Jean-Baptiste", "Denis", role = "ctb", email = "jbdenis@jouy.inra.fr"),
 			person("Yu", "Chen", role = "ctb", email = "chen0099yu@gmail.com"),
-			person("Arie", "Havelaar", role = "ctb", email = "ariehavelaar@ufl.edu"))
+			person("Arie", "Havelaar", role = "ctb", email = "ariehavelaar@ufl.edu", comment = c(ORCID = "0000-0002-6456-5460")))
 Author: Regis Pouillot [aut, cre],
   Marie-Laure Delignette-Muller [ctb],
   Jean-Baptiste Denis [ctb],
