@@ -1,0 +1,16 @@
+^.*\.Rproj$
+^\.Rproj\.user$
+^doc$
+^Meta$
+^cran-comments\.md$
+^CRAN-SUBMISSION$
+^revdep$
+^\.Rhistory$
+^bench$
+^tests/testthat/_ref$
+^vignettes/figs$
+^vignettes/.*_files$
+^vignettes/docmcEnglish\.R$
+^vignettes/docmcEnglish\.pdf$
+^vignettes/mc2dLmEnglish\.R$
+^vignettes/mc2dLmEnglish\.pdf$
