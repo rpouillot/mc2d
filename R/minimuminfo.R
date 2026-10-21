@@ -249,10 +249,13 @@ qmqi <- function(p,
   
   index <- findInterval(p, prob.interval)
   
-  q <- rep(0, length(p))
+  q <- rep(NA_real_, length(p))
   
-  q <- (p - prob.interval[index]) * (value.interval[(index+1)] - value.interval[index]) /
-    (prob.interval[(index+1)] - prob.interval[index]) + value.interval[index]
+  ok <- which(index >= 1)                          # p < 0 (index 0) or NA excluded
+  io <- index[ok]
+  q[ok] <- (p[ok] - prob.interval[io]) * (value.interval[(io+1)] - value.interval[io]) /
+    (prob.interval[(io+1)] - prob.interval[io]) + value.interval[io]
+  q[!is.na(p) & p < 0] <- NaN
   
   q[p==1] <- intrinsic[2] #For p=1
   q <- as.numeric(q)

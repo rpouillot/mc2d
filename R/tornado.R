@@ -79,7 +79,8 @@ tornado <- function(mc,output = length(mc),use = "all.obs",	method=c("spearman",
 
 
   # Which row are complete
-  quelk <- !apply(sapply(mc,function(x) apply(x,1,function(x) any(is.na(x)))),1,any)
+  quelk <- !Reduce("|", lapply(mc, function(x) rowSums(is.na(matrix(x, nrow = dim(x)[1]))) > 0))
+  if(is.matrix(quelk)) quelk <- quelk[, 1]
 
   if(!all(quelk)){
     if(na.method==1) stop("NA values. Change 'use' option")
@@ -103,11 +104,8 @@ tornado <- function(mc,output = length(mc),use = "all.obs",	method=c("spearman",
       if(nvariates==1) return(node)
       return(lapply(1:nvariates,function(x) node[,,x,drop=FALSE]))
       }
-    res <- mapply(function(outm){
-                  func <- get(outm,mode="function")
-                  node <- apply(node,c(1,2),func)
-                  dim(node) <- c(dim(node),1)
-                  node},outm,SIMPLIFY=FALSE)
+    res <- lapply(outm, function(outm) .outm_reduce(node, outm))
+    names(res) <- outm
     if(length(outm)==1) return(res[[1]])
     return(res)
   }
@@ -124,13 +122,26 @@ tornado <- function(mc,output = length(mc),use = "all.obs",	method=c("spearman",
 
 
   # Build correlations
+  # Spearman with use = "all.obs": cor() ranks x and y with rank(na.last = "keep") and computes
+  # Pearson's correlation on the ranks. The ranks of the output columns and of the 'V' inputs are
+  # computed only once (same results).
+  spear <- method == "spearman" && use == "all.obs"
+  rk <- function(u) rank(u, na.last = "keep")
   calcorr <- function(inp,out){
     nunci <- dim(inp)[2]
-   sapply(1:nco,function(y) cor(out[,y,],inp[,ifelse(nunci==1,1,y),],method=method,use=use))
+    if(spear) {
+      if(nunci == 1) {
+        ri <- rk(inp[,1,])
+        return(sapply(1:nco, function(y) cor(out[,y], ri, use=use)))
+      }
+      return(sapply(1:nco, function(y) cor(out[,y], rk(inp[,y,]), use=use)))
+    }
+    sapply(1:nco,function(y) cor(out[,y,],inp[,ifelse(nunci==1,1,y),],method=method,use=use))
   }
+  rankout <- function(x) if(spear) vapply(1:nco, function(y) rk(x[,y,]), numeric(dim(x)[1])) else x
 
   if(!is.list(out)) out <- list(out)
-  res <- rapply(out,function(x) matrix(rapply(mc,calcorr,how="unlist",out=x),nrow=nco,dimnames=list(NULL,nomin)),how="replace")
+  res <- rapply(out,function(x) matrix(rapply(mc,calcorr,how="unlist",out=rankout(x)),nrow=nco,dimnames=list(NULL,nomin)),how="replace")
 
   if(typeout=="VU") {
     res <- lapply(res,function(x) {

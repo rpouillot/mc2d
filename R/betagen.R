@@ -31,17 +31,15 @@
 dbetagen <- function(x,shape1,shape2,min=0,max=1,ncp=0,log=FALSE)
 {
   if(length(x) == 0) return(numeric(0))
-  ow <- options(warn=-1)
-  on.exit(options(ow), add = TRUE)
   min <- as.vector(min)
   max <- as.vector(max)
   x <- (x - min)/(max - min)
   if(missing(ncp))
-  d <- dbeta(x, shape1=shape1, shape2=shape2) / (max-min)
+  d <- suppressWarnings(dbeta(x, shape1=shape1, shape2=shape2)) / (max-min)
   else
   {
   ncp<- as.vector(ncp)
-  d <- dbeta(x, shape1=shape1, shape2=shape2, ncp=ncp) / (max-min)
+  d <- suppressWarnings(dbeta(x, shape1=shape1, shape2=shape2, ncp=ncp)) / (max-min)
   }
   if(log) d <- log(d)
   d[max <= min] <- NaN
@@ -56,14 +54,12 @@ pbetagen <- function(q,shape1,shape2,min=0,max=1,ncp=0,lower.tail = TRUE, log.p 
   min <- as.vector(min)
   max <- as.vector(max)
   q2 <- (q - min)/(max-min)
-  ow <- options(warn=-1)
-  on.exit(options(ow), add = TRUE)
   if(missing(ncp))
-  p <- pbeta(q2,shape1=shape1,shape2=shape2, lower.tail=lower.tail,log.p=log.p)
+  p <- suppressWarnings(pbeta(q2,shape1=shape1,shape2=shape2, lower.tail=lower.tail,log.p=log.p))
   else
   {
   ncp <- as.vector(ncp)
-  p <- pbeta(q2,shape1=shape1,shape2=shape2, ncp=ncp, lower.tail=lower.tail, log.p=log.p)
+  p <- suppressWarnings(pbeta(q2,shape1=shape1,shape2=shape2, ncp=ncp, lower.tail=lower.tail, log.p=log.p))
   }
   # If min = max = q -> should return 1
   quel <- (abs(q - min) < (.Machine$double.eps^0.5)) &
@@ -83,14 +79,12 @@ qbetagen <- function(p,shape1,shape2,min=0,max=1,ncp=0,lower.tail=TRUE,log.p=FAL
   lout <- max(length(p),length(shape1),length(shape2),length(max),length(min),length(ncp))
   min <- rep(as.vector(min),length.out=lout)
   max <- rep(as.vector(max),length.out=lout)
-  ow <- options(warn=-1)
-  on.exit(options(ow), add = TRUE)
   if(missing(ncp))
-    q <- qbeta(p,shape1=shape1, shape2=shape2, lower.tail=lower.tail, log.p=log.p)
+    q <- suppressWarnings(qbeta(p,shape1=shape1, shape2=shape2, lower.tail=lower.tail, log.p=log.p))
   else
   {
     ncp <- as.vector(ncp)
-    q <- qbeta(p,shape1=shape1, shape2=shape2, ncp=ncp, lower.tail=lower.tail, log.p=log.p)
+    q <- suppressWarnings(qbeta(p,shape1=shape1, shape2=shape2, ncp=ncp, lower.tail=lower.tail, log.p=log.p))
   }
   q <- q * (max-min) + min
   q[max < min] <- NaN
@@ -105,16 +99,16 @@ rbetagen <- function(n,shape1,shape2,min=0,max=1,ncp=0)
   if(length(n) == 0 || as.integer(n) == 0) return(numeric(0))
   n <- as.integer(n)
   if(n < 0) stop("integer(n) can not be negative in rbetagen")
-  min <- rep(as.vector(min),length.out=n)
-  max <- rep(as.vector(max),length.out=n)
-  ow <- options(warn=-1)
-  on.exit(options(ow), add = TRUE)
+  lpar <- max(length(min), length(max))
+  len <- if(lpar > 0 && n %% lpar == 0 && all(lpar %% c(length(min), length(max)) == 0)) lpar else n   # recycled by R (same results)
+  min <- rep(as.vector(min),length.out=len)
+  max <- rep(as.vector(max),length.out=len)
   if(missing(ncp))
-    r <- rbeta(n, shape1=shape1, shape2=shape2)
+    r <- suppressWarnings(rbeta(n, shape1=shape1, shape2=shape2))
   else
   {
     ncp <- as.vector(ncp)
-    r <- rbeta(n, shape1=shape1, shape2=shape2, ncp=ncp)
+    r <- suppressWarnings(rbeta(n, shape1=shape1, shape2=shape2, ncp=ncp))
   }
   r <- r*(max-min) + min
   r[max < min] <- NaN

@@ -48,7 +48,7 @@ plot.tornado <- function(x,which=1,name=NULL,stat=c("median","mean"),xlab="metho
 		segments(0,1:nc,val[stat,],1:nc,lwd=2,col="grey")
     points(val[stat,],1:nc, pch="|", lwd=2)
     if(nr>3){
-        val <- apply(val[3:nr,],2,range)
+        val <- apply(val[3:nr,,drop=FALSE],2,range)
         segments(val[1,],1:nc,val[2,],1:nc,lwd=2)
         points(val[1,],1:nc, pch="|", lwd=2)
         points(val[2,],1:nc, pch="|", lwd=2)
@@ -65,7 +65,14 @@ plot.tornadounc <- function(x,which=1, stat="median", name=NULL, xlab="method", 
 {
   statposs <- rownames(x$value[[which]])
 
-  if(is.character(stat)) stat <- pmatch(stat, rownames(x$value[[which]]))
+  if(is.character(stat)) {
+    stat0 <- stat
+    stat <- pmatch(stat, rownames(x$value[[which]]))
+    if(is.na(stat) && identical(stat0, "median")) {   # default: the median of the output if available
+      stat <- grep("^50%", statposs)[1]
+      if(is.na(stat)) stat <- 1
+    }
+  }
   if(is.na(stat)) stop("stat should match with: ",paste(statposs,collapse=", "))
 
   x$value <- list(x$value[[which]][stat,,drop=FALSE])

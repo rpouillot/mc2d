@@ -54,7 +54,7 @@ dempiricalD <- function(x,values,prob=NULL,log=FALSE)
 
   if(!is.numeric(values) || !is.numeric(prob) || !is.numeric(x)) stop("Non numeric arguments in a mathematical function")
 
-  if(any(is.na(prob)) || any(apply(prob,1,"<",0)) || any(rowSums(prob) == 0))
+  if(any(is.na(prob)) || any(prob < 0) || any(rowSums(prob) == 0))
     stop("Nas in prob, or sum(prob)=0 or negative values of prob")
 
   ncv <- ncol(values)
@@ -75,26 +75,29 @@ dempiricalD <- function(x,values,prob=NULL,log=FALSE)
   prob <- lapply(prob, function(y) y /sum(y))
   values <- lapply(values,function(y) sort(unique(y)))
 
-  find <- Vectorize(function(x,val,pr) {
-    if(is.na(x)) return(NA)
-    quel <- x==val
-    if(any(quel)) return(pr[quel])
-    return(0)}
-    ,vectorize.args = "x")
-
-  # to gain time and memory
-  n1 <- l %/% mnr
-  n2 <- l %% mnr
-  l2 <- l-n2
-  x1 <- x[1:l2]
-
-  res <- vector(mode = "numeric", length = l)
-  res[1:l2] <- mapply(find,x1,values,prob)
-  if(n2!=0){
-    x2 <- x[(l2+1):l]
-    res[(l2+1):l] <- mapply(find,x2,values[1:n2],prob[1:n2])
-    }
-
+  res <- .empD_find(x, values, prob, "d", mnr)   # vectorized search
+  if(is.null(res)) {
+    find <- Vectorize(function(x,val,pr) {
+      if(is.na(x)) return(NA)
+      quel <- x==val
+      if(any(quel)) return(pr[quel])
+      return(0)}
+      ,vectorize.args = "x")
+  
+    # to gain time and memory
+    n1 <- l %/% mnr
+    n2 <- l %% mnr
+    l2 <- l-n2
+    x1 <- x[1:l2]
+  
+    res <- vector(mode = "numeric", length = l)
+    res[1:l2] <- mapply(find,x1,values,prob)
+    if(n2!=0){
+      x2 <- x[(l2+1):l]
+      res[(l2+1):l] <- mapply(find,x2,values[1:n2],prob[1:n2])
+      }
+  
+  }
   if(any(is.na(res))) warning("NaN in dempiricalD")
   if(log) res <- log(res)
   return(res)}
@@ -110,7 +113,7 @@ pempiricalD <- function(q,values,prob=NULL,lower.tail = TRUE, log.p = FALSE)
 
   if(!is.numeric(values) || !is.numeric(prob) || !is.numeric(q)) stop("Non numeric arguments in a mathematical function")
 
-  if(any(apply(prob,1,is.na)) || any(apply(prob,1,function(x) x < 0)) || any(rowSums(prob)==0))
+  if(anyNA(prob) || any(prob < 0) || any(rowSums(prob)==0))
     stop("Nas in prob, or sum(prob)=0 or negative values of prob")
 
   ncv <- ncol(values)
@@ -132,24 +135,27 @@ pempiricalD <- function(q,values,prob=NULL,lower.tail = TRUE, log.p = FALSE)
   values <- lapply(values,function(y) sort(unique(y)))
 
   # the "-1" combined with the "<" allows duplicated values
-  find <- Vectorize(function(x,val,pr){
-        if(is.na(x)) return(NA)
-        if(x < val[1]) return(0)
-        return(max(pr[x >= val]))},vectorize.args = "x")
-
-  # to gain time and memory
-  n1 <- l %/% mnr
-  n2 <- l %% mnr
-  l2 <- l-n2
-  q1 <- q[1:l2]
-
-  res <- vector("numeric",length=l)
-  res[1:l2] <- mapply(find,q1,values,prob)
-  if(n2!=0){
-    q2 <- q[(l2+1):l]
-    res[(l2+1):l] <- mapply(find,q2,values[1:n2],prob[1:n2])
-    }
-
+  res <- .empD_find(q, values, prob, "p", mnr)   # vectorized search
+  if(is.null(res)) {
+    find <- Vectorize(function(x,val,pr){
+          if(is.na(x)) return(NA)
+          if(x < val[1]) return(0)
+          return(max(pr[x >= val]))},vectorize.args = "x")
+  
+    # to gain time and memory
+    n1 <- l %/% mnr
+    n2 <- l %% mnr
+    l2 <- l-n2
+    q1 <- q[1:l2]
+  
+    res <- vector("numeric",length=l)
+    res[1:l2] <- mapply(find,q1,values,prob)
+    if(n2!=0){
+      q2 <- q[(l2+1):l]
+      res[(l2+1):l] <- mapply(find,q2,values[1:n2],prob[1:n2])
+      }
+  
+  }
   if(any(is.na(res))) warning("NaN in pempiricalD")
   if(!lower.tail) res <- 1-res
   if(log.p) res <- log(res)
@@ -166,7 +172,7 @@ qempiricalD <- function(p,values,prob=NULL,lower.tail = TRUE, log.p = FALSE)
 
   if(!is.numeric(values) || !is.numeric(prob) || !is.numeric(p)) stop("Non numeric arguments in a mathematical function")
 
-  if(any(apply(prob,1,is.na)) || any(apply(prob,1,function(x) x < 0)) || any(rowSums(prob)==0))
+  if(anyNA(prob) || any(prob < 0) || any(rowSums(prob)==0))
     stop("Nas in prob, or sum(prob)=0 or negative values of prob")
 
   if(log.p) p <- exp(p)
@@ -190,23 +196,26 @@ qempiricalD <- function(p,values,prob=NULL,lower.tail = TRUE, log.p = FALSE)
   prob <- lapply(prob, function(x) cumsum(x)/sum(x))
   values <- lapply(values,function(y) sort(unique(y)))
 
-  find <- Vectorize(function(x,val,pr){
-    if(x > 1 || x < 0) return(NaN)
-    return(min(val[x <= pr]))},vectorize.args = "x")
-
-  # to gain time and memory
-  n1 <- l %/% mnr
-  n2 <- l %% mnr
-  l2 <- l-n2
-  p1 <- p[1:l2]
-
-  res <- vector("numeric",length=l)
-  res[1:l2] <- mapply(find,p1,values,prob)
-  if(n2!=0){
-    p2 <- p[(l2+1):l]
-    res[(l2+1):l] <- mapply(find,p2,values[1:n2],prob[1:n2])
-    }
-
+  res <- .empD_find(p, values, prob, "q", mnr)   # vectorized search
+  if(is.null(res)) {
+    find <- Vectorize(function(x,val,pr){
+      if(x > 1 || x < 0) return(NaN)
+      return(min(val[x <= pr]))},vectorize.args = "x")
+  
+    # to gain time and memory
+    n1 <- l %/% mnr
+    n2 <- l %% mnr
+    l2 <- l-n2
+    p1 <- p[1:l2]
+  
+    res <- vector("numeric",length=l)
+    res[1:l2] <- mapply(find,p1,values,prob)
+    if(n2!=0){
+      p2 <- p[(l2+1):l]
+      res[(l2+1):l] <- mapply(find,p2,values[1:n2],prob[1:n2])
+      }
+  
+  }
   if(any(is.na(res))) warning("NaN in qempiricalD")
   return(res)
 }
@@ -241,12 +250,89 @@ rempiricalD <- function(n,values,prob=NULL)
   n1 <- n %/% mnr
   n2 <- n%% mnr
   # To gain time, send sample on n1
-  res <- mapply(sample, x=values, prob=prob, MoreArgs=list(size=n1,replace=TRUE))
+  # same random draws as sample(x, ...) when length(x) > 1, and correct for a single value
+  samplex <- function(x, size, replace, prob) x[sample.int(length(x), size = size, replace = replace, prob = prob)]
+  res <- mapply(samplex, x=values, prob=prob, MoreArgs=list(size=n1,replace=TRUE))
   dim(res) <- c(n1,mnr)
   res <- t(res)
   dim(res) <- NULL
   # then the remaining n2, if any
   if(n2!=0)
-    res <- c(res,mapply(sample,x=values[1:n2],prob=prob[1:n2],MoreArgs=list(size=1,replace=TRUE)))
+    res <- c(res,mapply(samplex,x=values[1:n2],prob=prob[1:n2],MoreArgs=list(size=1,replace=TRUE)))
   return(as.vector(res))
+}
+
+# Internal: vectorized version of the element by element search used in
+# dempiricalD / pempiricalD / qempiricalD. 'values' is the list of the sorted unique values
+# per row, 'prob' the list of (cumulative for "p" and "q") probabilities per row,
+# as computed in these functions. Element i of x uses values[[(i-1) %% length(values) + 1]]
+# and prob[[(i-1) %% length(prob) + 1]] (the recycling of mapply).
+# Returns NULL when the fast path does not apply (the original code is then used).
+.empD_find <- function(x, values, prob, what = c("d", "p", "q"), mnr)
+{
+  what <- match.arg(what)
+  l <- length(x)
+  nv <- length(values)
+  np <- length(prob)
+  if(l %% mnr != 0 && (nv != mnr || np != mnr)) return(NULL)
+  if(any(lengths(prob) != lengths(values)[(seq_len(np) - 1L) %% nv + 1L])) return(NULL)
+  if(nv == 1 && np == 1) {
+    val <- values[[1]]
+    pr <- as.vector(prob[[1]])
+    res <- switch(what,
+      d = { r <- pr[match(x, val)]; r[is.na(r)] <- 0; r },
+      p = c(0, pr)[findInterval(x, val) + 1L],
+      q = { i <- findInterval(x, pr, left.open = TRUE) + 1L
+            r <- val[i]
+            r[!is.na(i) & i > length(val)] <- Inf
+            r })
+  }
+  else {
+    tomat <- function(lst, fill) {
+      K <- max(lengths(lst))
+      m <- matrix(fill, nrow = length(lst), ncol = K)
+      for(i in seq_along(lst)) m[i, seq_along(lst[[i]])] <- lst[[i]]
+      m
+    }
+    V <- tomat(values, NA_real_)
+    P <- tomat(lapply(prob, as.vector), NA_real_)
+    K <- ncol(V)
+    rv <- (seq_len(l) - 1L) %% nv + 1L
+    rp <- (seq_len(l) - 1L) %% np + 1L
+    res <- numeric(l)
+    if(what == "d") {
+      for(k in seq_len(K)) {
+        hit <- which(x == V[rv, k])
+        res[hit] <- P[cbind(rp[hit], k)]
+      }
+    }
+    else if(what == "p") {
+      idx <- integer(l)
+      for(k in seq_len(K)) {
+        ge <- x >= V[rv, k]
+        ge[is.na(ge)] <- FALSE
+        idx <- idx + ge
+      }
+      pos <- which(idx > 0)
+      res[pos] <- P[cbind(rp[pos], idx[pos])]
+    }
+    else {
+      idx <- rep(1L, l)
+      for(k in seq_len(K)) {
+        gt <- x > P[rp, k]
+        gt[is.na(gt)] <- FALSE
+        idx <- idx + gt
+      }
+      lr <- lengths(values)[rv]
+      ok <- idx <= lr
+      res[ok] <- V[cbind(rv[ok], idx[ok])]
+      res[!ok] <- Inf
+    }
+  }
+  if(what == "q") {
+    if(any(is.infinite(res) & !is.na(x) & x >= 0 & x <= 1)) warning("no non-missing arguments to min; returning Inf")
+    res[!is.na(x) & (x > 1 | x < 0)] <- NaN
+  }
+  res[is.na(x)] <- NA
+  as.vector(res)
 }

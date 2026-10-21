@@ -57,8 +57,8 @@ plot.mc <- function(x, prec=0.001, stat = c("median","mean"), lim = c(0.025, 0.2
    if(is.null(xlab)) xlab <- noms
    n <- length(noms)
 
-   if(!is.null(ylim) & ((is.list(ylim) & length(ylim)!= n)|(is.vector(ylim) & length(ylim)!= 2))) stop("ylim should be NULL, a vector of 2 elements or a list of length the number of nodes")
-   if(!is.null(xlim) & ((is.list(xlim) & length(xlim)!= n)|(is.vector(xlim) & length(xlim)!= 2))) stop("xlim should be NULL, a vector of 2 elements or a list of length the number of nodes")
+   if(!is.null(ylim) && ((is.list(ylim) && length(ylim)!= n) || (!is.list(ylim) && length(ylim)!= 2))) stop("ylim should be NULL, a vector of 2 elements or a list of length the number of nodes")
+   if(!is.null(xlim) && ((is.list(xlim) && length(xlim)!= n) || (!is.list(xlim) && length(xlim)!= 2))) stop("xlim should be NULL, a vector of 2 elements or a list of length the number of nodes")
 
 	 main <- rep(main,n)
 	 xlab <- rep(xlab,n)
@@ -79,7 +79,7 @@ plot.mc <- function(x, prec=0.001, stat = c("median","mean"), lim = c(0.025, 0.2
         else y <- y[-1,,drop=FALSE]}                                              #Retrait median or mean
   		nr <- nrow(y)
       i <- get("i",envir=env)
-      xlima <- if(is.null(xlim)) range(y,na.rm=TRUE) else
+      xlima <- if(is.null(xlim)) range(y[if(is.null(rownames(y))) TRUE else rownames(y) != "Nas",,drop=FALSE],na.rm=TRUE) else
 		xlima <- if(is.list(xlim)) xlim[[i]] else xlim
   	  if(xlima[1]==xlima[2]) xlima <- xlima + c(-0.5,0.5)
       ylima <- if(is.null(ylim)) c(0,1) else

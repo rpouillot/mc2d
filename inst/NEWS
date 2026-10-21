@@ -1,5 +1,80 @@
 === mc2d ===
 
+Version 0.2-3
+=============
+
+DEPENDENCIES
+- 'ggpubr' (and its ~60 recursive dependencies) is no longer needed.
+
+BUG FIX
+- Ops.mcnode: operations between a "V", "U" or "0" mcnode and an array (or a
+  matrix) always failed.
+- outm, mcdata, mcprobtree, Ops.mcnode: a vector of functions as "outm"
+  (e.g. outm = c("min","max")) failed with R >= 4.3.
+- outm(x, value, which.node) did not modify the node of an mc object.
+- mcdata: a 1 x k matrix was accepted (and truncated) for a "0" mcnode.
+- mcdatanocontrol: the "type" argument was not checked (a missing type led to
+  an invalid mcnode).
+- mcstoc and rtrunc: 'rtrunc = TRUE' or 'lhs = TRUE' failed with the default
+  function (runif) or with a function given as pkg::fun. The warning about
+  rounding errors in truncated distributions was almost never issued.
+- mcapply: margin "unc" or "variates" failed on a dimension of length 1.
+- pmin / pmax: a single argument returned a list; incompatible numbers of
+  variates are now an error.
+- mcprobtree: the elements of 'mcvalues' were only found if they were global
+  variables (e.g. it failed inside a function); 'mcvalues' given as a variable
+  and a single branch failed.
+- cornode: a 'V' mcnode not in the first position was not rejected.
+- is.mcnode: some invalid "0" mcnodes and invalid types were accepted.
+- mc: the names coming from mc objects are now made unique, as documented.
+- rmultinomial: the rows were not in the order of the parameters when 'size'
+  or 'prob' had several values (e.g. mcstoc(rmultinomial, "VU", size = <a "V"
+  mcnode>, ...)).
+- dmultinomial: x > 0 for a probability of 0 gave a density of 1 instead of 0.
+- rempiricalC: the support ('values' and 'prob' given as vectors) was truncated
+  to n values when n < length(values).
+- qempiricalD: NA in p led to an error. rempiricalD: a single value failed.
+- dtriang, ptriang: wrong results when 'min' was the longest parameter or when
+  the parameters had lengths that are not multiples.
+- dpert: NaN for large values of shape (underflow).
+- dbetasubj: NaN instead of 0 outside [min, max].
+- ddirichlet: NaN when x = 0 and alpha = 1.
+- dlnormb, plnormb, qlnormb, rlnormb: mean <= 0 or sd < 0 now give NaN.
+- qmqi: a probability < 0 corrupted the other results (now NaN).
+- rpert, rtriang, rbetagen, (d, p, q)pert, (d, p, q)betagen: the warnings of
+  the package ("NaN in ...", "mode < min or mode > max") were never shown.
+- summary.mc: the warning about NA was issued once per node.
+- converg: failed with nvariates > 1 and with non finite values (log scale).
+- tornadounc: wrong results with use = "pairwise.complete.obs" and NA; the
+  option use = "complete.obs" failed for mccut objects.
+- evalmccut: failed when nsu = 1 or when no 'U' or 'VU' node was built in the
+  first block; the type of the nodes in the first simulation was wrong when 'U'
+  and 'VU' nodes were mixed in the first block.
+- plot.mccut failed when all the nodes had the same type. The x range of the
+  graph included the number of NA.
+- plot.tornadounc, ggtornadounc: failed with the default value of 'stat'.
+  plot.tornado, ggtornado: failed with a single input.
+- plot.mc, ggplotmc: a list of xlim / ylim was rejected.
+- hist, gghist, spaghetti, ggspaghetti: with several functions in "outm", each
+  function was applied to the result of the previous one.
+- spaghetti: the x axis started at 0 even for negative values.
+
+PERFORMANCE (large mcnodes, e.g. nsv = 1e5 and nsu = 200)
+- The "outm" functions sum, mean, min and max are vectorized (summary, print,
+  quantile, tornado, hist, ...): up to 100 times faster.
+- spaghetti: 12 times faster, without building a data frame of all the values.
+- converg: the running statistics are computed on a grid of iterations when
+  there are more than 1000 iterations (was quadratic).
+- dempiricalD, pempiricalD, qempiricalD: vectorized (100 to 300 times faster).
+- dempiricalC, pempiricalC, qempiricalC, rempiricalC with varying min / max:
+  vectorized (40 times faster).
+- ddirichlet (20x), dmultinomial (5x), rtriang (2x), rpert, lhs.
+- tornado (Spearman): ranks computed once (2x). summary, tornadounc,
+  quantile: no copy of the whole node.
+- Ops.mcnode, mcdata, mcstoc, pmin, pmax: fewer copies of the data.
+- evalmccut: the results are filled in place (no copy at each iteration).
+
+
 Version 0.2-2
 =============
 

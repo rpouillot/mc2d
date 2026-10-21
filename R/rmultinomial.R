@@ -41,28 +41,24 @@ dmultinomial <- function (x, size = NULL, prob, log = FALSE)
     if(nx != maxn) x <- matrix(t(x), ncol=K, nrow=maxn, byrow=TRUE)
 	if(np != maxn) prob <- matrix(t(prob), ncol=K, nrow=maxn, byrow=TRUE)
 
-	N <- apply(x,1,sum)
+	N <- rowSums(x)
 	if (is.null(size)) size <- N
     size <- rep(size, length = maxn)
 	if (any(size != N)) stop("at least one size != sum(x), i.e. one is wrong")
 
-	if (any(prob < 0) || any((s <- apply(prob,1,sum)) == 0))
+	if (any(prob < 0) || any((s <- rowSums(prob)) == 0))
         stop("probabilities cannot be negative nor all 0.")
     prob <- prob/s
     if (any(as.integer(x + 0.5) < 0)) stop("'x' must be non-negative")
 
-    r <- sapply(1:maxn, function(y) {
-									xx <- as.integer(x[y,]+.5)
-									pp <- prob[y,]
-									i0 <- pp == 0
-									if (any(i0)) {
-										if (any(xx[i0] != 0)) return(0)
-										xx <- xx[!i0]
-										pp <- pp[!i0]
-												}
-									return(lgamma(size[y] + 1) + sum(xx * log(pp) - lgamma(xx + 1)))
-									}
-				)
+    # vectorized over the rows (same sums, in long double, as sum())
+    xx <- as.integer(x + .5)
+    dim(xx) <- dim(x)
+    lt <- xx * log(prob) - lgamma(xx + 1)
+    i0 <- prob == 0
+    lt[i0] <- 0
+    r <- lgamma(size + 1) + rowSums(lt)
+    r[rowSums(i0 & xx != 0) > 0] <- -Inf                 # x > 0 for a probability of 0
 
     if (log) return(r) else return(exp(r))
 }
@@ -92,7 +88,7 @@ rmultinomial <- function(n, size, prob)
 
   res <- sapply(1:mnr,function(x) rmultinom(n1,ss[x],prob[x,]))
   res <- matrix(res,ncol=ncol(prob),byrow=TRUE)
-  index <- as.vector(matrix(1:(mnr*n1),ncol=mnr,byrow=TRUE))
+  index <- as.vector(t(matrix(seq_len(mnr*n1), nrow=n1)))   # draw 1 of each set of parameters, then draw 2, ...
   res <- res[index,]
 
   if (n2 != 0){

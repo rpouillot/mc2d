@@ -109,6 +109,7 @@ dbetasubj <- function(x,
   a1 <- 2 * (mean-min) * (mid-mode) / (mean-mode) / (max-min)
   a2 <- a1 * (max-mean) / (mean-min)
   d <- (x-min)^(a1-1) * (max-x)^(a2-1) / beta(a1, a2) / (max-min)^(a1+a2-1)
+  d[x < min | x > max] <- 0
   
   if(log) d <- log(d)
   

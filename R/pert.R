@@ -68,9 +68,13 @@ dpert <- function(x,min=-1,mode=0,max=1,shape=4,log=FALSE, mean = 0){
 	a1 <- 1+shape*(mode-min)/(max-min)	
 	a2 <- 1+shape*(max-mode)/(max-min)
 	
-	oldw <- options(warn = -1)
-	on.exit(options(oldw), add = TRUE)
-	d <- (x-min)^(a1-1) * (max-x)^(a2-1) / beta(a=a1,b=a2) / (max-min)^(a1+a2-1)
+	d <- suppressWarnings((x-min)^(a1-1) * (max-x)^(a2-1) / beta(a=a1,b=a2) / (max-min)^(a1+a2-1))
+	# under/overflow of the direct formula (e.g. large shape): use dbeta
+	bad <- !is.finite(d) & !is.na(x)
+	if(any(bad)) {
+	  d2 <- suppressWarnings(dbeta((x-min)/(max-min), a1, a2) / (max-min))
+	  if(length(d2) == length(d)) d[bad] <- d2[bad]
+	}
 	
   d[x < min | x > max] <- 0
 	d[mode < min | max < mode] <- NaN
@@ -101,9 +105,7 @@ ppert <- function(q,min=-1,mode=0,max=1,shape=4,lower.tail = TRUE, log.p = FALSE
   a1 <- 1+shape*(mode-min)/(max-min)	
 	a2 <- 1+shape*(max-mode)/(max-min)
   
-	oldw <- options(warn = -1)
-	on.exit(options(oldw), add = TRUE)
-	p <- pbeta(q=(q-min)/(max-min),shape1=a1,shape2=a2)
+	p <- suppressWarnings(pbeta(q=(q-min)/(max-min),shape1=a1,shape2=a2))
 	
   p[q < min] <- 0
 	p[q >= max] <- 1
@@ -147,13 +149,12 @@ qpert <- function(p, min=-1, mode=0, max=1, shape=4, lower.tail=TRUE, log.p=FALS
       p <- 1 - p
     a1 <- 1 + shape * (mode - min)/(max - min)
     a2 <- 1 + shape * (max - mode)/(max - min)
-    oldw <- options(warn = -1)
-    on.exit(options(oldw), add = TRUE)
-    q <- qbeta(p, shape1 = a1, shape2 = a2)
+    q <- suppressWarnings(qbeta(p, shape1 = a1, shape2 = a2))
     q <- q * (max - min) + min
     # Check if min == max, but avoid some of the rounding errors
     minmodemax <- min >= max
-    q <- ifelse(minmodemax, min, q)
+    if(anyNA(minmodemax) || any(minmodemax)) q <- ifelse(minmodemax, min, q)
+    attributes(q) <- NULL                      # plain vector, as in previous versions
     q[p < 0 | p > 1] <- NaN
     q[mode < min | max < mode] <- NaN
     q[shape <= 0] <- NaN
@@ -175,30 +176,33 @@ rpert <- function(n,min=-1,mode=0,max=1,shape=4, mean=0){
   
   if (!missing(mode) && !missing(mean)) stop("specify 'mode' or 'mean' but not both")
 
-  min <- rep(as.vector(min),length.out=n)
-  max <- rep(as.vector(max),length.out=n)
-  shape <- rep(as.vector(shape),length.out=n)
+  # Parameters are recycled by R (same results) and not replicated to length n,
+  # unless n is not a multiple of their length or their lengths are not multiples
+  lpar <- max(length(min), length(max), length(shape), if(missing(mode)) length(mean) else length(mode))
+  len <- if(lpar > 0 && n %% lpar == 0 &&
+            all(lpar %% c(length(min), length(max), length(shape), if(missing(mode)) length(mean) else length(mode)) == 0)) lpar else n
+  min <- rep(as.vector(min),length.out=len)
+  max <- rep(as.vector(max),length.out=len)
+  shape <- rep(as.vector(shape),length.out=len)
   
   if (missing(mode)){
-    mean <- rep(as.vector(mean),length.out=n)
+    mean <- rep(as.vector(mean),length.out=len)
     mode <- ((shape+2)*mean - min - max) / shape
     if(any(mode < min | mode > max)) warning("Some values of mean lead to mode < min or mode > max.")
     
-  } else {  mode <- rep(as.vector(mode),length.out=n) }
+  } else {  mode <- rep(as.vector(mode),length.out=len) }
   
 
   a1 <- 1 + shape * (mode - min)/(max - min)
   a2 <- 1 + shape * (max - mode)/(max - min)
-  oldw <- options(warn = -1)
-  on.exit(options(oldw), add = TRUE)
-  r <- rbeta(n, shape1 = a1, shape2 = a2) * (max - min) + min
+  r <- suppressWarnings(rbeta(n, shape1 = a1, shape2 = a2)) * (max - min) + min
   # Check if min == max, but avoid some of the rounding errors
   minmodemax <- min >= max
-  r <- ifelse(minmodemax, min, r)
+  if(anyNA(minmodemax) || any(minmodemax)) r <- ifelse(rep(minmodemax, length.out=n), rep(min, length.out=n), r)
 
   check <- mode < min | mode > max
   if(any(check)) {
-    r[check] <- NA
+    r[rep(check, length.out=n)] <- NA
     warning("Some values of mode < min or mode > max.")
   }
   

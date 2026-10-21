@@ -47,8 +47,8 @@ mcapply <- function(x, margin=c("all","var","unc","variates"), fun, ...)
   nl <- length(dat)
 
   if(nl == length(x)){		 # fun(n) give n scalar
-	if(margin == "unc") 			dat <- aperm(dat,c(2,1,3))
-	else if(margin == "variates") 	dat <- aperm(dat,c(2,3,1))
+	if(length(dim(dat)) == 3 && margin == "unc") 			dat <- aperm(dat,c(2,1,3))
+	else if(length(dim(dat)) == 3 && margin == "variates") 	dat <- aperm(dat,c(2,3,1))
 	x[] <- dat
 	return(x)
 	}

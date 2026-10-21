@@ -78,8 +78,8 @@ ggplotmc.mcnode <- function(x, prec=0.001,
   if(is.null(xlab)) xlab <- noms
   n <- length(noms)
   
-  if(!is.null(ylim) & ((is.list(ylim) & length(ylim)!= n)|(is.vector(ylim) & length(ylim)!= 2))) stop("ylim should be NULL, a vector of 2 elements or a list of length the number of nodes") 
-  if(!is.null(xlim) & ((is.list(xlim) & length(xlim)!= n)|(is.vector(xlim) & length(xlim)!= 2))) stop("xlim should be NULL, a vector of 2 elements or a list of length the number of nodes") 
+  if(!is.null(ylim) && ((is.list(ylim) && length(ylim)!= n) || (!is.list(ylim) && length(ylim)!= 2))) stop("ylim should be NULL, a vector of 2 elements or a list of length the number of nodes") 
+  if(!is.null(xlim) && ((is.list(xlim) && length(xlim)!= n) || (!is.list(xlim) && length(xlim)!= 2))) stop("xlim should be NULL, a vector of 2 elements or a list of length the number of nodes") 
   
   main <- rep(main,n)
   xlab <- rep(xlab,n)
@@ -208,8 +208,8 @@ ggplotmc.mc <- function(x, prec=0.001,
   if(is.null(xlab)) xlab <- noms
   n <- length(noms)
   
-  if(!is.null(ylim) & ((is.list(ylim) & length(ylim)!= n)|(is.vector(ylim) & length(ylim)!= 2))) stop("ylim should be NULL, a vector of 2 elements or a list of length the number of nodes") 
-  if(!is.null(xlim) & ((is.list(xlim) & length(xlim)!= n)|(is.vector(xlim) & length(xlim)!= 2))) stop("xlim should be NULL, a vector of 2 elements or a list of length the number of nodes") 
+  if(!is.null(ylim) && ((is.list(ylim) && length(ylim)!= n) || (!is.list(ylim) && length(ylim)!= 2))) stop("ylim should be NULL, a vector of 2 elements or a list of length the number of nodes") 
+  if(!is.null(xlim) && ((is.list(xlim) && length(xlim)!= n) || (!is.list(xlim) && length(xlim)!= 2))) stop("xlim should be NULL, a vector of 2 elements or a list of length the number of nodes") 
   
   main <- rep(main,n)
   xlab <- rep(xlab,n)
@@ -292,7 +292,7 @@ ggplotmc.mc <- function(x, prec=0.001,
     
     rapply(y,LEPLOT,how="list")
 
-    gga <- ggpubr::ggarrange(plotlist = plotlist,ncol=griddim[2],nrow=griddim[1])
+    gga <- .ggarrange(plotlist = plotlist,ncol=griddim[2],nrow=griddim[1])
   })
 
   return(gga)

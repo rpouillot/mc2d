@@ -21,12 +21,12 @@
 #' @export
 outm <- function(x,value="each",which.node=1)
 {
-  if(is.character(value)  && (value == "none" || value == "each" | all(sapply(value,exists,mode="function")))){
+  if(.check_outm(value)){
 
   if(inherits(x,"mcnode"))  attr(x,which="outm") <- value
       else if(inherits(x,"mc")) {
         if(is.character(which.node)) which.node <- which(names(x) %in% which.node)
-        attr(x[which.node],which="outm") <- value}
+        for(w in which.node) attr(x[[w]],which="outm") <- value}
     }
   else stop("value should be 'none','each' or the name a valid function")
   return(x)

@@ -39,7 +39,7 @@ rtrunc <- function(distr=runif, n, linf=-Inf, lsup=Inf,...)
 {
     linf <- as.vector(linf)
 	lsup <- as.vector(lsup)
-	if(!is.character(distr)) distr <- as.character(match.call()$distr)          #retrieve the name of the function
+	if(!is.character(distr)) distr <- .fun_name(substitute(distr), "runif")      #retrieve the name of the function
     distr <- substr(distr, 2, 1000)                                             #remove the r
 
     if(any(linf >= lsup)) stop("linf should be < lsup")  #recycle vectors
@@ -64,7 +64,7 @@ rtrunc <- function(distr=runif, n, linf=-Inf, lsup=Inf,...)
 
     #Two tests for extreme situations. None Catch all possibilities. THe error is first to avoid the warning
     if(any(res <= linf | res > lsup, na.rm=TRUE)) stop("Error in rtrunc: some values are not in the expected range (maybe due to rounding errors)")
-    if(isTRUE(all.equal(pinf,1)) | isTRUE(all.equal(psup,0)) ) warning("Warning: check the results from rtrunc. It may have reached rounding errors")
+    if(any(abs(pinf - 1) < 1.5e-8, na.rm=TRUE) || any(abs(psup) < 1.5e-8, na.rm=TRUE)) warning("Warning: check the results from rtrunc. It may have reached rounding errors")
 
     return(res)
 }

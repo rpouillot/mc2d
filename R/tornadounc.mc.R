@@ -70,8 +70,8 @@ tornadounc.mc <- function(mc,output = length(mc), quant=c(0.5,0.75,0.975),use = 
   nomi <- nom[nom != output]
 
    # Which col are complete
-  quelk <- !apply(sapply(mc,function(x) apply(x,2,function(x) any(is.na(x)))),1,any)
-  nco <- sum(quelk)              # remaining dimension of uncertainty
+  quelk <- !Reduce("|", lapply(mc, function(x) rowSums(matrix(colSums(is.na(x)), nrow = dim(x)[2])) > 0))
+  nco <- if(na.method == 2) sum(quelk) else length(quelk)      # remaining dimension of uncertainty
 
   if(!all(quelk)){
     if(na.method==1) stop("NA values. Change 'use' option")
@@ -107,12 +107,10 @@ tornadounc.mc <- function(mc,output = length(mc), quant=c(0.5,0.75,0.975),use = 
   gerout <- function(node,name,outm,nvariates){
     if(outm[1]=="each")
       res <- lapply(1:nvariates,function(x) node[,,x,drop=FALSE])
-    else
-        res <- mapply(function(outm){
-                  func <- get(outm,mode="function")
-                  node <- apply(node,c(1,2),func)
-                  dim(node) <- c(dim(node),1)
-                  node},outm,SIMPLIFY=FALSE)
+    else {
+        res <- lapply(outm, function(outm) .outm_reduce(node, outm))
+        names(res) <- outm
+    }
 
   return(res)
   }
@@ -125,9 +123,11 @@ tornadounc.mc <- function(mc,output = length(mc), quant=c(0.5,0.75,0.975),use = 
     if(typen=="U")
       tmp <- lapply(node,function(x) x[1,,])
     else {
-      tmp <- lapply(node,function(x)
-                              apply(x,c(2,3),function(x) c(mean=mean(x,na.rm=TRUE),sd=sd(x,na.rm=TRUE), # Compliance with the deprecation of sd(<matrix>)
-                                              quantile(x,na.rm=TRUE,prob=quant))))
+      # column by column (no copy of the whole array)
+      statcol <- function(x) c(mean=mean(x,na.rm=TRUE),sd=sd(x,na.rm=TRUE),quantile(x,na.rm=TRUE,prob=quant))
+      tmp <- lapply(node,function(x) {
+                              nr <- dim(x)[1]
+                              vapply(seq_len(dim(x)[2]), function(j) statcol(x[(j - 1L) * nr + seq_len(nr)]), numeric(2 + length(quant)))})
                                               }
       node <- lapply(tmp,matrix,nrow=nco,byrow=TRUE)
 

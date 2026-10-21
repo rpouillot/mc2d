@@ -46,7 +46,7 @@ plot.mccut <- function(x, stat = c("median","mean"), lim = c(0.025, 0.25, 0.75, 
       return(x)
   }
 
-  x <- mapply(LEQUANT,x,typen)
+  x <- mapply(LEQUANT,x,typen,SIMPLIFY=FALSE)
 
   class(x) <- "plotmc"
   plot.mc(x,stat = stat, lim=lim, griddim = griddim, xlab = xlab, ylab = ylab, main = main, draw=draw, ...)

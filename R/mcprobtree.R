@@ -39,19 +39,23 @@
 #' @export
 mcprobtree <- function(mcswitch, mcvalues, type=c("V","U","VU","0"), nsv=ndvar(), nsu=ndunc(), nvariates=1, outm="each", seed=NULL)
 {
+    envir <- parent.frame()                      # where the elements of mcvalues are evaluated
     if (!is.null(seed)) set.seed(seed)
-    if (!is.character(outm) || (outm != "none" && outm != "each" &&
-        !all(sapply(outm, exists, mode = "function"))))
+    if (!.check_outm(outm))
         stop("outm should be 'none','each' or the name a valid function")
     type <- match.arg(type)
     nsv
     nsu
     if (type == "V") nsu <- 1 else if (type == "U") nsv <- 1 else if(type=="0") {nsv <- nsu <- 1}
-    stoc <- as.list(substitute(mcvalues))
+    stoc <- substitute(mcvalues)
+    if (!(is.call(stoc) && identical(stoc[[1]], as.name("list")))) {  # a list given as a variable
+        stoc <- c(list(NULL), as.list(mcvalues))
+        names(stoc)[1] <- ""
+    }
+    stoc <- as.list(stoc)
     choixstoc <- as.numeric(names(stoc))
     if (any(is.na(choixstoc[-1])))
         stop("Names of the mcvalues element should be convertible as numeric")
-    stoc <- substitute(mcvalues)
     if (inherits(mcswitch, "mcnode")) {
         typem <- attr(mcswitch, "type")
         if ((type == "V" && typem == "U") || (type == "U" &&
@@ -67,17 +71,17 @@ mcprobtree <- function(mcswitch, mcvalues, type=c("V","U","VU","0"), nsv=ndvar()
             stop("mcswitch values should be finite, nonnegative and not all zero")
         mcswitch <- mcswitch/sum(mcswitch)
         dimf <- prod(c(nsv, nsu, nvariates))
-        mcswitch <- sample(x = choixstoc[-1], size = dimf, replace = TRUE, prob = mcswitch)
+        mcswitch <- choixstoc[-1][sample.int(length(mcswitch), size = dimf, replace = TRUE, prob = mcswitch)]
     }
     else stop("mcswitch should be an mcnode or a vector")
     choixswitch <- unique(mcswitch)
-    if (!all(choixswitch %in% choixstoc))
+    if (!all(choixswitch %in% choixstoc[-1]))
         stop("Some values of mcswitch are not a name of elements of mcvalues")
     res <- mcdata(NA, type = type, nsv = nsv, nsu = nsu, nvariates = nvariates)
     for (i in choixswitch) {
         whichswitch <- mcswitch == i
         nbcall <- which(choixstoc == i)
-        thecall <- eval(stoc[[nbcall]])
+        thecall <- eval(stoc[[nbcall]], envir = envir)
         if (!inherits(thecall, "mcnode"))
             stop("One mcvalues does not lead to a mcnode")
         typen <- attr(thecall, "type")

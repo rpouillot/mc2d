@@ -1,12 +1,17 @@
-
-.Rbuildignore
 /.Rproj*
 .Rhistory
 mc2d.Rproj
 .Rproj.user
 .RData
 .Ruserdata
-echo .DS_Store >> ~/.gitignore_global
 testRP.R
 /doc/
 /Meta/
+Rplots.pdf
+# vignette build outputs (knitr figures, tangled code, rendered PDFs)
+vignettes/figs/
+vignettes/*_files/
+vignettes/docmcEnglish.R
+vignettes/docmcEnglish.pdf
+vignettes/mc2dLmEnglish.R
+vignettes/mc2dLmEnglish.pdf

@@ -20,7 +20,8 @@ argument \samp{p} as a vector of probabilities.}
 \item{...}{all arguments to be passed to \samp{distr} except the size of the sample.}
 }
 \value{
-A \samp{nsv x nsu} matrix of random variates.
+A vector of \samp{nsv x nsu x nvariates} random variates, stratified
+  along the variability dimension (\samp{nsv}) for each column.
 }
 \description{
 Creates a Latin Hypercube Sample (LHS) from the specified distribution.

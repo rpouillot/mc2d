@@ -87,7 +87,7 @@ mc <- function(..., name=NULL, devname=FALSE)
 	if(!is.null(name)) {
 		if(length(name)!=length(rv)) stop("the vector name is not equal to the number of rv")
 		names(rv) <- make.unique(name,sep="") }
-  else names(rv) <- nom
+  else names(rv) <- make.unique(nom,sep="")
 
   class(rv) <- "mc"
   attr(rv,which="type") <- type

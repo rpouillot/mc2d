@@ -43,6 +43,27 @@ Ops.mcnode <- function(e1,e2)
 {
   err <- "Incompatible mcnode dimensions"
 
+  # Check a vector or an array used with an mcnode of type 'type' and dimension 'dimf'
+  checkother <- function(e, dimf, type, nom){
+    if(!is.numeric(e) && !is.logical(e)) stop(nom, " should be numeric or logical")
+    if(is.vector(e)){
+      l <- length(e)
+      if(l != 1 && l != dimf[1]*dimf[2] && l!= prod(dimf)) stop("The vector size is not compatible with the node dimension. Length should be 1 or n=",dimf[1]*dimf[2]," or n=",prod(dimf))
+    }
+    else if(is.array(e)){
+      dim1 <- dim(e)
+      l <- length(dim1)
+      if(l > 3) stop("Maximum accepted dim of arrays is 3.")
+      if(l == 2) dim1 <- c(dim1,0)  # just to simplify the following tests
+      if(!((type=="VU" && dim1[1]== dimf[1] && dim1[2]==dimf[2] && dim1[3] %in% c(0,1,dimf[3])) ||
+           (type=="V" &&  dim1[1]== dimf[1] && dim1[2]==1 && dim1[3] %in% c(0,1,dimf[3])) ||
+           (type=="U" &&  dim1[1]== 1 && dim1[2]==dimf[2] && dim1[3] %in% c(0,1,dimf[3])) ||
+           (type=="0" &&  dim1[1]== 1 && dim1[2]==1 && dim1[3] %in% c(0,1,dimf[3]))))
+        stop("The array size is not compatible with the node dimension. Should be of dim: ",paste(dimf,collapse=" "))
+    }
+    else stop("data should be a vector, a matrix, an array or a mcnode")
+  }
+
   if(missing(e2)) {    # only e1 like -X
     type <- attr(e1,"type")
     outm <- attr(e1,"outm")
@@ -54,27 +75,7 @@ Ops.mcnode <- function(e1,e2)
           dimf <- dim(e2)
           type <- attr(e2,"type")
           outm <- attr(e2,"outm")
-
-          if(!is.numeric(e1) && !is.logical(e1)) stop("e1 should be numeric or logical")
-
-          if(is.vector(e1)){
-            l <- length(e1)
-            if(l != 1 && l != dimf[1]*dimf[2] && l!= prod(dimf)) stop("The vector size is not compatible
-              with the node dimension. Length should be 1 or n=",dimf[1]*dimf[2]," or n=",prod(dimf))
-            }
-
-          else if(is.array(e1)){
-            dim1 <- dim(e1)
-            l <- length(dim1)
-            if(l > 3) stop("Maximum accepted dim of arrays is 3.")
-            if(l == 2) dim1 <- c(dim1,0)  # just to simplify the following tests
-            if(! (type=="VU" && dim1[1]== dimf[1] && dim1[2]==dimf[2] && dim1[3] %in% c(0,1,dimf[3])) ||
-                 (type=="V" &&  dim1[1]== dimf[1] && dim1[2]==1 && dim1[3] %in% c(0,1,dimf[3])) ||
-                 (type=="U" &&  dim1[1]== 1 && dim1[2]==dimf[2] && dim1[3] %in% c(0,1,dimf[3])) ||
-                 (type=="0" &&  dim1[1]== 1 && dim1[1]==1 && dim1[3] %in% c(0,1,dimf[3])) )
-                  stop("The array size is not compatible with the node dimension. Should be of dim: ",paste(dimf,collapse=" "))
-            }
-          else stop("data should be a vector, a matrix, an array or a mcnode")
+          checkother(e1, dimf, type, "e1")
       }
 
       else {
@@ -82,27 +83,7 @@ Ops.mcnode <- function(e1,e2)
               dimf <- dim(e1)
               type <- attr(e1,"type")
               outm <- attr(e1,"outm")
-
-              if(!is.numeric(e2) && !is.logical(e2)) stop("e2 should be numeric or logical")
-
-              if(is.vector(e2)){
-                l <- length(e2)
-                if(l != 1 && l != dimf[1]*dimf[2] && l!= prod(dimf)) stop("The vector size is not compatible
-                  with the node dimension. Length should be 1 or n=",dimf[1]*dimf[2]," or n=",prod(dimf))
-                }
-
-              else if(is.array(e2)){
-                dim2 <- dim(e2)
-                l <- length(dim2)
-                if(l > 3) stop("Maximum accepted dim of arrays is 3.")
-                if(l == 2) dim2 <- c(dim2,0)  # just to simplify the following tests
-                if(! (type=="VU" && dim2[1]== dimf[1] && dim2[2]==dimf[2] && dim2[3] %in% c(0,1,dimf[3])) ||
-                     (type=="V" &&  dim2[1]== dimf[1] && dim2[2]==1 && dim2[3] %in% c(0,1,dimf[3])) ||
-                     (type=="U" &&  dim2[1]== 1 && dim2[2]==dimf[2] && dim2[3] %in% c(0,1,dimf[3])) ||
-                     (type=="0" &&  dim2[1]== 1 && dim2[1]==1 && dim2[3] %in% c(0,1,dimf[3])) )
-                      stop("The array size is not compatible with the node dimension. Should be of dim: ",paste(dimf,collapse=" "))
-                }
-              else stop("data should be a vector, a matrix, an array or a mcnode")
+              checkother(e2, dimf, type, "e2")
           }
 
           else {                            # e1 and e2 mcnode
@@ -116,8 +97,8 @@ Ops.mcnode <- function(e1,e2)
               if(is.null(outm1) && is.null(outm2)) outm <- "each"
               else if(is.null(outm1)) outm <- outm2
               else if(is.null(outm2)) outm <- outm1
-              else if(outm1 == "each" || outm2 == "each") outm <- "each"
-                else if(outm1=="none") outm <- outm2
+              else if(identical(outm1, "each") || identical(outm2, "each")) outm <- "each"
+                else if(identical(outm1, "none")) outm <- outm2
                   else outm <- outm1
 
               type1 <- attr(e1,"type")
@@ -129,12 +110,12 @@ Ops.mcnode <- function(e1,e2)
 
               else if(type1=="0"){
                 type <- type2                                                                    # 0 + others. gere la troisieme dim si necessaire
-                if(dim1[3] != 1) e1 <- rep(e1, each=dimf[1]*dimf[2])
+                if(dim1[3] != 1) e1 <- rep(as.vector(e1), each=dimf[1]*dimf[2])
                 }
 
               else if(type2=="0"){
                 type <- type1
-                if(dim2[3] != 1) e2 <- rep(e2, each=dimf[1]*dimf[2])
+                if(dim2[3] != 1) e2 <- rep(as.vector(e2), each=dimf[1]*dimf[2])
                 }
 
               else {                                                                                 #U+V, V+U, V+VU and U+VU
@@ -142,22 +123,22 @@ Ops.mcnode <- function(e1,e2)
 
                 if(type1=="U") {                                                                    #U+V and U+VU
                   if(type2=="VU" && dim1[2]!= dim2[2]) stop(err)
-                  e1 <- apply(e1,3,matrix,ncol=dimf[2],nrow=dimf[1],byrow=TRUE)                    # recycling dim 1,2
+                  e1 <- .recycle_node(e1, "U", dimf[1], dimf[2])                                    # recycling dim 1,2
                   }
 
                 else if(type2=="U") {                                                               #V+U and VU+U dim 1,2
                   if(type1=="VU" && dim1[2]!= dim2[2]) stop(err)
-                  e2 <- apply(e2,3,matrix,ncol=dimf[2],nrow=dimf[1],byrow=TRUE)                    # recycling dim 1,2
+                  e2 <- .recycle_node(e2, "U", dimf[1], dimf[2])                                    # recycling dim 1,2
                   }
 
                 if(type1=="V") {
                   if(type2=="VU" && dim1[1]!= dim2[1]) stop(err)
-                  if(dim1[3]!=1 && dimf[2]!=1) e1 <- apply(e1,3,matrix,ncol=dimf[2],nrow=dimf[1])  # necessary recycling of V for arrays
+                  if(dim1[3]!=1 && dimf[2]!=1) e1 <- .recycle_node(e1, "V", dimf[1], dimf[2])       # necessary recycling of V for arrays
                   }
 
                 else if(type2=="V"){
                   if(type1=="VU" && dim1[1]!= dim2[1]) stop(err)
-                  if(dim2[3]!=1 && dimf[2]!=1) e2 <- apply(e2,3,matrix,ncol=dimf[2],nrow=dimf[1])
+                  if(dim2[3]!=1 && dimf[2]!=1) e2 <- .recycle_node(e2, "V", dimf[1], dimf[2])
                   }
               }
           } # fin e1 e2 mcnode
@@ -168,11 +149,6 @@ Ops.mcnode <- function(e1,e2)
 
     } # fin else
 
-
     res <- NextMethod(.Generic)
-    res <- array(res,dim=dimf)
-    class(res) <- "mcnode"
-    attr(res,"type") <- type
-    attr(res,"outm") <- outm
-    return(res)
+    .as_mcnode(res, dimf, type, outm)
 }

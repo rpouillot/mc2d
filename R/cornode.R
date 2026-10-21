@@ -49,10 +49,13 @@ cornode <- function(...,target, outrank=FALSE, result=FALSE, seed=NULL)
     Ret <- Rr %*% P
     Rret <- apply(Ret,2,rank,ties.method="random")
     Xr <- apply(mat,2,order)
-    rang <- sapply(1:p, function(i) (Xr[,i])[Rret[,i]])
-    rang <- rang[order(rang[,1]),]
+    idcol <- rep(seq_len(p), each = nvar)
+    rang <- matrix(Xr[cbind(as.vector(Rret), idcol)], nrow = nvar)
+    inv <- integer(nvar)
+    inv[rang[,1]] <- seq_len(nvar)                 # = order(rang[,1]) as rang[,1] is a permutation
+    rang <- rang[inv, , drop = FALSE]
     if(outrank) return(rang)
-    return(sapply(1:p, function(i) mat[rang[,i],i]))
+    return(matrix(mat[cbind(as.vector(rang), idcol)], nrow = nvar))
   }
 
   data <- list(...)
@@ -119,7 +122,7 @@ cornode <- function(...,target, outrank=FALSE, result=FALSE, seed=NULL)
         warning("impossible to provide the correlation result")
         result <- FALSE
       }
-      if(sum(tmcn=="V")!=1 && tmcn[1]!="V")
+      if(sum(tmcn=="V")!=1 || tmcn[1]!="V")
         stop("Valid if only one 'V' node in the first position is combined with 'VU' nodes")
     }
 
@@ -143,7 +146,7 @@ cornode <- function(...,target, outrank=FALSE, result=FALSE, seed=NULL)
 
   for(k in 1:nvariates){
     for(i in 1:nunc){
-      ir <- ifelse(tmcd[2,1]==1, 1, i)
+      ir <- if(tmcd[2,1]==1) 1 else i
       datai[,1] <- data[[1]][,ir,k]
       for(j in 2:p) datai[,j] <- data[[j]][,i,k]
       sortim <- iman(datai)

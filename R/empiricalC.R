@@ -62,8 +62,8 @@ dempiricalC <- function(x, min, max, values, prob=NULL, log=FALSE)
 		stop("values/prob should be vector(s), matrix(es) of 1 row or matrix(es) of the same number of rows")
 
 	if(any(!is.finite(values)) || any(!is.finite(min)) || any(!is.finite(max)) || any(!is.finite(prob))) stop("values, prob, min and ax should be finite values")
-	if(any(min > max) || any(min > apply(values,1,min)) || any(max < apply(values,1,max))) stop("at least one min is not a minimum or max is not a maximum")
-	if(any(prob < 0) || any(apply(prob,1,sum) == 0)) stop("Prob should be non negative and sum(prob) should be != 0")
+	if(any(min > max) || any(min > do.call(pmin, lapply(seq_len(ncol(values)), function(j) values[,j]))) || any(max < do.call(pmax, lapply(seq_len(ncol(values)), function(j) values[,j])))) stop("at least one min is not a minimum or max is not a maximum")
+	if(any(prob < 0) || any(rowSums(prob) == 0)) stop("Prob should be non negative and sum(prob) should be != 0")
 
 	onerow <- function(x, min, max, values, prob){
 
@@ -92,12 +92,15 @@ dempiricalC <- function(x, min, max, values, prob=NULL, log=FALSE)
 	if(lpar == 1) { #Shortcut if only one set of parameters
 		d <- onerow(x, as.vector(min), as.vector(max), as.vector(values), as.vector(prob))} else
 		{ # launch lpar time the function
-		x      <- matrix(x, nrow = lpar)
-		x      <- lapply(1:lpar, function(y) x[y,])
-		prob   <- lapply(1:nrp,  function(x) prob[x,])
-		values <- lapply(1:nrv,  function(x) values[x,])
-		d <- as.vector(t(mapply(onerow, x, min, max, values, prob)))
-		d <- d[1:max(lx,lpar)]
+		d <- if(nrv == 1 && nrp == 1) .empC_fast(x, min, max, values, prob, "d", lpar) else NULL   # vectorized
+		if(is.null(d)) {
+  		x      <- matrix(x, nrow = lpar)
+  		x      <- lapply(1:lpar, function(y) x[y,])
+  		prob   <- lapply(1:nrp,  function(x) prob[x,])
+  		values <- lapply(1:nrv,  function(x) values[x,])
+  		d <- as.vector(t(mapply(onerow, x, min, max, values, prob)))
+  		d <- d[1:max(lx,lpar)]
+		}
 		}
 
 	if(log) d <- log(d)
@@ -125,8 +128,8 @@ pempiricalC <- function(q, min, max, values, prob=NULL, lower.tail = TRUE, log.p
 		stop("values/prob should be vector(s), matrix(es) of 1 row or matrix(es) of the same number of rows")
 
 	if(any(!is.finite(values)) || any(!is.finite(min)) || any(!is.finite(max)) || any(!is.finite(prob))) stop("values, prob, min and ax should be finite values")
-	if(any(min > max) || any(min > apply(values,1,min)) || any(max < apply(values,1,max))) stop("at least one min is not a minimum or max is not a maximum")
-	if(any(prob < 0) || any(apply(prob,1,sum) == 0)) stop("Prob should be non negative and sum(prob) should be != 0")
+	if(any(min > max) || any(min > do.call(pmin, lapply(seq_len(ncol(values)), function(j) values[,j]))) || any(max < do.call(pmax, lapply(seq_len(ncol(values)), function(j) values[,j])))) stop("at least one min is not a minimum or max is not a maximum")
+	if(any(prob < 0) || any(rowSums(prob) == 0)) stop("Prob should be non negative and sum(prob) should be != 0")
 
   onerow <- function(q,min,max,values,prob){
 
@@ -161,12 +164,15 @@ pempiricalC <- function(q, min, max, values, prob=NULL, lower.tail = TRUE, log.p
 	if(lpar == 1) { #Shortcut if only one set of parameters
 		p <- onerow(q, as.vector(min), as.vector(max), as.vector(values), as.vector(prob))} else
 		{ # launch lpar time the function
-		q      <- matrix(q, nrow = lpar)
-		q      <- lapply(1:lpar, function(y) q[y,])
-		prob   <- lapply(1:nrp,  function(x) prob[x,])
-		values <- lapply(1:nrv,  function(x) values[x,])
-		p <- as.vector(t(mapply(onerow, q, min, max, values, prob)))
-		p <- p[1:max(lq,lpar)]
+		p <- if(nrv == 1 && nrp == 1) .empC_fast(q, min, max, values, prob, "p", lpar) else NULL   # vectorized
+		if(is.null(p)) {
+  		q      <- matrix(q, nrow = lpar)
+  		q      <- lapply(1:lpar, function(y) q[y,])
+  		prob   <- lapply(1:nrp,  function(x) prob[x,])
+  		values <- lapply(1:nrv,  function(x) values[x,])
+  		p <- as.vector(t(mapply(onerow, q, min, max, values, prob)))
+  		p <- p[1:max(lq,lpar)]
+		}
 		}
 
 	if(!lower.tail) p <- 1-p
@@ -197,8 +203,8 @@ qempiricalC <- function(p, min, max, values, prob=NULL, lower.tail = TRUE, log.p
 		stop("values/prob should be vector(s), matrix(es) of 1 row or matrix(es) of the same number of rows")
 
 	if(any(!is.finite(values)) || any(!is.finite(min)) || any(!is.finite(max)) || any(!is.finite(prob))) stop("values, prob, min and ax should be finite values")
-	if(any(min > max) || any(min > apply(values,1,min)) || any(max < apply(values,1,max))) stop("at least one min is not a minimum or max is not a maximum")
-	if(any(prob < 0) || any(apply(prob,1,sum) == 0)) stop("Prob should be non negative and sum(prob) should be != 0")
+	if(any(min > max) || any(min > do.call(pmin, lapply(seq_len(ncol(values)), function(j) values[,j]))) || any(max < do.call(pmax, lapply(seq_len(ncol(values)), function(j) values[,j])))) stop("at least one min is not a minimum or max is not a maximum")
+	if(any(prob < 0) || any(rowSums(prob) == 0)) stop("Prob should be non negative and sum(prob) should be != 0")
 
 	onerow <- function(p, min, max, values, prob){
 		val2 <- sort(unique(values))
@@ -237,12 +243,15 @@ qempiricalC <- function(p, min, max, values, prob=NULL, lower.tail = TRUE, log.p
 	if(lpar == 1) { #Shortcut if only one set of parameters
 		q <- onerow(p, as.vector(min), as.vector(max), as.vector(values), as.vector(prob))} else
 		{ # launch lpar time the function
-		p      <- matrix(p, nrow = lpar)
-		p      <- lapply(1:lpar, function(y) p[y,])
-		prob   <- lapply(1:nrp,  function(x) prob[x,])
-		values <- lapply(1:nrv,  function(x) values[x,])
-		q <- as.vector(t(mapply(onerow, p, min, max, values, prob)))
-		q <- q[1:max(lp,lpar)]
+		q <- if(nrv == 1 && nrp == 1) .empC_fast(p, min, max, values, prob, "q", lpar) else NULL   # vectorized
+		if(is.null(q)) {
+  		p      <- matrix(p, nrow = lpar)
+  		p      <- lapply(1:lpar, function(y) p[y,])
+  		prob   <- lapply(1:nrp,  function(x) prob[x,])
+  		values <- lapply(1:nrv,  function(x) values[x,])
+  		q <- as.vector(t(mapply(onerow, p, min, max, values, prob)))
+  		q <- q[1:max(lp,lpar)]
+		}
 		}
 
 	if(any(is.na(q))) warning("NaN in qempiricalC")
@@ -258,11 +267,125 @@ rempiricalC <- function(n, min, max, values, prob=NULL)
   if(n < 0) stop("integer(n) cannot be negative in rempiricalc")
   if(length(min) > n) min <- min[1:n]
   if(length(max) > n) max <- max[1:n]
-  if(is.vector(values) && length(values) > n) values <- values[1:n]
-  else if(is.matrix(values) && nrow(values) > n)   values <- values[1:n,]
-  if(is.vector(prob) && length(prob) > n) prob <- prob[1:n]
-  else if(is.matrix(prob) && nrow(prob) > n)   prob <- prob[1:n,]
+  if(is.matrix(values) && nrow(values) > n)   values <- values[1:n,]
+  if(is.matrix(prob) && nrow(prob) > n)   prob <- prob[1:n,]
 
   r <- qempiricalC(runif(n), min=min, max=max, values=values, prob=prob, lower.tail = TRUE, log.p = FALSE)
   return(as.vector(r))
   }
+
+# Internal: vectorized version of the "one row per set of parameters" computation of
+# dempiricalC / pempiricalC / qempiricalC, when 'values' and 'prob' are a single row
+# and 'min' / 'max' vary (lpar > 1). Same operations, in the same order, as the
+# function 'onerow' of these functions. Returns NULL when not applicable.
+.empC_fast <- function(x, min, max, values, prob, what = c("d", "p", "q"), lpar)
+{
+  what <- match.arg(what)
+  lx <- length(x)
+  if(all(is.na(x))) return(NULL)
+  if(lpar %% length(min) != 0 || lpar %% length(max) != 0) return(NULL)
+  values <- as.vector(values)
+  prob <- as.vector(prob)
+  val2 <- sort(unique(values))
+  probi <- as.vector(tapply(prob, values, sum))
+  K <- length(val2)
+  if(length(probi) != K) return(NULL)
+
+  x <- as.vector(matrix(x, nrow = lpar))         # same recycling as the original code
+  n <- length(x)
+  row <- (seq_len(n) - 1L) %% lpar + 1L
+  min <- rep(as.vector(min), length.out = lpar)
+  max <- rep(as.vector(max), length.out = lpar)
+
+  # h = c(val2,max) - c(min,val2), one row per set of parameters
+  H <- matrix(0, nrow = lpar, ncol = K + 1)
+  H[, 1] <- val2[1] - min
+  H[, K + 1] <- max - val2[K]
+  for(k in seq_len(K)[-1]) H[, k] <- val2[k] - val2[k - 1]
+  terms <- function(pr) {             # h*(a+b)/2 with a <- c(0,pr), b <- c(pr,0)
+    if(is.matrix(pr)) { a <- cbind(0, pr); b <- cbind(pr, 0) }
+    else { a <- matrix(rep(c(0, pr), each = lpar), nrow = lpar); b <- matrix(rep(c(pr, 0), each = lpar), nrow = lpar) }
+    H * (a + b) / 2
+  }
+
+  mi <- min[row]
+  ma <- max[row]
+  vfull <- function(j, r) {           # c(-Inf,min,val2,max,Inf)[j] for the row r
+    v <- numeric(length(j))
+    v[j == 1] <- -Inf
+    v[j == 2] <- min[r[j == 2]]
+    i <- j >= 3 & j <= K + 2
+    v[i] <- val2[j[i] - 2]
+    v[j == K + 3] <- max[r[j == K + 3]]
+    v[j == K + 4] <- Inf
+    v
+  }
+
+  if(what == "d") {
+    probi <- probi / sum(probi)
+    Integ <- rowSums(terms(probi))
+    pfull <- c(0, 0, probi, 0, 0)
+    res <- rep(NA_real_, n)
+    res[x >= ma | x <= mi] <- 0
+    les <- which(!is.na(x) & x < ma & x > mi)
+    xl <- x[les]; rl <- row[les]
+    quel <- findInterval(xl, val2) + 3L
+    v0 <- vfull(quel - 1L, rl); v1 <- vfull(quel, rl)
+    res[les] <- pfull[quel - 1L] + (xl - v0) / (v1 - v0) * (pfull[quel] - pfull[quel - 1L])
+    res <- res / Integ[row]
+    return(res[1:max(lx, lpar)])
+  }
+
+  Integ <- rowSums(terms(probi))
+  PI <- matrix(rep(probi, each = lpar), nrow = lpar) / Integ      # probi / Integ, row by row
+  U <- terms(PI)
+  CUM <- U
+  for(k in seq_len(K + 1)[-1]) CUM[, k] <- rowSums(U[, 1:k, drop = FALSE])   # = cumsum(), row by row
+  pifull <- function(j, r) {          # c(0,0,probi,0,0)[j] for the row r
+    v <- numeric(length(j))
+    i <- j >= 3 & j <= K + 2
+    v[i] <- PI[cbind(r[i], j[i] - 2L)]
+    v
+  }
+
+  if(what == "p") {
+    res <- rep(NA_real_, n)
+    res[x >= ma] <- 1
+    res[x <= mi] <- 0
+    les <- which(!is.na(x) & x < ma & x > mi)
+    xl <- x[les]; rl <- row[les]
+    quel <- findInterval(xl, val2) + 3L
+    v0 <- vfull(quel - 1L, rl); v1 <- vfull(quel, rl)
+    j0 <- quel - 1L
+    pc0 <- numeric(length(j0))
+    i <- j0 >= 3
+    pc0[i] <- CUM[cbind(rl[i], j0[i] - 2L)]
+    p0 <- pifull(quel - 1L, rl); p1 <- pifull(quel, rl)
+    res[les] <- pc0 + (xl - v0) * (p0 + ((p1 - p0) * (xl - v0) / (2 * (v1 - v0))))
+    return(res[1:max(lx, lpar)])
+  }
+
+  # what == "q"
+  res <- rep(NA_real_, n)
+  res[x > 1] <- NaN
+  i1 <- which(x == 1)
+  res[i1] <- ma[i1]
+  res[x < 0] <- NaN
+  les <- which(!is.na(x) & x < 1 & x >= 0)
+  xl <- x[les]; rl <- row[les]
+  cnt <- integer(length(les))
+  for(k in seq_len(K + 1)) cnt <- cnt + (xl >= CUM[rl, k])
+  quel <- cnt + 3L
+  j0 <- quel - 1L
+  pc0 <- numeric(length(j0))
+  i <- j0 >= 3
+  pc0[i] <- CUM[cbind(rl[i], j0[i] - 2L)]
+  v0 <- vfull(j0, rl); v1 <- vfull(quel, rl)
+  p0 <- pifull(j0, rl); p1 <- pifull(quel, rl)
+  a <- (p1 - p0) / (v1 - v0) / 2
+  b <- p0
+  c <- pc0 - xl
+  d <- b^2 - 4 * a * c
+  res[les] <- ifelse(a == 0, -c/b + v0, (-b + sqrt(d))/2/a + v0)
+  res[1:max(lx, lpar)]
+}

@@ -72,7 +72,7 @@ gghist.mcnode <- function(x, griddim = NULL, xlab = names(x),ylab = "Frequency",
   
   loutm <- lapply(x,attr,which="outm")
   dimm <- sapply(x,dim)
-  n <- sum(dimm[3,]* (loutm=="each") + (loutm!="each" & loutm!="none"))
+  n <- .n_outm_panels(loutm, dimm[3,])
   
   
   if(is.null(griddim)) griddim <- beau(n)
@@ -88,21 +88,20 @@ gghist.mcnode <- function(x, griddim = NULL, xlab = names(x),ylab = "Frequency",
       
       for(j in loutm[[i]]){                                                     # loop on the nb of stat, j is the name of the function
         
+        xi <- x[[i]]
         if(j == "each"){
           nvar <- dim(x[[i]])[3]
           if(nvar==1) xlab2 <- xlab[i] else xlab2 <- paste(xlab[i],1:nvar,sep="")
         }else{
-          func <- get(j,mode="function")                                        # apply the function
-          x[[i]] <- apply(x[[i]],c(1,2),func)
-          dim(x[[i]]) <- c(dim(x[[i]]),1)
+          xi <- .outm_reduce(x[[i]], j)                                         # apply the function on the original node
           nvar <- 1                                                             #1 dimension now for this stat
           xlab2 <- paste(j,xlab[i])                                             #change the name with the name of the stat
         }
         
-        if(is.logical(x[[i]])) x[[i]] <- unclass(x[[i]]) * 1                        # unclass to avoid Ops.mcnode
+        if(is.logical(xi)) xi <- unclass(xi) * 1                                  # unclass to avoid Ops.mcnode
         
         for(k in 1:nvar){
-          df <- data.frame(x = as.vector(x[[i]][,,k])) # nvariates data
+          df <- data.frame(x = as.vector(xi[,,k])) # nvariates data
           plotlist[[k]] <- ggplot2::ggplot(df,aes(x=x))+
             ggplot2::geom_histogram(bins = bins,fill="grey",colour="black",...)+
             ggplot2::xlab(xlab2[k])+
@@ -155,7 +154,7 @@ gghist.mc <- function(x, griddim = NULL, xlab = names(x),ylab = "Frequency", mai
   
   loutm <- lapply(x,attr,which="outm")
   dimm <- sapply(x,dim)
-  n <- sum(dimm[3,]* (loutm=="each") + (loutm!="each" & loutm!="none"))
+  n <- .n_outm_panels(loutm, dimm[3,])
   
   
   if(is.null(griddim)) griddim <- beau(n)
@@ -171,21 +170,20 @@ gghist.mc <- function(x, griddim = NULL, xlab = names(x),ylab = "Frequency", mai
       
       for(j in loutm[[i]]){                                                     # loop on the nb of stat, j is the name of the function
         
+        xi <- x[[i]]
         if(j == "each"){
           nvar <- dim(x[[i]])[3]
           if(nvar==1) xlab2 <- xlab[i] else xlab2 <- paste(xlab[i],1:nvar,sep="")
         } else {
-          func <- get(j,mode="function")                                        # apply the function
-          x[[i]] <- apply(x[[i]],c(1,2),func)
-          dim(x[[i]]) <- c(dim(x[[i]]),1)
+          xi <- .outm_reduce(x[[i]], j)                                         # apply the function on the original node
           nvar <- 1                                                             #1 dimension now for this stat
           xlab2 <- paste(j,xlab[i])                                             #change the name with the name of the stat
         }
         
-        if(is.logical(x[[i]])) x[[i]] <- unclass(x[[i]]) * 1                    # unclass to avoid Ops.mcnode
+        if(is.logical(xi)) xi <- unclass(xi) * 1                                  # unclass to avoid Ops.mcnode
         
         for(k in 1:nvar){
-          df <- data.frame(x = as.vector(x[[i]][,,k])) # nvariates data
+          df <- data.frame(x = as.vector(xi[,,k])) # nvariates data
           ggp <- ggplot2::ggplot(df, ggplot2::aes(x=x))+
             ggplot2::geom_histogram(bins = bins,fill="grey",colour="black", ...)+
             ggplot2::xlab(xlab2[k])+
@@ -199,7 +197,7 @@ gghist.mc <- function(x, griddim = NULL, xlab = names(x),ylab = "Frequency", mai
         }
       }
     }
-    gga <- ggpubr::ggarrange(plotlist = plotlist,ncol=griddim[2],nrow=griddim[1])
+    gga <- .ggarrange(plotlist = plotlist,ncol=griddim[2],nrow=griddim[1])
     
   })
   return(gga)

@@ -46,12 +46,21 @@ ddirichlet <- function (x, alpha)
     if(nra != nrx) alpha <- matrix(t(alpha), ncol = nca, nrow = nrx, byrow = TRUE)
 
 	lgama <- lgamma(alpha)
-	logD <- apply(lgama,1,sum) - lgamma(apply(alpha,1,sum))
-	s <- apply((alpha - 1) * log(x), 1, sum)
+	logD <- rowSums(lgama) - lgamma(rowSums(alpha))
+	lx <- (alpha - 1) * log(x)
+	lx[alpha == 1 & !is.na(x)] <- 0                      # 0 * log(0) = 0
+	s <- rowSums(lx)
 	pd <- exp(s - logD)
 
-	pd[apply(x, 1, function(z) any(z < 0 | z > 1))] <- 0
-    pd[apply(x, 1, function(z) all.equal(sum(z), 1) != TRUE)] <- 0
+	out <- x < 0 | x > 1                                  # any() by row, NA as in any()
+	anyout <- rowSums(out, na.rm = TRUE) > 0
+	anyout[!anyout & rowSums(is.na(out)) > 0] <- NA
+	pd[anyout] <- 0
+    # all.equal(sum(z), 1) != TRUE, by row
+    sz <- rowSums(x)
+    dif <- abs(sz - 1)
+    rel <- ifelse(is.finite(sz) & abs(sz) > 1.5e-8, dif / abs(sz), dif)
+    pd[is.na(sz) | is.na(rel) | rel > 1.5e-8] <- 0
     return(pd)
 }
 

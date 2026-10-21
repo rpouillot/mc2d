@@ -105,6 +105,28 @@ evalmccut <- function(model, nsv = ndvar(), nsu = ndunc(), seed = NULL,  ind = "
     return(PREC)
     }
 
+  # LEAVES gives the paths (vectors of positions) to the arrays of the structure built by FONCSPEC
+  # (NULL if the structures of STAT and PREC differ: FONCSPEC is then used)
+  LEAVES <- function(STAT, PREC, PATH = integer(0)){
+    if(inherits(STAT,"tornado")) STAT <- STAT$value
+    if(!is.list(PREC)) return(list(PATH))
+    if(!is.list(STAT) || length(STAT) != length(PREC)) return(NULL)
+    RES <- list()
+    for(K in seq_along(PREC)){
+      L <- LEAVES(STAT[[K]], PREC[[K]], c(PATH, K))
+      if(is.null(L)) return(NULL)
+      RES <- c(RES, L)}
+    RES
+  }
+  # GETLEAF extracts the element of STAT corresponding to a path
+  GETLEAF <- function(STAT, PATH){
+    for(K in PATH){
+      if(inherits(STAT,"tornado")) STAT <- STAT$value
+      STAT <- STAT[[K]]}
+    if(inherits(STAT,"tornado")) STAT <- STAT$value
+    STAT
+  }
+
 OLDV <- ndvar()
 OLDU <- ndunc()
 RESULTAT <- try({                                                                # Debut du try
@@ -121,7 +143,7 @@ RESULTAT <- try({                                                               
   eval(model[[1]][[2]])
   LSEND <- ls()
   NEW <- LSEND[!(LSEND %in% LSBEG)]                                             # New objects built
-  NEW <- NEW[sapply(NEW,function(x) inherits(get(x),"mcnode"))]                 # New mcnode built
+  NEW <- NEW[vapply(NEW,function(x) inherits(get(x),"mcnode"),NA)]              # New mcnode built
   TYPE <- sapply(NEW, function(x) attr(get(x),which="type"))
   OUTM <- sapply(NEW, function(x) attr(get(x),which="outm"))
     cat("'0' mcnode(s) built in the first block:",NEW[TYPE == "0"],"\n")
@@ -138,7 +160,7 @@ RESULTAT <- try({                                                               
   NORIG <- NEW[QUEL]                                                            # Name of the node to save
   NSAVED <- paste("SAVE",NORIG,sep="")                                          # New names
 
-  for(i in 1:NN)  assign(NSAVED[i], get(NORIG[i]))                              # Save the nodes
+  for(i in seq_len(NN))  assign(NSAVED[i], get(NORIG[i]))                       # Save the nodes
 
   # Prepare the loop
   ndunc(1)                                                                      # nsu = 1
@@ -153,9 +175,9 @@ RESULTAT <- try({                                                               
 
   # Get the first row of the stocked nodes
   NODE <- vector(mode="list",length=NN)
-  for(i in 1:NN) {
+  for(i in seq_len(NN)) {
     NODE[[i]] <- get(NSAVED[i])[,1,,drop=FALSE]                                 # Can not be put in an mapply function
-    attr(NODE[[i]],which="type") <- TORIG[1]                                    # First simulation: keep the original "type"
+    attr(NODE[[i]],which="type") <- TORIG[i]                                    # First simulation: keep the original "type"
     attr(NODE[[i]],which="outm") <- OUTM[i]
     class(NODE[[i]])  <- "mcnode"
     assign(NORIG[i],NODE[[i]]) }                                                 # And assign them to their original name
@@ -176,7 +198,7 @@ RESULTAT <- try({                                                               
 
  #Evaluate the model with new types
     NODE <- mapply("attr<-",NODE,"type",TORIG1D,SIMPLIFY=FALSE)                 # Assign the new type
-    for(i in 1:NN) assign(NORIG[i],NODE[[i]])                                   # And assign them to their original name
+    for(i in seq_len(NN)) assign(NORIG[i],NODE[[i]])                            # And assign them to their original name
 
     MCOBJ[] <- mapply("attr<-",MCOBJ,"type",TYPENEW,SIMPLIFY=FALSE)
     assign(NOM,MCOBJ)
@@ -186,13 +208,14 @@ RESULTAT <- try({                                                               
  #Define the final structure and stock the first simu
     SORTIE <- DEFINEOUT(PREMSPRIM)
     SORTIE <- mapply(FONCSPEC,PREMSPRIM,SORTIE,MoreArgs=list(LOOP=1),SIMPLIFY=FALSE)
+    PATHS <- LEAVES(PREMSPRIM, SORTIE)
 
 # Other Simulations
-  for(LOOP in 2:nsu){
+  for(LOOP in seq_len(nsu)[-1]){
 
     assign(ind,LOOP)
 
-    for(i in 1:NN) {
+    for(i in seq_len(NN)) {
       NODE[[i]][] <- get(NSAVED[i])[,LOOP,,drop=FALSE]
       assign(NORIG[i],NODE[[i]])
     }
@@ -203,7 +226,9 @@ RESULTAT <- try({                                                               
     assign(NOM,MCOBJ)
 
     STAT <- eval(model[[1]][[4]])
-    SORTIE <- mapply(FONCSPEC,STAT,SORTIE,MoreArgs=list(LOOP=LOOP),SIMPLIFY=FALSE)
+    if(!is.null(PATHS) && !is.null(names(STAT)) && identical(names(STAT), names(SORTIE)))
+      for(P in PATHS) SORTIE[[P]][,LOOP,] <- GETLEAF(STAT, P)                   # in place
+    else SORTIE <- mapply(FONCSPEC,STAT,SORTIE,MoreArgs=list(LOOP=LOOP),SIMPLIFY=FALSE)
 
     cat(rep("*",sum(LOOP == quelcroix)),sep="")                                    # progress bar
     flush.console()

@@ -58,11 +58,8 @@ mcratio <- function(x, pcentral = .5, pvar = .975, punc = .975, na.rm=FALSE)
       if(nvariates==1) return(node)
       return(lapply(1:nvariates,function(x) node[,,x,drop=FALSE]))
       }
-    res <- mapply(function(outm){
-                  func <- get(outm,mode="function")
-                  node <- apply(node,c(1,2),func)
-                  dim(node) <- c(dim(node),1)
-                  node},outm,SIMPLIFY=FALSE)
+    res <- lapply(outm, function(outm) .outm_reduce(node, outm))
+    names(res) <- outm
     if(length(outm)==1) return(res[[1]])
     return(res)
   }

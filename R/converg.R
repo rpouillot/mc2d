@@ -78,19 +78,25 @@ cat("Convergence for ",node,", variates: ", nvariates,"\n",sep="")
   stat <- function(i,x,lesq){
       c(mean=mean(x[1:i],na.rm=TRUE),quantile(x[1:i],probs=c(0.5,lesq),na.rm=TRUE,names=FALSE))}
 
-  graph <- function(x,typen,titre){
+  # Iterations where the running statistics are evaluated: all of them up to 1000,
+  # the 100 first ones and a regular grid of 500 iterations otherwise (the running
+  # statistics are computed exactly at these iterations)
+  lesiter <- function(n) if(n <= 1000) seq_len(n) else unique(c(1:100, round(seq(1, n, length.out = 500))))
+
+  graph <- function(x,typen,titre,it=seq_len(ncol(x))){
     if(typen=="U") {xlab <- "Iterations (Unc)" ; lty <- 2}
     else {xlab <- "Iterations (Var)" ; lty <- 1}
-    ylim <- range(x)
-    plot(x[1,],ylim=ylim,main=titre,xlab=xlab,ylab="",type="l",col="blue",lwd=2)
-    lines(x[2,],col="red",lwd=2,lty=lty)
+    ylim <- range(x, finite=TRUE)
+    plot(it,x[1,],ylim=ylim,main=titre,xlab=xlab,ylab="",type="l",col="blue",lwd=2)
+    lines(it,x[2,],col="red",lwd=2,lty=lty)
     for(i in 2:nrow(x)){
-      lines(x[i,],col="red",lty=lty)
+      lines(it,x[i,],col="red",lty=lty)
       }
     }
 
   if(typen=="VU" && !cmcc && margin=="var"){
       x <- x[,iter,nvariates,drop=FALSE]
+      nvariates <- 1                          # only one variate left
       node <- paste(node,"[,",iter,"]",sep="")
       typen <- "V"
       cat("Iteration #",iter," in the uncertainty dimension\n",sep="")
@@ -99,8 +105,9 @@ cat("Convergence for ",node,", variates: ", nvariates,"\n",sep="")
   if(typen %in% c("V","U")){
       x <- as.vector(x[,,nvariates])
       if(typen == "U") mesq <- lim else mesq <- probs
-      x <- sapply(1:length(x),stat,x=x,lesq=mesq)
-      graph(x,typen,node)
+      it <- lesiter(length(x))
+      x <- sapply(it,stat,x=x,lesq=mesq)
+      graph(x,typen,node,it)
       }
   else {  # 2DVU with margin == "unc" and mccut
           if(!cmcc) x <- apply(x[,,nvariates,drop=FALSE],2,function(x) c(mean=mean(x,na.rm=TRUE),quantile(x,probs=c(0.5,probs),na.rm=TRUE)))
@@ -120,8 +127,9 @@ cat("Convergence for ",node,", variates: ", nvariates,"\n",sep="")
           try({                 #to restore par in case of error
             for(i in 1:ng) {
               mesq <- lim
-              tmp <- sapply(1:length(x[i,]),stat,x=x[i,],lesq=mesq)
-              graph(tmp,"U",nom[i])
+              it <- lesiter(length(x[i,]))
+              tmp <- sapply(it,stat,x=x[i,],lesq=mesq)
+              graph(tmp,"U",nom[i],it)
             }
           })
           par(op)

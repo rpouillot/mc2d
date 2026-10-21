@@ -15,7 +15,8 @@
 #' @param nsu the number of columns of the final matrix.
 #' @param nvariates the number of variates.
 #' @param ... all arguments to be passed to \samp{distr} except the size of the sample.
-#' @return A \samp{nsv x nsu} matrix of random variates.
+#' @return A vector of \samp{nsv x nsu x nvariates} random variates, stratified
+#'   along the variability dimension (\samp{nsv}) for each column.
 #' @note Adapted from a code by Rob Carnell (package \pkg{lhs}).
 #' @seealso \code{\link{mcstoc}}
 #' @keywords design
@@ -34,17 +35,20 @@ lhs <- function(distr="runif",nsv=ndvar(),nsu=ndunc(),nvariates=1,...)
 
     arg <- list(...)
 
-    if(!is.character(distr)) distr <- as.character(match.call()$distr)                     #retrieve the name of the function
+    if(!is.character(distr)) distr <- .fun_name(substitute(distr), "runif")                 #retrieve the name of the function
     distr <- substr(distr, 2, 1000)                             #remove the r
     distr <- paste("q",distr,sep="")                            # add the q
 
-    ranperm <- function(X, N) order(runif(N))
 
-    P <- array(dim=c(nsv, nsu, nvariates))
+
+    P <- array(0, dim=c(nsv, nsu, nvariates))
+    group <- rep(seq_len(nsu), each = nsv)
+    offset <- rep(seq.int(0, by = nsv, length.out = nsu), each = nsv)
     for(i in 1:nvariates) {
-      P[,,i] <- apply(P[,,i,drop=FALSE], 2, ranperm, N = nsv)
+      # random permutation of 1:nsv in each column: same as order(runif(nsv)) column by column
+      perm <- order(group, runif(nsv * nsu), method = "radix") - offset
       eps <- matrix(runif(nsv * nsu), nrow = nsv, ncol = nsu)
-      P[,,i] <- (P[,,i] - 1 + eps) / nsv
+      P[,,i] <- (perm - 1 + eps) / nsv
       }
     return(as.vector(do.call(distr,c(list(p=P),arg))))
 }

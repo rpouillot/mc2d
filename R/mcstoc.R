@@ -76,6 +76,7 @@
 mcstoc <- function(func=runif, type=c("V","U","VU","0"), ..., nsv=ndvar(), nsu=ndunc(), nvariates=1, outm="each", nsample="n", seed=NULL, rtrunc=FALSE, linf=-Inf, lsup=Inf, lhs=FALSE)
 {
 
+    funcname <- substitute(func)                                  # name of the function (before evaluation)
     func <- match.fun(func)
     if(!is.null(seed)) set.seed(seed)
 
@@ -109,10 +110,10 @@ mcstoc <- function(func=runif, type=c("V","U","VU","0"), ..., nsv=ndvar(), nsu=n
  # incompatible dimension
 
             if(maxdim3 > 1){  #at least one multivariate node as parameter, need recycling on the third dimension
-              if(typethismc=="U") argsd <- apply(argsd, 3, matrix, nrow=maxdim1, ncol=maxdim2, byrow=TRUE)  # recycling U as matrix (maxdim1*maxdim2) x nvariates
+              if(typethismc=="U") argsd <- .recycle_node(argsd, "U", maxdim1, maxdim2)  # recycling U as matrix (maxdim1*maxdim2) x nvariates
                 else {
                   if(maxdim1 ==1 && maxdim2 ==1) argsd <- matrix(argsd, nrow=1) # Very special case to be added
-                  else argsd <- apply(argsd, 3, matrix, nrow = maxdim1, ncol = maxdim2)
+                  else argsd <- .recycle_node(argsd, typethismc, maxdim1, maxdim2)
                   }        # recycling 0, V, VU as matrix (maxdim1*maxdim2) x nvariates
             }
 
@@ -148,7 +149,7 @@ mcstoc <- function(func=runif, type=c("V","U","VU","0"), ..., nsv=ndvar(), nsu=n
   funcorigin <- func
 
   if(lhs || rtrunc){                                             #define good function for the random sampling
-    distr <- as.character(match.call()$func)                     #retrieve the name of the function
+    distr <- .fun_name(funcname, "runif")                         #retrieve the name of the function
     distr <- substr(distr, 2, 1000)                              #remove the r
     qfun <- paste("q",distr,sep="")                              #define "qfunc"
 
@@ -161,7 +162,7 @@ mcstoc <- function(func=runif, type=c("V","U","VU","0"), ..., nsv=ndvar(), nsu=n
           linf <- if(length(argsd$linf) <= nnfin) as.vector(argsd$linf) else rep(argsd$linf, length.out=nnfin)      # solve a problem when linf was multivariate
           lsup <- if(length(argsd$lsup) <= nnfin) as.vector(argsd$lsup) else rep(argsd$lsup, length.out=nnfin)      # solve a problem when linf was multivariate
           lmax <- max(length(linf),length(lsup))
-          if(any(rep(linf, length.out = lmax) >= rep(lsup, length.out = lmax))) stop("linf should be < lsup")  #recycle vectors
+          if(if(length(linf) == length(lsup) || length(linf) == 1 || length(lsup) == 1) any(linf >= lsup) else any(rep(linf, length.out = lmax) >= rep(lsup, length.out = lmax))) stop("linf should be < lsup")  #recycle vectors
           argsd$linf <- argsd$lsup <- argsd[[nsample]] <- NULL
           #find the p of the limit
           pinf <- as.vector(do.call(pfun,c(list(q=linf),argsd),quote=TRUE))
@@ -170,14 +171,15 @@ mcstoc <- function(func=runif, type=c("V","U","VU","0"), ..., nsv=ndvar(), nsu=n
           if(!lhs) lesp <- runif(nnfin,min=pinf,max=psup)
           else     lesp <- lhs(distr="runif", nsv=dimf[1], nsu=dimf[2], nvariates=dimf[3], min=pinf, max=psup)
           #get the q
-          data <- (do.call(qfun,c(list(p=lesp),argsd)))[1:nnfin]
+          data <- do.call(qfun,c(list(p=lesp),argsd))
+          if(length(data) != nnfin || !is.null(attributes(data))) data <- data[1:nnfin]
           data[pinf==0 & data > lsup] <- NaN          #ex: rtrunc("lnorm",10,linf=-2,lsup=-1)
           data[psup==1 & data < linf] <- NaN          #ex: rtrunc("unif",10,linf=2,lsup=4,max=1)
           data[is.na(linf) | is.na(lsup)] <- NaN      #ex: rtrunc("norm",10,sd=-2)
 
           #Two tests for extreme situations. None Catch all possibilities. THe error is first to avoid the warning
           if(any(data <= linf | data > lsup, na.rm=TRUE)) stop("Error in rtrunc: some values are not in the expected range (maybe due to rounding errors)")
-          if(isTRUE(all.equal(pinf,1)) | isTRUE(all.equal(psup,0)) ) warning("Warning: check the results from rtrunc. It may have reached rounding errors")
+          if(any(abs(pinf - 1) < 1.5e-8, na.rm=TRUE) || any(abs(psup) < 1.5e-8, na.rm=TRUE)) warning("Warning: check the results from rtrunc. It may have reached rounding errors")
           return(data)
        }#end redefinition func
     }
@@ -213,28 +215,26 @@ mcstoc <- function(func=runif, type=c("V","U","VU","0"), ..., nsv=ndvar(), nsu=n
        #Post Production, multivariate
        if (yamc){
           if(l==1){ # univariate distribution
-                if(maxdim1 == 1 && maxdim2 == 1) data <- aperm(array(data, dim = c(nvariates, nsv, nsu)), c(2, 3, 1))
-           else if(maxdim1 == 1 && nsv!=1)       data <- aperm(array(data, dim = c(nsu, nvariates, nsv)), c(3, 1, 2))
-           else if(maxdim2 == 1 && nsu!=1)       data <- aperm(array(data, dim = c(nsv, nvariates, nsu)), c(1, 3, 2))
-           else data <- array(data, dim = c(nsv, nsu, nvariates))
+                if(maxdim1 == 1 && maxdim2 == 1) data <- aperm(.arr(data, c(nvariates, nsv, nsu)), c(2, 3, 1))
+           else if(maxdim1 == 1 && nsv!=1)       data <- aperm(.arr(data, c(nsu, nvariates, nsv)), c(3, 1, 2))
+           else if(maxdim2 == 1 && nsu!=1)       data <- aperm(.arr(data, c(nsv, nvariates, nsu)), c(1, 3, 2))
+           else data <- .arr(data, c(nsv, nsu, nvariates))
           }
           else {     # l != 1 : multivariate
-                if(maxdim1 == 1 && nsv != 1)     data <- aperm(array(data, dim = c(nsu, nsv, nvariates)), c(2, 1, 3))
-           else data <- array(data, dim = c(nsv, nsu, nvariates))
+                if(maxdim1 == 1 && nsv != 1)     data <- aperm(.arr(data, c(nsu, nsv, nvariates)), c(2, 1, 3))
+           else data <- .arr(data, c(nsv, nsu, nvariates))
            }
         }
-        else data <- array(data, dim = c(nsv, nsu, nvariates))
+        else data <- .arr(data, c(nsv, nsu, nvariates))
       } #end multivariates
    else{  # univariate
         argsd[[nsample]] <- prod(dimf)
         data <- do.call(func, argsd, quote = TRUE)
 
-        if (yamc && maxdim1 == 1 && nsv != 1) data <- aperm(array(data, dim = c(nsu, nsv, nvariates)), c(2, 1, 3))
-        else data <- array(data, dim = c(nsv, nsu, nvariates))
+        if (yamc && maxdim1 == 1 && nsv != 1) data <- aperm(.arr(data, c(nsu, nsv, nvariates)), c(2, 1, 3))
+        else data <- .arr(data, c(nsv, nsu, nvariates))
    }
 
-      class(data) <- "mcnode"
-      attr(data,"type") <- type
-      attr(data,"outm") <- outm
+      data <- .as_mcnode(data, dim(data), type, outm)
       return(data)
     }

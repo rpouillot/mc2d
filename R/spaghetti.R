@@ -45,7 +45,7 @@ spaghetti.mc <- function(x,
   
   loutm <- lapply(x,attr,which="outm")
   dimm <- sapply(x,dim)
-  n <- sum(dimm[3,]* (loutm=="each") + (loutm!="each" & loutm!="none"))
+  n <- .n_outm_panels(loutm, dimm[3,])
   
   
   if(is.null(griddim)) griddim <- beau(n)
@@ -64,40 +64,33 @@ spaghetti.mc <- function(x,
       if(loutm[[i]][1] == "none") next                                             # Pass outm == none
       for(j in loutm[[i]]){                                                     # loop on the nb of stat, j is the name of the function
         
+        xi <- x[[i]]
         if(j == "each"){
           nvar <- dim(x[[i]])[3]
           if(nvar==1) xlab2 <- xlab[i] else xlab2 <- paste(xlab[i],1:nvar,sep="")
         } else {
-          func <- get(j,mode="function")                                        # apply the function
-          x[[i]] <- apply(x[[i]],c(1,2),func)
-          dim(x[[i]]) <- c(dim(x[[i]]),1)
+          xi <- .outm_reduce(x[[i]], j)                                         # apply the function on the original node
           nvar <- 1                                                             #1 dimension now for this stat
           xlab2 <- paste(j,xlab[i])                                             #change the name with the name of the stat
         }
         
-        if(is.logical(x[[i]])) x[[i]] <- unclass(x[[i]]) * 1                        # unclass to avoid Ops.mcnode
+        if(is.logical(xi)) xi <- unclass(xi) * 1                                  # unclass to avoid Ops.mcnode
         
         for(k in 1:nvar){
           
-          value <- as.matrix(unmc(x[[i]][,,k])) # nvariates data
-          variable <- rep(1:dim(value)[2], each=dim(value)[1])
+          value <- as.matrix(unmc(xi[,,k])) # nvariates data
           ncol.value <- min(maxlines, dim(value)[2])
-          
-          dim(value) <- c(prod(dim(value)),1)
-          
-          
-          data.df <- data.frame(variable=as.factor(variable),value=value)
-          data.df <- data.df[which(!is.na(data.df$value)), ]
-          
-          plot.stepfun(data.df[which(data.df$variable==1),2], 
-                       xlim=c(0,max(data.df[,2])),
+          rg <- suppressWarnings(range(value, na.rm = TRUE))
+          xlim <- if(is.finite(rg[1]) && rg[1] < 0) rg else c(0, rg[2])        # from 0 for positive values
+          plot.stepfun(value[!is.na(value[, 1]), 1],
+                       xlim=xlim,
                        main = main[i],
                        xlab = xlab2[k],
                        ylab = ylab[i],
                        do.points = FALSE)
           if(ncol.value>1){
             for (p in 2: ncol.value){
-              plot.stepfun(data.df[which(data.df$variable==p),2], do.points = FALSE, add=T)}}}
+              plot.stepfun(value[!is.na(value[, p]), p], do.points = FALSE, add=T)}}}
       }
     }
   })

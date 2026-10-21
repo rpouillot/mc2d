@@ -20,9 +20,9 @@
 unmc <- function(x, drop=TRUE)
 {
   unmcnode <- function(y){
-    attr(y,"type") <- NULL
-    attr(y,"outm") <- NULL
-    y <- unclass(y)
+    a <- attributes(y)                      # remove the attributes in one step (one copy)
+    a$type <- a$outm <- a$class <- NULL
+    attributes(y) <- a
     if(drop) y <- drop(y)
     return(y)}
 

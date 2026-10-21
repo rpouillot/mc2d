@@ -12,22 +12,21 @@
 #' @param ... further arguments to be passed to [ggplot2::stat_ecdf()]
 #' @aliases ggspaghetti.mc
 #' @aliases ggspaghetti.mcnode
-#' @examples 
+#' @examples
 #' data(ec)
 #' EC2 <- evalmcmod(ec[[2]])
-#' # When the input is mc object
-#' ggspaghetti(EC2) 
-#' # When the input is mcnode object
+#' # When the input is an mc object
+#' ggspaghetti(EC2)
+#' # When the input is an mcnode object
 #' data(total)
-#' # mcnode has one variate
-#' ggspaghetti(xV) 
-#' # This mcnode has two variates, will save two plots in a list
-#' gplots <- ggplotmc(xVUM) #will save two plots in a list
-#' # show the first variate plot of xVUM mcnode
-#' gplots[[1]] 
-#' # directly show the first variate plot of xVUM mcnode
-#' ggspaghetti(xVUM, which = 1) 
-#' 
+#' # mcnode with one variate
+#' ggspaghetti(xV)
+#' # This mcnode has two variates: the plots are returned in a list
+#' gplots <- ggspaghetti(xVUM)
+#' gplots[[1]]
+#' # directly show the plot of the first variate
+#' ggspaghetti(xVUM, which = 1)
+#'
 #' @author Yu Chen and Regis Pouillot
 #' 
 #' @rdname ggspaghetti
@@ -60,7 +59,7 @@ ggspaghetti.mc <- function(x,
   
   loutm <- lapply(x,attr,which="outm")
   dimm <- sapply(x,dim)
-  n <- sum(dimm[3,]* (loutm=="each") + (loutm!="each" & loutm!="none"))
+  n <- .n_outm_panels(loutm, dimm[3,])
   
   if(is.null(griddim)) griddim <- beau(n)
   
@@ -74,22 +73,21 @@ ggspaghetti.mc <- function(x,
       
       for(j in loutm[[i]]){                                                     # loop on the nb of stat, j is the name of the function
         
+        xi <- x[[i]]
         if(j == "each"){
           nvar <- dim(x[[i]])[3]
           if(nvar==1) xlab2 <- xlab[i] else xlab2 <- paste(xlab[i],1:nvar,sep="")
         }else{
-          func <- get(j,mode="function")                                        # apply the function
-          x[[i]] <- apply(x[[i]],c(1,2),func)
-          dim(x[[i]]) <- c(dim(x[[i]]),1)
+          xi <- .outm_reduce(x[[i]], j)                                         # apply the function on the original node
           nvar <- 1                                                             #1 dimension now for this stat
           xlab2 <- paste(j,xlab[i])                                             #change the name with the name of the stat
         }
         
-        if(is.logical(x[[i]])) x[[i]] <- unclass(x[[i]][,,k]) * 1                        # unclass to avoid Ops.mcnode
+        if(is.logical(xi)) xi <- unclass(xi) * 1                                  # unclass to avoid Ops.mcnode
         
         for(k in 1:nvar){
           
-          value <- as.matrix(unmc(x[[i]][,,k]) ) # nvariates data
+          value <- as.matrix(unmc(xi[,,k]) ) # nvariates data
           ncol.value <- pmin(dim(value)[2], maxlines)
           # Limite to the maxlines 
           value <- value[, 1:ncol.value, drop=FALSE]
@@ -112,7 +110,7 @@ ggspaghetti.mc <- function(x,
       }
       plotlist[[i]] <- gg.temp
     }
-    gga <- ggpubr::ggarrange(plotlist = plotlist,ncol=griddim[2],nrow=griddim[1])
+    gga <- .ggarrange(plotlist = plotlist,ncol=griddim[2],nrow=griddim[1])
   })
   return(gga)
 }
@@ -141,7 +139,7 @@ ggspaghetti.mcnode <- function(x,
   
   loutm <- lapply(x,attr,which="outm")
   dimm <- sapply(x,dim)
-  n <- sum(dimm[3,]* (loutm=="each") + (loutm!="each" & loutm!="none"))
+  n <- .n_outm_panels(loutm, dimm[3,])
   
   if(is.null(griddim)) griddim <- beau(n)
   
@@ -155,22 +153,21 @@ ggspaghetti.mcnode <- function(x,
       
       for(j in loutm[[i]]){                                                     # loop on the nb of stat, j is the name of the function
         
+        xi <- x[[i]]
         if(j == "each"){
           nvar <- dim(x[[i]])[3]
           if(nvar==1) xlab2 <- xlab[i] else xlab2 <- paste(xlab[i],1:nvar,sep="")
         }else{
-          func <- get(j,mode="function")                                        # apply the function
-          x[[i]] <- apply(x[[i]],c(1,2),func)
-          dim(x[[i]]) <- c(dim(x[[i]]),1)
+          xi <- .outm_reduce(x[[i]], j)                                         # apply the function on the original node
           nvar <- 1                                                             #1 dimension now for this stat
           xlab2 <- paste(j,xlab[i])                                             #change the name with the name of the stat
         }
         
-        if(is.logical(x[[i]])) x[[i]] <- unclass(x[[i]][,,k]) * 1               # unclass to avoid Ops.mcnode
+        if(is.logical(xi)) xi <- unclass(xi) * 1                                  # unclass to avoid Ops.mcnode
         
         for(k in 1:nvar){
           
-          value <- as.matrix(unmc(x[[i]][,,k]) ) # nvariates data
+          value <- as.matrix(unmc(xi[,,k]) ) # nvariates data
           ncol.value <- pmin(dim(value)[2],maxlines)
           
           value <- value[,1:ncol.value,drop=FALSE]

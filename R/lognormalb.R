@@ -39,6 +39,7 @@ dlnormb <- function (x, mean = exp(0.5), sd = sqrt(exp(2)-exp(1)), log = FALSE)
 { 
   gmean <- log(mean^2 / sqrt(sd^2+mean^2))
   gstd <- sqrt(log(1+sd^2/mean^2))
+  gmean[mean <= 0 | sd < 0] <- NaN                    # invalid parameters
   
   return(dlnorm(x, meanlog = gmean, sdlog = gstd, log = log))
 }
@@ -49,6 +50,7 @@ plnormb <- function (q, mean = exp(0.5), sd = sqrt(exp(2)-exp(1)), lower.tail = 
 { 
   gmean <- log(mean^2 / sqrt(sd^2+mean^2))
   gstd <- sqrt(log(1+sd^2/mean^2))
+  gmean[mean <= 0 | sd < 0] <- NaN                    # invalid parameters
   
   return(plnorm(q, meanlog = gmean, sdlog = gstd, lower.tail = lower.tail, log.p = log.p))
 }
@@ -59,6 +61,7 @@ qlnormb <- function (p, mean = exp(0.5), sd = sqrt(exp(2)-exp(1)), lower.tail = 
 { 
   gmean <- log(mean^2 / sqrt(sd^2+mean^2))
   gstd <- sqrt(log(1+sd^2/mean^2))
+  gmean[mean <= 0 | sd < 0] <- NaN                    # invalid parameters
   
   return(qlnorm(p, meanlog = gmean, sdlog = gstd, lower.tail = lower.tail, log.p = log.p))
 }
@@ -69,6 +72,7 @@ rlnormb <- function (n, mean = exp(0.5), sd = sqrt(exp(2)-exp(1)))
 { 
   gmean <- log(mean^2 / sqrt(sd^2+mean^2))
   gstd <- sqrt(log(1+sd^2/mean^2))
+  gmean[mean <= 0 | sd < 0] <- NaN                    # invalid parameters
   
   return(rlnorm(n, meanlog = gmean, sdlog = gstd))
 }

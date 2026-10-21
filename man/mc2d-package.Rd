@@ -9,19 +9,19 @@
 A complete framework to build and study Two-Dimensional Monte-Carlo simulations, aka Second-Order Monte-Carlo simulations. Also includes various distributions (pert, triangular, Bernoulli, empirical discrete and continuous).
 }
 \author{
-\strong{Maintainer}: Regis Pouillot \email{rpouillot@yahoo.fr}
+\strong{Maintainer}: Regis Pouillot \email{rpouillot@yahoo.fr} (\href{https://orcid.org/0000-0002-6107-5212}{ORCID})
 
 Authors:
 \itemize{
-  \item Regis Pouillot \email{rpouillot@yahoo.fr}
+  \item Regis Pouillot \email{rpouillot@yahoo.fr} (\href{https://orcid.org/0000-0002-6107-5212}{ORCID})
 }
 
 Other contributors:
 \itemize{
-  \item Marie-Laure Delignette-Muller \email{ml.delignette@vetagro-sup.fr} [contributor]
+  \item Marie-Laure Delignette-Muller \email{ml.delignette@vetagro-sup.fr} (\href{https://orcid.org/0000-0001-5453-3994}{ORCID}) [contributor]
   \item Jean-Baptiste Denis \email{jbdenis@jouy.inra.fr} [contributor]
   \item Yu Chen \email{chen0099yu@gmail.com} [contributor]
-  \item Arie Havelaar \email{ariehavelaar@ufl.edu} [contributor]
+  \item Arie Havelaar \email{ariehavelaar@ufl.edu} (\href{https://orcid.org/0000-0002-6456-5460}{ORCID}) [contributor]
 }
 
 }

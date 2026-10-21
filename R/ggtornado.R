@@ -98,7 +98,7 @@ ggtornado <- function(x,which=1,name=NULL,stat=c("median","mean"),xlab="method",
     
     if(nr>3){
       xmax <- xmin <- ymax <- ymin <- NULL
-      val <- apply(val[3:nr,],2,range)
+      val <- apply(val[3:nr,,drop=FALSE],2,range)
       df <- as.data.frame(t(val))
       df[,"xminus"] <- c(1:nc-0.1)
       df[,"xplus"] <- c(1:nc+0.1)
@@ -123,7 +123,14 @@ ggtornadounc <- function(x,which=1, stat="median", name=NULL, xlab="method", yla
 {
   statposs <- rownames(x$value[[which]])
   
-  if(is.character(stat)) stat <- pmatch(stat, rownames(x$value[[which]]))
+  if(is.character(stat)) {
+    stat0 <- stat
+    stat <- pmatch(stat, rownames(x$value[[which]]))
+    if(is.na(stat) && identical(stat0, "median")) {   # default: the median of the output if available
+      stat <- grep("^50%", statposs)[1]
+      if(is.na(stat)) stat <- 1
+    }
+  }
   if(is.na(stat)) stop("stat should match with: ",paste(statposs,collapse=", ")) 
   
   x$value <- list(x$value[[which]][stat,,drop=FALSE])

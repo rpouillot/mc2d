@@ -54,18 +54,17 @@ Use ggplot to draw spaghetti plots for the [mc] or [mcnode] objects.
 \examples{
 data(ec)
 EC2 <- evalmcmod(ec[[2]])
-# When the input is mc object
-ggspaghetti(EC2) 
-# When the input is mcnode object
+# When the input is an mc object
+ggspaghetti(EC2)
+# When the input is an mcnode object
 data(total)
-# mcnode has one variate
-ggspaghetti(xV) 
-# This mcnode has two variates, will save two plots in a list
-gplots <- ggplotmc(xVUM) #will save two plots in a list
-# show the first variate plot of xVUM mcnode
-gplots[[1]] 
-# directly show the first variate plot of xVUM mcnode
-ggspaghetti(xVUM, which = 1) 
+# mcnode with one variate
+ggspaghetti(xV)
+# This mcnode has two variates: the plots are returned in a list
+gplots <- ggspaghetti(xVUM)
+gplots[[1]]
+# directly show the plot of the first variate
+ggspaghetti(xVUM, which = 1)
 
 }
 \author{

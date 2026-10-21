@@ -8,10 +8,13 @@
 #' @export
 mcdatanocontrol <- function(data, type=c("V","U","VU","0"), nsv=ndvar(), nsu=ndunc(), nvariates=1, outm="each")
 {
+  type <- match.arg(type)
+  n <- nsv*nsu*nvariates
   dim(data) <- NULL
-  data[1:(nsv*nsu*nvariates)] <- data
+  if(length(data) != n) data[1:n] <- data                 # recycle only when needed (avoids a copy)
   dim(data) <- c(nsv,nsu,nvariates)
   class(data) <- "mcnode"
   attr(data,which="type") <- type
   attr(data,which="outm") <- outm
+  return(data)
   }

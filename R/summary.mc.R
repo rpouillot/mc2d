@@ -40,17 +40,21 @@ summary.mc <- function(object,probs = c(0,0.025,0.25,0.5,0.75,0.975,1),lim=c(0.0
 
   warnna <- FALSE
   stat1 <- function(x){	# x is a array(nvar, nunc, 1)
-    nsimna <- apply(x,2,function(x) sum(is.na(x)))
-    if(yaprob) quant <- t(apply(x,2,quantile,na.rm=TRUE,probs=probs,names = FALSE))
+    # column by column: no copy of the whole array (as with apply())
+    nr <- dim(x)[1]
+    nc <- dim(x)[2]
+    col <- function(j) x[(j - 1L) * nr + seq_len(nr)]
+    nsimna <- vapply(seq_len(nc), function(j) sum(is.na(col(j))), 0L)
+    if(yaprob) quant <- t(vapply(seq_len(nc), function(j) quantile(col(j), na.rm=TRUE, probs=probs, names = FALSE), numeric(length(probs))))
       else quant <- NULL
     if(warnna==FALSE && any(nsimna!=0)) {
         warning("NA's value in mc object",call.=FALSE)
-        eval(expression(warnna <- TRUE),sys.parent())}
+        warnna <<- TRUE}
 
         cbind(    colMeans(x,na.rm=TRUE),
-                  apply(x,c(2,3),sd,na.rm=TRUE),	#compliance with deprecated sd(<matrix>)
+                  vapply(seq_len(nc), function(j) sd(col(j), na.rm=TRUE), 0),
                   quant,
-                  apply(x,2,length),
+                  rep.int(nr, nc),
                   nsimna)
      }
 
@@ -77,11 +81,8 @@ summary.mc <- function(object,probs = c(0,0.025,0.25,0.5,0.75,0.975,1),lim=c(0.0
       if(nvariates==1) return(node)
       return(lapply(1:nvariates,function(x) node[,,x,drop=FALSE]))
     }
-    res <- mapply(function(outm){
-                  func <- get(outm,mode="function")
-                  node <- apply(node,c(1,2),func)
-                  dim(node) <- c(dim(node),1)
-                  node},outm,SIMPLIFY=FALSE)
+    res <- lapply(outm, function(outm) .outm_reduce(node, outm))
+    names(res) <- outm
     if(length(outm)==1) return(res[[1]])
     return(res)
   }
@@ -95,11 +96,11 @@ summary.mc <- function(object,probs = c(0,0.025,0.25,0.5,0.75,0.975,1),lim=c(0.0
         if(is.list(object)) return(mapply(lesstat,object,typen,SIMPLIFY=FALSE))
 
         if(typen=="VU") {
-          out <- stat2(t(stat1(object[,,1,drop=FALSE])))
+          out <- stat2(t(stat1(object)))          # object has one variate here
           nomtmp <- list(nom2,nom1)}
 
         else if(typen=="V") {
-          out <- stat1(object[,,1,drop=FALSE])
+          out <- stat1(object)
           nomtmp <- list("NoUnc",nom1)}
 
         else if(typen=="U") {

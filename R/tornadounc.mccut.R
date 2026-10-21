@@ -57,13 +57,13 @@ tornadounc.mccut <- function(mc,output = length(mc), quant=c(0.5,0.75,0.975),use
   nomin <- unlist(noml[names(noml)!= output])
 
    # Which columns are complete
-  quelk <-  unique(rapply(mc,function(x) which(apply(x,1,is.na))))
+  quelk <-  unique(unlist(rapply(mc,function(x) which(rowSums(is.na(as.matrix(x))) > 0))))   # rows with NA
 
   if(length(quelk) != 0){
     if(na.method==1) stop("NA values. Change 'use' option")
     if(na.method==2){
-      out <- lapply(out,"[",,-quelk,,drop=FALSE)    # ! perte structure
-      inp <- inp[-quel,]    # ! perte structure
+      out <- if(is.list(out)) lapply(out, function(o) o[-quelk,,drop=FALSE]) else out[-quelk,,drop=FALSE]
+      inp <- inp[-quelk,,drop=FALSE]
       use <-  "all.obs"}
   }
 

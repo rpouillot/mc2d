@@ -60,7 +60,7 @@ mcdata <- function(data, type=c("V","U","VU","0"), nsv=ndvar(), nsu=ndunc(),nvar
 {
   type <- match.arg(type)
 
-    if(!is.character(outm)  || (outm != "none" && outm != "each" && !all(sapply(outm,exists,mode="function"))))
+    if(!.check_outm(outm))
       stop("outm should be 'none','each' or the name a valid function")
 
   dimf <- switch(type,"V"=c(nsv,1,nvariates),"U"=c(1,nsu,nvariates),"VU"=c(nsv,nsu,nvariates),"0"=c(1,1,nvariates))
@@ -73,25 +73,24 @@ mcdata <- function(data, type=c("V","U","VU","0"), nsv=ndvar(), nsu=ndunc(),nvar
     if(typem=="VU") {
       if(dimd[1]!=dimf[1] || dimd[2]!=dimf[2]) stop(err)
       if(type!="VU") stop("Incompatible node type. A 'VU' mcnode makes only a 'VU'mcnode.")
-      data <- array(data,dim=dimf)}                                             # recycle on nvariates
+      data <- .as_mcnode(data, dimf, type, outm)}                                # recycle on nvariates
     else if(typem=="U") {
       if(dimd[2]!=dimf[2]) stop(err)
       if(type!="VU" && type!="U") stop("Incompatible node type. A 'U' mcnode makes a 'U' or a 'VU' mcnode.")
-      data <- array(apply(data,3,rep,each=dimf[1]),dim=dimf)}                   # recycle on nsu and nvariates
+      data <- .as_mcnode(rep(as.vector(data), each=dimf[1]), dimf, type, outm)} # recycle on nsu and nvariates
     else if(typem=="V") {
       if(dimd[1]!=dimf[1]) stop(err)
       if(type!="VU" && type!="V") stop("Incompatible node type. A 'V' mcnode makes a 'V' or a 'VU' mcnode.")
-      data <- array(apply(data,3,rep,times=dimf[2]),dim=dimf)}                  # recycle on nsv and nvariates
+      data <- .as_mcnode(.recycle_node(data, "V", dimf[1], dimf[2]), dimf, type, outm)}  # recycle on nsv and nvariates
     else if(typem=="0") {
-      data <- array(apply(data,3,rep,each=dimf[1]*dimf[2]),dim=dimf)}           # recycle on nvariates
+      data <- .as_mcnode(rep(as.vector(data), each=dimf[1]*dimf[2]), dimf, type, outm)}    # recycle on nvariates
   }
   else {                                    # data non mcnode
       if(!is.numeric(data) && !is.logical(data)) stop("data should be numeric or logical")
       if(is.vector(data)){
         l <- length(data)
-        if(l != 1 && l != dimf[1]*dimf[2] && l!= prod(dimf)) stop("The vector size is not compatible
-          with the node dimension. Length should be 1 or n=",dimf[1]*dimf[2]," or n=",prod(dimf))
-        data <- array(data,dim=dimf)}
+        if(l != 1 && l != dimf[1]*dimf[2] && l!= prod(dimf)) stop("The vector size is not compatible with the node dimension. Length should be 1 or n=",dimf[1]*dimf[2]," or n=",prod(dimf))
+        data <- .as_mcnode(data, dimf, type, outm)}
 
       else if(is.array(data)){
         dimd <- dim(data)
@@ -101,15 +100,12 @@ mcdata <- function(data, type=c("V","U","VU","0"), nsv=ndvar(), nsu=ndunc(),nvar
         if( (type=="VU" && dimd[1]== nsv && dimd[2]==nsu && dimd[3] %in% c(0,1,nvariates)) ||
             (type=="V" &&  dimd[1]== nsv && dimd[2]==1 && dimd[3] %in% c(0,1,nvariates)) ||
             (type=="U" &&  dimd[1]== 1 && dimd[2]==nsu && dimd[3] %in% c(0,1,nvariates)) ||
-            (type=="0" &&  dimd[1]== 1 && dimd[1]==1 && dimd[3] %in% c(0,1,nvariates)) )
-        data <- array(data,dim=dimf)
+            (type=="0" &&  dimd[1]== 1 && dimd[2]==1 && dimd[3] %in% c(0,1,nvariates)) )
+        data <- .as_mcnode(data, dimf, type, outm)
         else stop("The array size is not compatible with the node dimension. Should be of dim: ",paste(dimf,collapse=" "))
         }
 
       else stop("data should be a vector, a matrix, an array or a mcnode")}
 
-  class(data) <- "mcnode"
-  attr(data,"type") <- type
-  attr(data,"outm") <- outm
   return(data)
 }

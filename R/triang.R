@@ -46,6 +46,15 @@ dtriang <- function(x, min=-1, mode=0, max=1, log=FALSE, mean = 0){
     
   } else {mode <- as.vector(mode)}
   
+  lout <- max(length(x),length(min),length(mode),length(max))
+  # replicate only if a parameter is longer than x or if the lengths are not multiples
+  # (otherwise recycled by R with the same results, and the attributes of x are kept)
+  if(length(x) < lout || any(lout %% c(length(min), length(mode), length(max)) != 0)) {
+    if(length(x) < lout) x <- rep(x, length.out=lout)
+    min <- rep(min, length.out=lout)
+    mode <- rep(mode, length.out=lout)
+    max <- rep(max, length.out=lout)
+  }
 	# quel: x < mode or x = mode = max 
 	xmaxmode <-  x >= max & mode >= max # to avoid some rounding errors
 	quel <- (x < mode) | xmaxmode  
@@ -82,6 +91,15 @@ ptriang <- function(q,min=-1,mode=0,max=1,lower.tail = TRUE, log.p = FALSE, mean
     
   } else {mode <- as.vector(mode)}
   
+  lout <- max(length(q),length(min),length(mode),length(max))
+  # replicate only if a parameter is longer than q or if the lengths are not multiples
+  # (otherwise recycled by R with the same results, and the attributes of q are kept)
+  if(length(q) < lout || any(lout %% c(length(min), length(mode), length(max)) != 0)) {
+    if(length(q) < lout) q <- rep(q, length.out=lout)
+    min <- rep(min, length.out=lout)
+    mode <- rep(mode, length.out=lout)
+    max <- rep(max, length.out=lout)
+  }
   # quel: q < mode or q = mode = max 
   qmaxmode <-  q >= max & mode >= max # to avoid some rounding errors
 	quel <- (q < mode) | qmaxmode  
@@ -118,20 +136,36 @@ qtriang <- function(p, min=-1, mode=0, max=1, lower.tail=TRUE, log.p=FALSE, mean
   } else {mode <- as.vector(mode)}
   
   lout <- max(length(p),length(min),length(mode),length(max))
+  short <- length(min) == 1 && length(mode) == 1 && length(max) == 1   # scalar parameters: no replication
+  if(!short) {
   min <- rep(min, length.out=lout)
   mode <- rep(mode, length.out=lout)
   max <- rep(max,length.out=lout)
+  }
   
   if (log.p) 
     p <- exp(p)
   if (!lower.tail) 
     p <- 1 - p
   quel <- p <= (mode - min)/(max - min)
+  if(short && length(p) == lout && !anyNA(quel)) {
+    # same result as the ifelse() below (attributes of 'quel' kept),
+    # each branch being computed only on the values where it is used
+    q <- quel
+    storage.mode(q) <- "double"
+    iq <- which(quel)
+    nq <- which(!quel)
+    if(length(iq)) q[iq] <- min + sqrt(p[iq] * (mode - min) * (max - min))
+    if(length(nq)) q[nq] <- max - sqrt((1 - p[nq]) * (max - min) * (max - mode))
+  } else {
+  if(short) { min <- rep(min, length.out=lout); mode <- rep(mode, length.out=lout); max <- rep(max, length.out=lout) }
   q <- ifelse(quel, min + sqrt(p * (mode - min) * (max - min)), 
               max - sqrt((1 - p) * (max - min) * (max - mode)))
+  }
   #if max = mode = min
   minmodemax <- min >= max # Avoid some rounding errors
-  q <- ifelse(minmodemax, min, q)
+  if(anyNA(minmodemax) || any(minmodemax)) q <- ifelse(rep(minmodemax, length.out=lout), rep(min, length.out=lout), q)
+  attributes(q) <- NULL                        # plain vector, as in previous versions
   q[p < 0 | p > 1] <- NaN
   q[mode < min | max < mode] <- NaN
   if (any(is.na(q))) 
@@ -163,14 +197,14 @@ rtriang <- function(n, min=-1, mode=0, max=1, mean = 0){
   } else {mode <- as.vector(mode)}
   
   U <- runif(n)
-  ow <- options(warn = -1)
-  on.exit(options(ow), add = TRUE)
-  q <- qtriang(U,
-               min = rep(as.vector(min),length.out=n),
-               mode = rep(as.vector(mode),length.out=n),
-               max = rep(as.vector(max),length.out=n),
+  lpar <- max(length(min), length(mode), length(max))
+  len <- if(lpar > 0 && n %% lpar == 0 && all(lpar %% c(length(min), length(mode), length(max)) == 0)) lpar else n   # recycled in qtriang (same results)
+  q <- suppressWarnings(qtriang(U,
+               min = rep(as.vector(min),length.out=len),
+               mode = rep(as.vector(mode),length.out=len),
+               max = rep(as.vector(max),length.out=len),
                lower.tail = TRUE,
-               log.p = FALSE)
+               log.p = FALSE))
   if (any(is.na(q))) 
     warning("NaN in rtriang")
   return(q)

@@ -52,11 +52,8 @@ quantile.mc <- function(x, probs = seq(0, 1, 0.01), lim=c(0.025,0.975), na.rm=TR
       if(nvariates==1) return(node)
       return(lapply(1:nvariates,function(x) node[,,x,drop=FALSE]))
       }
-    res <- mapply(function(outm){
-                  func <- get(outm,mode="function")
-                  node <- apply(node,c(1,2),func)
-                  dim(node) <- c(dim(node),1)
-                  node},outm,SIMPLIFY=FALSE)
+    res <- lapply(outm, function(outm) .outm_reduce(node, outm))
+    names(res) <- outm
     if(length(outm)==1) return(res[[1]])
     return(res)
   }
@@ -82,7 +79,7 @@ quantile.mc <- function(x, probs = seq(0, 1, 0.01), lim=c(0.025,0.975), na.rm=TR
             }
 
         else if(typen=="VU") {
-            prem <- apply(x[,,1,drop=FALSE],2,quantile,probs = probs, na.rm = na.rm, names=FALSE)
+            prem <- .col_quantile(x, probs = probs, na.rm = na.rm, names=FALSE)    # column by column, no copy
             restmp <-  apply(prem,1,quantile,probs = lim, na.rm = na.rm, names=FALSE)
             restmp <-  rbind(rowMeans(prem,na.rm=na.rm), restmp)
             restmp[1:2,] <- restmp[2:1,]
