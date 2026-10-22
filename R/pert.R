@@ -180,7 +180,7 @@ rpert <- function(n,min=-1,mode=0,max=1,shape=4, mean=0){
   # unless n is not a multiple of their length or their lengths are not multiples
   lpar <- max(length(min), length(max), length(shape), if(missing(mode)) length(mean) else length(mode))
   len <- if(lpar > 0 && n %% lpar == 0 &&
-            all(lpar %% c(length(min), length(max), length(shape), if(missing(mode)) length(mean) else length(mode)) == 0)) lpar else n
+            isTRUE(all(lpar %% c(length(min), length(max), length(shape), if(missing(mode)) length(mean) else length(mode)) == 0))) lpar else n
   min <- rep(as.vector(min),length.out=len)
   max <- rep(as.vector(max),length.out=len)
   shape <- rep(as.vector(shape),length.out=len)

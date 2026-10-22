@@ -100,7 +100,8 @@ mcdata <- function(data, type=c("V","U","VU","0"), nsv=ndvar(), nsu=ndunc(),nvar
         if( (type=="VU" && dimd[1]== nsv && dimd[2]==nsu && dimd[3] %in% c(0,1,nvariates)) ||
             (type=="V" &&  dimd[1]== nsv && dimd[2]==1 && dimd[3] %in% c(0,1,nvariates)) ||
             (type=="U" &&  dimd[1]== 1 && dimd[2]==nsu && dimd[3] %in% c(0,1,nvariates)) ||
-            (type=="0" &&  dimd[1]== 1 && dimd[2]==1 && dimd[3] %in% c(0,1,nvariates)) )
+            (type=="0" &&  dimd[1]== 1 && dimd[3] %in% c(0,1,nvariates) &&
+               (dimd[2] * max(dimd[3], 1)) %in% c(1, nvariates)) )    # e.g. a 1 x nvariates matrix (but no truncation)
         data <- .as_mcnode(data, dimf, type, outm)
         else stop("The array size is not compatible with the node dimension. Should be of dim: ",paste(dimf,collapse=" "))
         }

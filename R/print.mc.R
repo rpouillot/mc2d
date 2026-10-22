@@ -33,7 +33,7 @@ print.mc <- function(x, digits=3,...)
       variate=x,
       min=rangem[1],
       mean=mean(obj,na.rm=TRUE),
-      median=median(if(is.logical(obj)) as.vector(obj) * 1 else as.vector(obj),na.rm=TRUE),   # For logical
+      median=median(as.vector(obj) * 1,na.rm=TRUE),   # For logical (and always a double, as in previous versions)
       max=rangem[2],
       Nas=sum(is.na(unclass(obj))),
       type=type[[i]],

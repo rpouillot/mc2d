@@ -48,9 +48,11 @@ dtriang <- function(x, min=-1, mode=0, max=1, log=FALSE, mean = 0){
   
   lout <- max(length(x),length(min),length(mode),length(max))
   # replicate only if a parameter is longer than x or if the lengths are not multiples
-  # (otherwise recycled by R with the same results, and the attributes of x are kept)
-  if(length(x) < lout || any(lout %% c(length(min), length(mode), length(max)) != 0)) {
-    if(length(x) < lout) x <- rep(x, length.out=lout)
+  # (otherwise recycled by R with the same results, and the attributes of x are kept);
+  # not with a zero-length parameter (handled by R as in previous versions)
+  lpars <- c(length(min), length(mode), length(max))
+  if(all(lpars > 0) && (length(x) < lout || any(lout %% lpars != 0))) {
+    if(length(x) < lout) x <- rep_len(x, lout)   # no names, as in previous versions
     min <- rep(min, length.out=lout)
     mode <- rep(mode, length.out=lout)
     max <- rep(max, length.out=lout)
@@ -93,9 +95,11 @@ ptriang <- function(q,min=-1,mode=0,max=1,lower.tail = TRUE, log.p = FALSE, mean
   
   lout <- max(length(q),length(min),length(mode),length(max))
   # replicate only if a parameter is longer than q or if the lengths are not multiples
-  # (otherwise recycled by R with the same results, and the attributes of q are kept)
-  if(length(q) < lout || any(lout %% c(length(min), length(mode), length(max)) != 0)) {
-    if(length(q) < lout) q <- rep(q, length.out=lout)
+  # (otherwise recycled by R with the same results, and the attributes of q are kept);
+  # not with a zero-length parameter (handled by R as in previous versions)
+  lpars <- c(length(min), length(mode), length(max))
+  if(all(lpars > 0) && (length(q) < lout || any(lout %% lpars != 0))) {
+    if(length(q) < lout) q <- rep_len(q, lout)   # no names, as in previous versions
     min <- rep(min, length.out=lout)
     mode <- rep(mode, length.out=lout)
     max <- rep(max, length.out=lout)
@@ -198,7 +202,7 @@ rtriang <- function(n, min=-1, mode=0, max=1, mean = 0){
   
   U <- runif(n)
   lpar <- max(length(min), length(mode), length(max))
-  len <- if(lpar > 0 && n %% lpar == 0 && all(lpar %% c(length(min), length(mode), length(max)) == 0)) lpar else n   # recycled in qtriang (same results)
+  len <- if(lpar > 0 && n %% lpar == 0 && isTRUE(all(lpar %% c(length(min), length(mode), length(max)) == 0))) lpar else n   # recycled in qtriang (same results)
   q <- suppressWarnings(qtriang(U,
                min = rep(as.vector(min),length.out=len),
                mode = rep(as.vector(mode),length.out=len),

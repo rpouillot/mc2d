@@ -15,3 +15,4 @@
 ^vignettes/mc2dLmEnglish\.R$
 ^vignettes/mc2dLmEnglish\.pdf$
 ^\.github$
+^mc2d_bugfix.*$

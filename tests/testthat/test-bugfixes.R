@@ -214,3 +214,51 @@ test_that("compatibility with 0.2.2: class 'ggarrange' and names from mc objects
     expect_identical(names(mc(a, a)), c("a", "a1"))    # names of mcnode arguments are made unique
   })
 })
+
+test_that("compatibility with 0.2.2: cases found in the final review", {
+  # mcdata: a 1 x nvariates matrix makes a "0" node; other lengths are an error
+  x <- mcdata(matrix(1:3, 1, 3), "0", nvariates = 3)
+  expect_identical(as.vector(x), 1:3)
+  expect_identical(dim(x), c(1L, 1L, 3L))
+  expect_identical(as.vector(mcdata(matrix(7, 1), "0", nvariates = 4)), rep(7, 4))
+  expect_error(mcdata(matrix(1:5, 1), "0"), "array size")
+  expect_error(mcdata(matrix(1:2, 1), "0", nvariates = 4), "array size")
+  with_dims(5, 3, {
+    # an outm function returning several values: print and mcratio do not fail
+    set.seed(1)
+    y <- mcstoc(rnorm, "VU", nvariates = 2)
+    attr(y, "outm") <- "range"
+    expect_no_error(capture.output(print(y)))
+    expect_no_error(mcratio(y))
+    # print: the median is a double for integer nodes
+    z <- mcstoc(rpois, "VU", lambda = 3)
+    capture.output(p <- print(z))
+    expect_type(p$median, "double")
+  })
+  # zero-length parameters: NA as before (no error)
+  expect_identical(suppressWarnings(rtriang(3, min = numeric(0))), rep(NA_real_, 3))
+  expect_identical(suppressWarnings(rbetagen(3, 1, 1, min = numeric(0))), rep(NA_real_, 3))
+  expect_no_error(suppressWarnings(ptriang(0.5, min = numeric(0))))
+  # no names recycled from a short named x
+  expect_null(names(dtriang(c(a = 0.2, b = 0.7), min = 0, mode = c(.5, .5, .4, .4), max = 1)))
+  expect_null(names(ptriang(c(a = 0.2, b = 0.7), min = 0, mode = c(.5, .5, .4, .4), max = 1)))
+  # plot.tornadounc: 'stat = "median"' without a 50% row is an error, as before
+  utils::data("ec", package = "mc2d", envir = environment())
+  on_null_device({
+    set.seed(1)
+    capture.output(EC2 <- evalmcmod(ec[[2]]))
+    tu <- tornadounc(EC2, output = "risk", quant = c(0.025, 0.975))
+    expect_error(plot(tu, stat = "median"), "stat should match")
+    expect_error(ggtornadounc(tu), "stat should match")
+  })
+  # ggspaghetti: an outm "none" node leaves a blank cell, as with ggpubr
+  with_dims(11, 5, {
+    set.seed(2)
+    a <- mcstoc(runif, "VU"); b <- mcstoc(rnorm, "VU", outm = "none"); cc <- mcstoc(rexp, "VU")
+    on_null_device({
+      p <- ggspaghetti(mc(a, b, cc))
+      expect_identical(class(p), c("list", "ggarrange"))
+      expect_length(p, 2)
+    })
+  })
+})

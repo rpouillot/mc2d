@@ -14,12 +14,14 @@ with 0.2-2 may nevertheless behave differently in the following cases:
 - Warnings: rpert, rtriang, rbetagen, (d, p, q)pert and (d, p, q)betagen (also
   through mcstoc) now issue their warnings ("NaN in ...", "mode < min or
   mode > max"), which were silenced. The rtrunc / mcstoc(rtrunc = TRUE) warning
-  about rounding errors is issued when any bound is extreme (was: all bounds).
+  about rounding errors is issued when any bound is extreme (was: only with a
+  single bound and scalar parameters).
   Code run with options(warn = 2), or tests expecting no warning, may stop.
 - pmin(x) / pmax(x) with a single mcnode return the mcnode (was a list of one
   mcnode): pmin(x)[[1]] now returns the first value of the node.
+- mcdatanocontrol returns the mcnode (it returned the value of 'outm').
 - New errors instead of silent wrong results: mcdata with a 1 x k matrix for a
-  "0" mcnode, pmin / pmax with incompatible numbers of variates, mcdatanocontrol
+  "0" mcnode when k is neither 1 nor nvariates, pmin / pmax with incompatible numbers of variates, mcdatanocontrol
   with an invalid 'type', cornode with a 'V' mcnode not in the first position.
 - is.mcnode returns FALSE for objects with an invalid type or dimension (e.g.
   hand-modified attributes): functions checking their input now reject them.
@@ -33,7 +35,8 @@ with 0.2-2 may nevertheless behave differently in the following cases:
   dlnormb, plnormb, qlnormb, rlnormb with mean <= 0 or sd < 0 (now NaN);
   dmultinomial, ddirichlet, dbetasubj, dpert, qmqi in the cases listed below.
 - outm = "mean" is computed with rowMeans(): results may differ from 0.2-2 in
-  the last digit (about 1e-16); a test with identical() may fail.
+  the last digit (about 1e-16), and be NaN instead of NA when NA and NaN are
+  mixed; a test with identical() may fail.
 - Graphs: hist / spaghetti / gghist / ggspaghetti with several outm functions,
   spaghetti with negative values, the x range of plot.mccut, and converg with
   more than 1000 iterations (drawn on a grid of iterations) look different.
@@ -48,9 +51,10 @@ BUG FIX
 - outm, mcdata, mcprobtree, Ops.mcnode: a vector of functions as "outm"
   (e.g. outm = c("min","max")) failed with R >= 4.3.
 - outm(x, value, which.node) did not modify the node of an mc object.
-- mcdata: a 1 x k matrix was accepted (and truncated) for a "0" mcnode.
-- mcdatanocontrol: the "type" argument was not checked (a missing type led to
-  an invalid mcnode).
+- mcdata: a 1 x k matrix was accepted (and truncated or recycled) for a "0"
+  mcnode when k was neither 1 nor nvariates.
+- mcdatanocontrol: returned the value of 'outm' instead of the mcnode; the
+  "type" argument was not checked.
 - mcstoc and rtrunc: 'rtrunc = TRUE' or 'lhs = TRUE' failed with the default
   function (runif) or with a function given as pkg::fun. The warning about
   rounding errors in truncated distributions was almost never issued.
@@ -72,7 +76,7 @@ BUG FIX
 - dtriang, ptriang: wrong results when 'min' was the longest parameter or when
   the parameters had lengths that are not multiples.
 - dpert: NaN for large values of shape (underflow).
-- dbetasubj: NaN instead of 0 outside [min, max].
+- dbetasubj: wrong values (NaN or a non-zero density) outside [min, max].
 - ddirichlet: NaN when x = 0 and alpha = 1.
 - dlnormb, plnormb, qlnormb, rlnormb: mean <= 0 or sd < 0 now give NaN.
 - qmqi: a probability < 0 corrupted the other results (now NaN).
@@ -83,8 +87,7 @@ BUG FIX
 - tornadounc: wrong results with use = "pairwise.complete.obs" and NA; the
   option use = "complete.obs" failed for mccut objects.
 - evalmccut: failed when nsu = 1 or when no 'U' or 'VU' node was built in the
-  first block; the type of the nodes in the first simulation was wrong when 'U'
-  and 'VU' nodes were mixed in the first block.
+  first block, or when 'U' and 'VU' nodes were mixed in the first block.
 - plot.mccut failed when all the nodes had the same type. The x range of the
   graph included the number of NA.
 - plot.tornadounc, ggtornadounc: failed with the default value of 'stat'.
@@ -93,6 +96,7 @@ BUG FIX
 - hist, gghist, spaghetti, ggspaghetti: with several functions in "outm", each
   function was applied to the result of the previous one.
 - spaghetti: the x axis started at 0 even for negative values.
+- ggspaghetti: failed with a logical mcnode.
 
 PERFORMANCE (large mcnodes, e.g. nsv = 1e5 and nsu = 200)
 - The "outm" functions sum, mean, min and max are vectorized (summary, print,

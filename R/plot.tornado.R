@@ -70,7 +70,6 @@ plot.tornadounc <- function(x,which=1, stat="median", name=NULL, xlab="method", 
     stat <- pmatch(stat, rownames(x$value[[which]]))
     if(is.na(stat) && identical(stat0, "median")) {   # default: the median of the output if available
       stat <- grep("^50%", statposs)[1]
-      if(is.na(stat)) stat <- 1
     }
   }
   if(is.na(stat)) stop("stat should match with: ",paste(statposs,collapse=", "))

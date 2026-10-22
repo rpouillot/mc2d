@@ -60,8 +60,10 @@
         r
       })
   }
-  if(is.null(res)) res <- apply(x, c(1, 2), get(fname, mode = "function"))
-  dim(res) <- c(d[1:2], 1L)
+  if(is.null(res)) {
+    res <- apply(x, c(1, 2), get(fname, mode = "function"))
+    dim(res) <- c(dim(res), 1)             # as previous versions (also for a function returning several values)
+  } else dim(res) <- c(d[1:2], 1L)
   res
 }
 
@@ -105,15 +107,14 @@
 # or a list of ggplot objects (one per page) if there are more plots than cells.
 # As ggpubr::ggarrange, "ggarrange" is added to the class (compatibility with mc2d <= 0.2.2).
 .ggarrange <- function(plotlist, ncol, nrow, tag = TRUE) {
-  plotlist <- plotlist[!vapply(plotlist, is.null, NA)]
-  ncell <- ncol * nrow
+  ncell <- ncol * nrow                     # NULL elements give blank cells, as in ggpubr
   if (length(plotlist) > ncell) {
     pages <- split(plotlist, ceiling(seq_along(plotlist) / ncell))
     res <- lapply(pages, .ggarrange, ncol = ncol, nrow = nrow, tag = FALSE)   # pages not tagged, as in ggpubr
     class(res) <- c(class(res), "ggarrange")
     return(res)
   }
-  grobs <- lapply(plotlist, ggplot2::ggplotGrob)
+  grobs <- lapply(plotlist, function(p) if (is.null(p)) grid::nullGrob() else ggplot2::ggplotGrob(p))
   grobs <- c(grobs, rep(list(grid::nullGrob()), ncell - length(grobs)))
   tab <- gtable::gtable_matrix("mc2d_arrange",
                                matrix(grobs, nrow = nrow, ncol = ncol, byrow = TRUE),
