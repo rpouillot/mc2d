@@ -29,4 +29,11 @@ This is an update of mc2d (0.2.3), following a full review of the code:
 
 ## Reverse dependencies
 
-To be checked with revdepcheck before submission.
+We checked the 20 reverse dependencies (aae.pop, bayespmtools, CloneSeeker,
+CopulaREMADA, CPP, decisionSupport, fitdistrplus, fitteR, FitVerse, handwriter,
+hmix, mcmodule, OSCV, PRA, rriskDistributions, sensitivity, stratifyR, Umpire,
+wired, wxgenR) with R CMD check, comparing the current CRAN version of mc2d (0.2.2)
+with this version (0.2.3).
+
+ * We saw 0 new problems.
+ * We failed to check 0 packages.

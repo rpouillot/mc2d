@@ -14,3 +14,4 @@
 ^vignettes/docmcEnglish\.pdf$
 ^vignettes/mc2dLmEnglish\.R$
 ^vignettes/mc2dLmEnglish\.pdf$
+^\.github$
