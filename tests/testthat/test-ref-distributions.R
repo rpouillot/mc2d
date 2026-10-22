@@ -1,6 +1,6 @@
 ## Characterization tests: probability distributions (d, p, q, r).
 ## See helper-ref.R. Comments tagged "BUG:" document a behaviour of
-## mc2d <= 0.2.2 that is known to be wrong and is fixed in 0.2.3.
+## mc2d <= 0.2.2 that is known to be wrong and is fixed in 0.3.0.
 
 pgrid <- c(0, 1e-10, .01, .25, .5, .75, .99, 1, NA, -0.1, 1.1)
 lpgrid <- log(c(1e-10, .01, .25, .5, .75, .99, 1))

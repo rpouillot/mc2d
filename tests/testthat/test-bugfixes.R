@@ -1,4 +1,4 @@
-## Regression tests for the bugs fixed in mc2d 0.2.3
+## Regression tests for the bugs fixed in mc2d 0.3.0
 
 test_that("Ops.mcnode accepts arrays for V, U and 0 nodes", {
   with_dims(7, 5, {

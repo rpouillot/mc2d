@@ -1,6 +1,6 @@
 ## Submission
 
-This is an update of mc2d (0.2.3), following a full review of the code:
+This is an update of mc2d (0.3.0), following a full review of the code:
 
 * Bug fixes (see inst/NEWS).
 * Faster code and lower memory use on large mcnodes (Monte-Carlo arrays).
@@ -33,7 +33,7 @@ We checked the 20 reverse dependencies (aae.pop, bayespmtools, CloneSeeker,
 CopulaREMADA, CPP, decisionSupport, fitdistrplus, fitteR, FitVerse, handwriter,
 hmix, mcmodule, OSCV, PRA, rriskDistributions, sensitivity, stratifyR, Umpire,
 wired, wxgenR) with R CMD check, comparing the current CRAN version of mc2d (0.2.2)
-with this version (0.2.3).
+with this version (0.3.0).
 
  * We saw 0 new problems.
  * We failed to check 0 packages.

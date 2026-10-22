@@ -1,6 +1,6 @@
 ## Characterization tests: base and ggplot2 graphics.
 ## See helper-ref.R. Comments tagged "BUG:" document a behaviour of
-## mc2d <= 0.2.2 that is known to be wrong and is fixed in 0.2.3.
+## mc2d <= 0.2.2 that is known to be wrong and is fixed in 0.3.0.
 
 test_that("base graphics: plot, hist, spaghetti", {
   utils::data("total", package = "mc2d", envir = environment())

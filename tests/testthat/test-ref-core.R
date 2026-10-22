@@ -1,6 +1,6 @@
 ## Characterization tests: mcnode construction, arithmetic and utilities.
 ## See helper-ref.R. Comments tagged "BUG:" document a behaviour of
-## mc2d <= 0.2.2 that is known to be wrong and is fixed in 0.2.3.
+## mc2d <= 0.2.2 that is known to be wrong and is fixed in 0.3.0.
 
 types <- c("0", "V", "U", "VU")
 
