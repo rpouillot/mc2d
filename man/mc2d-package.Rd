@@ -6,6 +6,8 @@
 \alias{mc2d-package}
 \title{mc2d: Tools for Two-Dimensional Monte-Carlo Simulations}
 \description{
+\if{html}{\figure{logo.svg}{options: style='float: right' alt='logo' width='120'}}
+
 A complete framework to build and study Two-Dimensional Monte-Carlo simulations, aka Second-Order Monte-Carlo simulations. Also includes various distributions (pert, triangular, Bernoulli, empirical discrete and continuous).
 }
 \author{
