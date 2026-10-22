@@ -17,15 +17,14 @@ This is an update of mc2d (0.3.0), following a full review of the code:
 
 * local Windows 11, R 4.6.0 (R CMD check --as-cran): Status OK
 * local Windows 11, R-devel (2026-10-20 r90728 ucrt) (R CMD check --as-cran): Status OK
-* win-builder (R-devel, R-release): to be done
+* win-builder (R-devel): Status OK
 * R-hub (R-devel: linux, windows, macos, macos-arm64): Status OK
-* mac-builder: to be done
 
 ## R CMD check results
 
 0 errors | 0 warnings | 0 notes
 
-(local checks; to be completed with the results of win-builder / R-hub)
+(local, win-builder and R-hub checks)
 
 ## Reverse dependencies
 
