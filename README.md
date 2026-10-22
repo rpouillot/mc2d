@@ -1,7 +1,7 @@
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/mc2d)](https://cran.r-project.org/package=mc2d)
 [![CRAN Downloads](https://cranlogs.r-pkg.org/badges/mc2d)](https://cran.r-project.org/package=mc2d)
 
-# Tools for Two-Dimensional Monte-Carlo Simulations
+# Tools for Two-Dimensional Monte-Carlo Simulations <img src="man/figures/logo.png" align="right" height="139" alt="mc2d logo" />
 
 ## The package 
 
