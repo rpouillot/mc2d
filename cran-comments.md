@@ -18,7 +18,7 @@ This is an update of mc2d (0.3.0), following a full review of the code:
 * local Windows 11, R 4.6.0 (R CMD check --as-cran): Status OK
 * local Windows 11, R-devel (2026-10-20 r90728 ucrt) (R CMD check --as-cran): Status OK
 * win-builder (R-devel, R-release): to be done
-* R-hub (linux, macos, windows): to be done
+* R-hub (R-devel: linux, windows, macos, macos-arm64): Status OK
 * mac-builder: to be done
 
 ## R CMD check results
@@ -32,8 +32,8 @@ This is an update of mc2d (0.3.0), following a full review of the code:
 We checked the 20 reverse dependencies (aae.pop, bayespmtools, CloneSeeker,
 CopulaREMADA, CPP, decisionSupport, fitdistrplus, fitteR, FitVerse, handwriter,
 hmix, mcmodule, OSCV, PRA, rriskDistributions, sensitivity, stratifyR, Umpire,
-wired, wxgenR) with R CMD check, comparing the current CRAN version of mc2d (0.2.2)
-with this version (0.3.0).
+wired, wxgenR) with R CMD check (local Windows 11, R 4.6.0, 2026-10-22),
+comparing the current CRAN version of mc2d (0.2.2) with this version (0.3.0).
 
- * We saw 0 new problems.
+ * We saw 0 new problems: the check results are identical with both versions.
  * We failed to check 0 packages.
