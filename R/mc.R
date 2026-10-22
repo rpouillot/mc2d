@@ -7,7 +7,14 @@
 #'
 #' If one of the arguments is a \samp{mc} object, the names of its elements are used.
 #' \samp{devname = TRUE} develops the name using the name of the \samp{mc} object as prefix.
-#' Finally, names are made unique.
+#' The names of the \samp{mcnode} arguments are made unique; the names of the elements
+#' of \samp{mc} arguments are kept as they are (they may duplicate other names,
+#' unless \samp{devname = TRUE} is used).
+#'
+#' An unnamed argument that is not a variable name (e.g. \samp{a + b} or a call to
+#' \code{\link{mcstoc}}) gets an empty name. Name such arguments (e.g.
+#' \samp{mc(a, b, out = a + b)}): functions that select nodes by name,
+#' such as \code{\link{tornadounc}}, may fail otherwise.
 #'
 #' @param ... \samp{mcnode} and/or \samp{mc} object(s) to be gathered in a \samp{mc} object,
 #'   separated by a comma.
@@ -87,7 +94,7 @@ mc <- function(..., name=NULL, devname=FALSE)
 	if(!is.null(name)) {
 		if(length(name)!=length(rv)) stop("the vector name is not equal to the number of rv")
 		names(rv) <- make.unique(name,sep="") }
-  else names(rv) <- make.unique(nom,sep="")
+  else names(rv) <- nom
 
   class(rv) <- "mc"
   attr(rv,which="type") <- type

@@ -5,6 +5,42 @@ Version 0.2-3
 
 DEPENDENCIES
 - 'ggpubr' (and its ~60 recursive dependencies) is no longer needed.
+- R (>= 3.3.0) is required (was R >= 2.10.0).
+
+CHANGES THAT MAY AFFECT EXISTING CODE
+The API is unchanged and, for a given seed, results are identical to version
+0.2-2, except for the corrected bugs (see BUG FIX). Code that ran without error
+with 0.2-2 may nevertheless behave differently in the following cases:
+- Warnings: rpert, rtriang, rbetagen, (d, p, q)pert and (d, p, q)betagen (also
+  through mcstoc) now issue their warnings ("NaN in ...", "mode < min or
+  mode > max"), which were silenced. The rtrunc / mcstoc(rtrunc = TRUE) warning
+  about rounding errors is issued when any bound is extreme (was: all bounds).
+  Code run with options(warn = 2), or tests expecting no warning, may stop.
+- pmin(x) / pmax(x) with a single mcnode return the mcnode (was a list of one
+  mcnode): pmin(x)[[1]] now returns the first value of the node.
+- New errors instead of silent wrong results: mcdata with a 1 x k matrix for a
+  "0" mcnode, pmin / pmax with incompatible numbers of variates, mcdatanocontrol
+  with an invalid 'type', cornode with a 'V' mcnode not in the first position.
+- is.mcnode returns FALSE for objects with an invalid type or dimension (e.g.
+  hand-modified attributes): functions checking their input now reject them.
+- mcprobtree evaluates the elements of 'mcvalues' where it is called: inside a
+  function, a local mcnode is used instead of a global one with the same name.
+- outm(<mc>, value, which.node) now modifies the node: the following summaries
+  and graphs use the new outm.
+- Different values (previous results were wrong): rmultinomial (and mcstoc)
+  with several values of 'size' or 'prob'; rempiricalC when n < length(values);
+  dtriang / ptriang with parameters of lengths that are not multiples;
+  dlnormb, plnormb, qlnormb, rlnormb with mean <= 0 or sd < 0 (now NaN);
+  dmultinomial, ddirichlet, dbetasubj, dpert, qmqi in the cases listed below.
+- outm = "mean" is computed with rowMeans(): results may differ from 0.2-2 in
+  the last digit (about 1e-16); a test with identical() may fail.
+- Graphs: hist / spaghetti / gghist / ggspaghetti with several outm functions,
+  spaghetti with negative values, the x range of plot.mccut, and converg with
+  more than 1000 iterations (drawn on a grid of iterations) look different.
+- gghist, ggplotmc and ggspaghetti on mc objects are built without 'ggpubr':
+  they still return a ggplot object of class "ggarrange" (with several pages,
+  a list of class "ggarrange"),
+  but functions of 'ggpubr' applied to these objects may behave differently.
 
 BUG FIX
 - Ops.mcnode: operations between a "V", "U" or "0" mcnode and an array (or a
@@ -26,7 +62,6 @@ BUG FIX
   and a single branch failed.
 - cornode: a 'V' mcnode not in the first position was not rejected.
 - is.mcnode: some invalid "0" mcnodes and invalid types were accepted.
-- mc: the names coming from mc objects are now made unique, as documented.
 - rmultinomial: the rows were not in the order of the parameters when 'size'
   or 'prob' had several values (e.g. mcstoc(rmultinomial, "VU", size = <a "V"
   mcnode>, ...)).

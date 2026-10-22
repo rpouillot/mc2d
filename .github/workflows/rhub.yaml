@@ -64,6 +64,8 @@ jobs:
         with:
           token: ${{ secrets.RHUB_TOKEN }}
           job-config: ${{ matrix.config.job-config }}
+      # mc2d: the vignettes are PDF documents, LaTeX is needed to build them
+      - uses: r-lib/actions/setup-tinytex@v2
       - uses: r-hub/actions/run-check@v1
         with:
           token: ${{ secrets.RHUB_TOKEN }}
@@ -93,6 +95,8 @@ jobs:
         with:
           job-config: ${{ matrix.config.job-config }}
           token: ${{ secrets.RHUB_TOKEN }}
+      # mc2d: the vignettes are PDF documents, LaTeX is needed to build them
+      - uses: r-lib/actions/setup-tinytex@v2
       - uses: r-hub/actions/run-check@v1
         with:
           job-config: ${{ matrix.config.job-config }}

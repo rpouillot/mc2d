@@ -198,3 +198,19 @@ test_that("evalmccut with nsu = 1 and mixed U / VU nodes in the first block", {
   capture.output(r2 <- evalmccut(mod, nsv = 10, nsu = 4, seed = 1))
   expect_identical(dim(r2$node), c(10L, 4L, 1L))
 })
+
+test_that("compatibility with 0.2.2: class 'ggarrange' and names from mc objects", {
+  utils::data("total", package = "mc2d", envir = environment())
+  on_null_device({
+    expect_true(inherits(ggplotmc(total), "ggarrange"))
+    p <- ggplotmc(total, griddim = c(1, 2))           # more graphs than cells: list of pages
+    expect_identical(class(p), c("list", "ggarrange"))
+    expect_false(inherits(p[[1]], "ggarrange"))
+  })
+  with_dims(7, 5, {
+    m1 <- mc(x = mcdata(1, "V")); m2 <- mc(x = mcdata(2, "V"))
+    expect_identical(names(mc(m1, m2)), c("x", "x"))   # names of mc elements are kept
+    a <- mcdata(1, "V")
+    expect_identical(names(mc(a, a)), c("a", "a1"))    # names of mcnode arguments are made unique
+  })
+})

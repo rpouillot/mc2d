@@ -27,7 +27,14 @@ A \samp{mc} object is a list of \code{\link{mcnode}} objects.
 
 If one of the arguments is a \samp{mc} object, the names of its elements are used.
 \samp{devname = TRUE} develops the name using the name of the \samp{mc} object as prefix.
-Finally, names are made unique.
+The names of the \samp{mcnode} arguments are made unique; the names of the elements
+of \samp{mc} arguments are kept as they are (they may duplicate other names,
+unless \samp{devname = TRUE} is used).
+
+An unnamed argument that is not a variable name (e.g. \samp{a + b} or a call to
+\code{\link{mcstoc}}) gets an empty name. Name such arguments (e.g.
+\samp{mc(a, b, out = a + b)}): functions that select nodes by name,
+such as \code{\link{tornadounc}}, may fail otherwise.
 }
 \examples{
 x <- mcstoc(runif)

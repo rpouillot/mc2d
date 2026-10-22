@@ -103,12 +103,15 @@
 # Arrange a list of ggplot objects on a grid (nrow x ncol, filled by row).
 # Replaces ggpubr::ggarrange (to avoid the dependency). Returns a ggplot object,
 # or a list of ggplot objects (one per page) if there are more plots than cells.
-.ggarrange <- function(plotlist, ncol, nrow) {
+# As ggpubr::ggarrange, "ggarrange" is added to the class (compatibility with mc2d <= 0.2.2).
+.ggarrange <- function(plotlist, ncol, nrow, tag = TRUE) {
   plotlist <- plotlist[!vapply(plotlist, is.null, NA)]
   ncell <- ncol * nrow
   if (length(plotlist) > ncell) {
     pages <- split(plotlist, ceiling(seq_along(plotlist) / ncell))
-    return(lapply(pages, .ggarrange, ncol = ncol, nrow = nrow))
+    res <- lapply(pages, .ggarrange, ncol = ncol, nrow = nrow, tag = FALSE)   # pages not tagged, as in ggpubr
+    class(res) <- c(class(res), "ggarrange")
+    return(res)
   }
   grobs <- lapply(plotlist, ggplot2::ggplotGrob)
   grobs <- c(grobs, rep(list(grid::nullGrob()), ncell - length(grobs)))
@@ -116,8 +119,10 @@
                                matrix(grobs, nrow = nrow, ncol = ncol, byrow = TRUE),
                                widths = grid::unit(rep(1, ncol), "null"),
                                heights = grid::unit(rep(1, nrow), "null"))
-  ggplot2::ggplot() +
+  res <- ggplot2::ggplot() +
     ggplot2::coord_cartesian(xlim = c(0, 1), ylim = c(0, 1), expand = FALSE) +
     ggplot2::annotation_custom(tab, xmin = 0, xmax = 1, ymin = 0, ymax = 1) +
     ggplot2::theme_void()
+  if (tag) class(res) <- c(class(res), "ggarrange")
+  res
 }
