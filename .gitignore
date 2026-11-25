@@ -17,3 +17,5 @@ vignettes/mc2dLmEnglish.R
 vignettes/mc2dLmEnglish.pdf
 # outputs of the bug-fix demo script
 mc2d_bugfix*
+
+bench/
