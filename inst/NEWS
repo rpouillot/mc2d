@@ -1,5 +1,17 @@
 === mc2d ===
 
+Version 0.3-1
+=============
+
+NEW FEATURES
+- plot.tornado, plot.tornadounc, ggtornado, ggtornadounc: new argument 'bar'.
+  With bar = FALSE, the bar from 0 to the estimate (median or mean) is not
+  drawn: only a mark at the estimate is shown, together with the uncertainty
+  interval, if any, drawn in light grey. The default (bar = TRUE) is unchanged.
+  Suggested by a user.
+- ggtornado, ggtornadounc: new argument 'width' to set the width of the bars
+  and of the uncertainty intervals.
+
 Version 0.3-0
 =============
 

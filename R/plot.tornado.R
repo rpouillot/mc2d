@@ -4,6 +4,13 @@
 #'
 #' A point is drawn at the estimate, and the segment reflects the uncertainty around it.
 #'
+#' By default (\samp{bar = TRUE}), a bar is drawn from 0 to the estimate (the median or the
+#' mean of the correlation coefficients for a two-dimensional \samp{tornado} object). For a
+#' two-dimensional \samp{tornado} object, the uncertainty interval (range of the quantiles,
+#' e.g. 2.5\% - 97.5\%) is drawn in addition. With \samp{bar = FALSE}, the bar from 0 is not
+#' drawn: only the estimate is shown, as a vertical mark, together with the uncertainty
+#' interval, if any, drawn in light grey.
+#'
 #' @param x a \code{\link{tornado}} or \code{\link{tornadounc}} object.
 #' @param which which output to plot (for multivariate output).
 #' @param name vector of names for input variables. If \samp{NULL}, taken from the object.
@@ -12,6 +19,8 @@
 #'   name, or use the row number.
 #' @param xlab label of the x axis. If \samp{"method"}, use the correlation method.
 #' @param ylab label of the y axis.
+#' @param bar if \samp{TRUE} (default), a bar is drawn from 0 to the estimate. If \samp{FALSE},
+#'   only a mark at the estimate (and the uncertainty interval, if any, in light grey) is drawn.
 #' @param ... further arguments to be passed to the \samp{plot} function.
 #' @return \samp{NULL} (called for side effects).
 #' @seealso \code{\link{tornado}}
@@ -22,8 +31,9 @@
 #' x <- evalmcmod(ec$modEC2, nsv=100, nsu=100, seed=666)
 #' tor <- tornado(x, 7)
 #' plot(tor)
+#' plot(tor, bar = FALSE)
 #' @export
-plot.tornado <- function(x,which=1,name=NULL,stat=c("median","mean"),xlab="method",ylab="",...)
+plot.tornado <- function(x,which=1,name=NULL,stat=c("median","mean"),xlab="method",ylab="",bar=TRUE,...)
 {
   val <- x$value[[which]]
   if(is.null(val)) stop("Invalid value for which")
@@ -40,19 +50,27 @@ plot.tornado <- function(x,which=1,name=NULL,stat=c("median","mean"),xlab="metho
   stat <- ifelse(stat=="mean" && nr!=1, 2 ,1)
   val <- val[,order(abs(val[stat,])),drop=FALSE]
 	if(nr==1){
-		segments(0,1:nc,val,1:nc,lwd=2)
+		if(bar) segments(0,1:nc,val,1:nc,lwd=2)
     points(val,1:nc, pch="|", lwd=2)
     }
 
   else {
-		segments(0,1:nc,val[stat,],1:nc,lwd=2,col="grey")
-    points(val[stat,],1:nc, pch="|", lwd=2)
+    if(bar) {
+      segments(0,1:nc,val[stat,],1:nc,lwd=2,col="grey")
+      points(val[stat,],1:nc, pch="|", lwd=2)
+    }
     if(nr>3){
+        mid <- val[stat,]
         val <- apply(val[3:nr,,drop=FALSE],2,range)
-        segments(val[1,],1:nc,val[2,],1:nc,lwd=2)
+        if(bar) {
+          segments(val[1,],1:nc,val[2,],1:nc,lwd=2)
+        } else {
+          segments(val[1,],1:nc,val[2,],1:nc,lwd=4,lend=1,col="grey80")
+          points(mid,1:nc, pch="|", lwd=2)
+        }
         points(val[1,],1:nc, pch="|", lwd=2)
         points(val[2,],1:nc, pch="|", lwd=2)
-            }
+    } else if(!bar) points(val[stat,],1:nc, pch="|", lwd=2)
     }
 
 		abline(v=0)
@@ -61,7 +79,7 @@ plot.tornado <- function(x,which=1,name=NULL,stat=c("median","mean"),xlab="metho
 
 #' @rdname plot.tornado
 #' @export
-plot.tornadounc <- function(x,which=1, stat="median", name=NULL, xlab="method", ylab="",...)
+plot.tornadounc <- function(x,which=1, stat="median", name=NULL, xlab="method", ylab="", bar=TRUE,...)
 {
   statposs <- rownames(x$value[[which]])
 
@@ -75,5 +93,5 @@ plot.tornadounc <- function(x,which=1, stat="median", name=NULL, xlab="method", 
   if(is.na(stat)) stop("stat should match with: ",paste(statposs,collapse=", "))
 
   x$value <- list(x$value[[which]][stat,,drop=FALSE])
-	plot.tornado(x,which=1, stat="median", name=name, xlab=xlab,ylab=ylab,...)
+	plot.tornado(x,which=1, stat="median", name=name, xlab=xlab,ylab=ylab,bar=bar,...)
  }

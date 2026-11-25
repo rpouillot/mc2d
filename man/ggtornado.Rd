@@ -10,17 +10,21 @@ ggtornado(x,
   which=1, 
   name=NULL, 
   stat=c("median","mean"), 
-  xlab="method", 
-  ylab=""
+  xlab="method",
+  ylab="",
+  bar=TRUE,
+  width=0.1
 )
 
 ## For class 'tornadounc'
 ggtornadounc(x,
-  which=1, 
-  stat="median", 
-  name=NULL, 
-  xlab="method", 
-  ylab=""
+  which=1,
+  stat="median",
+  name=NULL,
+  xlab="method",
+  ylab="",
+  bar=TRUE,
+  width=0.1
 )
 
 ggtornadounc(
@@ -29,7 +33,9 @@ ggtornadounc(
   stat = "median",
   name = NULL,
   xlab = "method",
-  ylab = ""
+  ylab = "",
+  bar = TRUE,
+  width = 0.1
 )
 }
 \arguments{
@@ -44,6 +50,10 @@ ggtornadounc(
 \item{xlab}{Label of the x axis. Default is to use the correlation method used in the tornado object.}
 
 \item{ylab}{Label of the y axis. Default is empty.}
+
+\item{bar}{If \samp{TRUE} (default), a bar is drawn from 0 to the estimate (the median or the mean of the correlation coefficients for a two-dimensional tornado object). If \samp{FALSE}, the bar is not drawn: only a mark at the estimate is shown, together with the uncertainty interval (range of the quantiles, e.g. 2.5\% - 97.5\%), if any, drawn in light grey.}
+
+\item{width}{Width of the bars and of the uncertainty intervals, as a proportion of the space between two inputs (between 0 and 1). Default is 0.1.}
 }
 \description{
 Draws a Tornado chart as provided by tornado.
@@ -53,6 +63,7 @@ data(ec)
 x <- evalmcmod(ec$modEC2, nsv=100, nsu=100, seed=666)
 tor <- tornado(x, 7)
 ggtornado(tor)
+ggtornado(tor, bar = FALSE)
 data(total)
 ggtornado(tornadounc(total, 10, use="complete.obs"), which=1)
 }

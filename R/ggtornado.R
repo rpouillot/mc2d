@@ -9,17 +9,21 @@
 #'   which=1, 
 #'   name=NULL, 
 #'   stat=c("median","mean"), 
-#'   xlab="method", 
-#'   ylab=""
+#'   xlab="method",
+#'   ylab="",
+#'   bar=TRUE,
+#'   width=0.1
 #' )
-#' @usage 
+#' @usage
 #' ## For class 'tornadounc'
 #' ggtornadounc(x,
-#'   which=1, 
-#'   stat="median", 
-#'   name=NULL, 
-#'   xlab="method", 
-#'   ylab=""
+#'   which=1,
+#'   stat="median",
+#'   name=NULL,
+#'   xlab="method",
+#'   ylab="",
+#'   bar=TRUE,
+#'   width=0.1
 #' )
 #' @param x A tornado object as provided by the \code{\link{tornado}} function.
 #' @param which Which output to print -for multivariates output-.
@@ -27,19 +31,23 @@
 #' @param stat The name of the statistics of the output to be considered. For a tornado object: "median" or "mean". For a tornadounc object: the value should match one row name of the tornadounc object. Alternatively, for a tornadounc object, the number of the row may be used.
 #' @param xlab Label of the x axis. Default is to use the correlation method used in the tornado object.
 #' @param ylab Label of the y axis. Default is empty.
+#' @param bar If \samp{TRUE} (default), a bar is drawn from 0 to the estimate (the median or the mean of the correlation coefficients for a two-dimensional tornado object). If \samp{FALSE}, the bar is not drawn: only a mark at the estimate is shown, together with the uncertainty interval (range of the quantiles, e.g. 2.5\% - 97.5\%), if any, drawn in light grey.
+#' @param width Width of the bars and of the uncertainty intervals, as a proportion of the space between two inputs (between 0 and 1). Default is 0.1.
 #' @seealso \code{\link{tornado}}
 #' @examples
 #' data(ec)
 #' x <- evalmcmod(ec$modEC2, nsv=100, nsu=100, seed=666)
 #' tor <- tornado(x, 7)
 #' ggtornado(tor)
+#' ggtornado(tor, bar = FALSE)
 #' data(total)
 #' ggtornado(tornadounc(total, 10, use="complete.obs"), which=1)
 #' @export 
-ggtornado <- function(x,which=1,name=NULL,stat=c("median","mean"),xlab="method",ylab="")
+ggtornado <- function(x,which=1,name=NULL,stat=c("median","mean"),xlab="method",ylab="",bar=TRUE,width=0.1)
 {
   val <- x$value[[which]]
   if(is.null(val)) stop("Invalid value for which")
+  stopifnot(is.numeric(width), length(width) == 1, width > 0, width <= 1)
   nc <- ncol(val)
   nr <- nrow(val)
   if(!is.null(name)) {colnames(val) <- (rep(name,nc))[1:nc]}
@@ -66,11 +74,12 @@ ggtornado <- function(x,which=1,name=NULL,stat=c("median","mean"),xlab="method",
   
   if(nr==1){
     df <- as.data.frame(t(val))
-    ggp <- ggp + 
+    if(bar) ggp <- ggp +
       ggplot2::geom_bar(data = df, ggplot2::aes(x = rownames(df), y = df[,1]),
-                        stat = "identity", 
+                        stat = "identity",
                         position = "identity",
-                        width=0.2)+
+                        width=width)
+    ggp <- ggp +
       ggplot2::coord_flip()+
       ggplot2::scale_y_continuous(limits = c(-1,1),
                                   breaks=seq(-1,1,0.5),
@@ -81,12 +90,13 @@ ggtornado <- function(x,which=1,name=NULL,stat=c("median","mean"),xlab="method",
     
   } else {
     df <- as.data.frame(t(val))
-    ggp <- ggp + 
-      ggplot2::geom_bar(data = df, 
+    if(bar) ggp <- ggp +
+      ggplot2::geom_bar(data = df,
                         aes(x = rownames(df), y = df[,stat]),
-                        stat = "identity", 
+                        stat = "identity",
                         position = "identity",
-                        width=0.2)+
+                        width=width)
+    ggp <- ggp +
       ggplot2::coord_flip()+
       ggplot2::scale_y_continuous(limits = c(-1,1),
                                   breaks=seq(-1,1,0.5),
@@ -100,15 +110,20 @@ ggtornado <- function(x,which=1,name=NULL,stat=c("median","mean"),xlab="method",
       xmax <- xmin <- ymax <- ymin <- NULL
       val <- apply(val[3:nr,,drop=FALSE],2,range)
       df <- as.data.frame(t(val))
-      df[,"xminus"] <- c(1:nc-0.1)
-      df[,"xplus"] <- c(1:nc+0.1)
+      df[,"xminus"] <- c(1:nc-width/2)
+      df[,"xplus"] <- c(1:nc+width/2)
       colnames(df) <- c("ymin","ymax","xmin","xmax")
       ggp <- ggp +
-        ggplot2::geom_rect(data = df, 
-                           ggplot2::aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax))+
+        (if(bar) ggplot2::geom_rect(data = df,
+                           ggplot2::aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax))
+         else ggplot2::geom_rect(data = df,
+                           ggplot2::aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax),
+                           fill = "grey80"))+
         ggplot2::geom_point(aes(x=1:nc, y =val[1,]), shape="|", size=8.5)+               #left        
         ggplot2::geom_point(aes(x=1:nc, y =val[2,]), shape="|", size=8.5)+               #right
         ggplot2::geom_point(aes(x=1:nc, y=my),shape="|", size=8.5)                       #mid
+    } else if(!bar) {
+      ggp <- ggp + ggplot2::geom_point(aes(x=1:nc, y=my),shape="|", size=8.5)
     }
     ggp <- ggp + ggplot2::geom_segment(ggplot2::aes(x=0,y=0,xend=nrow.df+0.2,yend=0))
   }
@@ -118,7 +133,7 @@ ggtornado <- function(x,which=1,name=NULL,stat=c("median","mean"),xlab="method",
 
 #' @rdname ggtornado
 #' @export
-ggtornadounc <- function(x,which=1, stat="median", name=NULL, xlab="method", ylab="")
+ggtornadounc <- function(x,which=1, stat="median", name=NULL, xlab="method", ylab="", bar=TRUE, width=0.1)
 
 {
   statposs <- rownames(x$value[[which]])
@@ -133,7 +148,7 @@ ggtornadounc <- function(x,which=1, stat="median", name=NULL, xlab="method", yla
   if(is.na(stat)) stop("stat should match with: ",paste(statposs,collapse=", ")) 
   
   x$value <- list(x$value[[which]][stat,,drop=FALSE])
-  ggtornado(x,which=1, stat="median", name=name, xlab=xlab,ylab=ylab)
+  ggtornado(x,which=1, stat="median", name=name, xlab=xlab,ylab=ylab,bar=bar,width=width)
 }
 
 

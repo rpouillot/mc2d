@@ -12,6 +12,7 @@
   stat = c("median", "mean"),
   xlab = "method",
   ylab = "",
+  bar = TRUE,
   ...
 )
 
@@ -22,6 +23,7 @@
   name = NULL,
   xlab = "method",
   ylab = "",
+  bar = TRUE,
   ...
 )
 }
@@ -40,6 +42,9 @@ name, or use the row number.}
 
 \item{ylab}{label of the y axis.}
 
+\item{bar}{if \samp{TRUE} (default), a bar is drawn from 0 to the estimate. If \samp{FALSE},
+only a mark at the estimate (and the uncertainty interval, if any, in light grey) is drawn.}
+
 \item{...}{further arguments to be passed to the \samp{plot} function.}
 }
 \value{
@@ -50,12 +55,20 @@ Draws a Tornado chart as provided by \code{\link{tornado}} or \code{\link{tornad
 }
 \details{
 A point is drawn at the estimate, and the segment reflects the uncertainty around it.
+
+By default (\samp{bar = TRUE}), a bar is drawn from 0 to the estimate (the median or the
+mean of the correlation coefficients for a two-dimensional \samp{tornado} object). For a
+two-dimensional \samp{tornado} object, the uncertainty interval (range of the quantiles,
+e.g. 2.5\% - 97.5\%) is drawn in addition. With \samp{bar = FALSE}, the bar from 0 is not
+drawn: only the estimate is shown, as a vertical mark, together with the uncertainty
+interval, if any, drawn in light grey.
 }
 \examples{
 data(ec)
 x <- evalmcmod(ec$modEC2, nsv=100, nsu=100, seed=666)
 tor <- tornado(x, 7)
 plot(tor)
+plot(tor, bar = FALSE)
 }
 \seealso{
 \code{\link{tornado}}
